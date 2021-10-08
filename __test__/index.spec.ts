@@ -1,3 +1,29 @@
-import test from 'ava'
+import { promises } from 'fs'
+import { join } from 'path'
 
-// TODO
+import test from 'ava'
+import probeImageSize from 'probe-image-size'
+
+import { render } from '../index'
+
+test('draw-svg', async (t) => {
+  const filePath = '../example/text.svg'
+  const svg = await promises.readFile(join(__dirname, filePath))
+  const svgString = svg.toString('utf-8')
+  const pngData = render(svgString, {
+    background: '#eeebe6',
+    fitTo: {
+      mode: 'width',
+      value: 1200,
+    },
+    font: {
+      fontFiles: ['./example/SourceHanSerifCN-Light-subset.ttf'], // Load custom fonts.
+      loadSystemFonts: false, // It will be faster to disable loading system fonts.
+      defaultFontFamily: 'Source Han Serif CN Light',
+    },
+  })
+  const result = probeImageSize.sync(pngData)
+
+  t.is(result.width, 1200)
+  t.is(result.height, 623)
+})

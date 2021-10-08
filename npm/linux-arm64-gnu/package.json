@@ -7,9 +7,9 @@
   "cpu": [
     "arm64"
   ],
-  "main": "resvg.linux-arm64-gnu.node",
+  "main": "resvgjs.linux-arm64-gnu.node",
   "files": [
-    "resvg.linux-arm64-gnu.node"
+    "resvgjs.linux-arm64-gnu.node"
   ],
   "description": "A high-performance SVG renderer, powered by Rust based resvg and napi-rs",
   "keywords": [

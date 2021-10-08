@@ -7,9 +7,9 @@
   "cpu": [
     "arm64"
   ],
-  "main": "resvg.darwin-arm64.node",
+  "main": "resvgjs.darwin-arm64.node",
   "files": [
-    "resvg.darwin-arm64.node"
+    "resvgjs.darwin-arm64.node"
   ],
   "description": "A high-performance SVG renderer, powered by Rust based resvg and napi-rs",
   "keywords": [

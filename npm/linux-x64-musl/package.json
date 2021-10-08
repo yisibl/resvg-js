@@ -7,9 +7,9 @@
   "cpu": [
     "x64"
   ],
-  "main": "resvg.linux-x64-musl.node",
+  "main": "resvgjs.linux-x64-musl.node",
   "files": [
-    "resvg.linux-x64-musl.node"
+    "resvgjs.linux-x64-musl.node"
   ],
   "description": "A high-performance SVG renderer, powered by Rust based resvg and napi-rs",
   "keywords": [

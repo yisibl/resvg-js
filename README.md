@@ -26,9 +26,10 @@ Font './example/SourceHanSerifCN-Light-subset.ttf':0 found in 0.006ms.
 ✨ Done in 55.65491008758545 ms
 ```
 
-| SVG                                                     | PNG                                                     |
-| ------------------------------------------------------- | ------------------------------------------------------- |
-| <img width="360" src="example/text.svg">                | <img width="360" src="example/text-out.png">            |
+| SVG                                      | PNG                                          |
+| ---------------------------------------- | -------------------------------------------- |
+| <img width="360" src="example/text.svg"> | <img width="360" src="example/text-out.png"> |
+
 ## Support matrix
 
 ### Operating Systems
@@ -52,7 +53,9 @@ Font './example/SourceHanSerifCN-Light-subset.ttf':0 found in 0.006ms.
 
 ### Build
 
-After `npm run build` command, you can see `package-template.[darwin|win32|linux].node` file in project root. This is the native addon built from [lib.rs](./src/lib.rs).
+You can set the name of the generated `.node` file in `napi.name` of package.json.
+
+After `npm run build` command, you can see `resvgjs.[darwin|win32|linux].node` file in project root. This is the native addon built from [lib.rs](./src/lib.rs).
 
 ### Test
 
