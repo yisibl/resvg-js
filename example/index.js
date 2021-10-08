@@ -20,7 +20,7 @@ async function main() {
     },
   })
   const t1 = performance.now()
-  console.log('✨ Done in:', t1 - t0, 'ms')
+  console.log('✨ Done in', t1 - t0, 'ms')
   await promises.writeFile(join(__dirname, './text-out.png'), pngData)
 }
 
