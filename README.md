@@ -16,11 +16,19 @@ cnpm i @resvg/resvg-js
 pnpm i @resvg/resvg-js
 ```
 
-## Example
+## [Example](example/index.js)
 
 ```shell
 node example/index.js
+
+Loaded 1 font faces in 0ms.
+Font './example/SourceHanSerifCN-Light-subset.ttf':0 found in 0.006ms.
+time:  55.65491008758545 ms
 ```
+
+| SVG                                                     | PNG                                                     |
+| ------------------------------------------------------- | ------------------------------------------------------- |
+| <img width="360" src="example/text.svg">                | <img width="360" src="example/text-out.png">            |
 ## Support matrix
 
 ### Operating Systems
