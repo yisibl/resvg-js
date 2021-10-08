@@ -2,13 +2,11 @@
 
 ![https://github.com/yisibl/resvg-js/actions](https://github.com/yisibl/resvg-js/workflows/CI/badge.svg)
 
-> A high-performance SVG renderer, powered by Rust based [resvg](https://github.com/RazrFalcon/resvg/) and [napi-rs](https://github.com/napi-rs/napi-rs). 
+> A high-performance SVG renderer, powered by Rust based [resvg](https://github.com/RazrFalcon/resvg/) and [napi-rs](https://github.com/napi-rs/napi-rs).
 
-
-* Very fast, safe and zero JavaScript dependencies!
-* Cross-platform support, including [Apple M1](https://www.apple.com/newsroom/2020/11/apple-unleashes-m1/).
-* No need for node-gyp and postinstall, the `.node` file has been compiled for you.
-
+- Very fast, safe and zero JavaScript dependencies!
+- Cross-platform support, including [Apple M1](https://www.apple.com/newsroom/2020/11/apple-unleashes-m1/).
+- No need for node-gyp and postinstall, the `.node` file has been compiled for you.
 
 ## Installation
 
@@ -18,6 +16,11 @@ cnpm i @resvg/resvg-js
 pnpm i @resvg/resvg-js
 ```
 
+## Example
+
+```shell
+node example/index.js
+```
 ## Support matrix
 
 ### Operating Systems
@@ -46,7 +49,6 @@ After `npm run build` command, you can see `package-template.[darwin|win32|linux
 ### Test
 
 With [ava](https://github.com/avajs/ava), run `npm run test` to testing native addon. You can also switch to another testing framework if you want.
-
 
 ## Develop requirements
 
@@ -88,7 +90,6 @@ git push --follow-tags
 ```
 
 GitHub actions will do the rest job for you.
-
 
 ## License
 
