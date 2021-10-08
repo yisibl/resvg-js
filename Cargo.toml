@@ -1,0 +1,22 @@
+[package]
+name = "resvg-js"
+version = "1.0.0"
+authors = ["yisibl <percyley@qq.com>"]
+license = "MPL-2.0"
+edition = "2018"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+napi = "1"
+napi-derive = "1"
+
+[target.'cfg(all(any(windows, unix), target_arch = "x86_64", not(target_env = "musl")))'.dependencies]
+mimalloc = {version = "0.1"}
+
+[build-dependencies]
+napi-build = "1"
+
+[profile.release]
+lto = true

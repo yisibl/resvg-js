@@ -1,0 +1,20 @@
+name: Dependabot auto merge
+
+on:
+  workflow_run:
+    types:
+      - completed
+    workflows:
+      # List all required workflow names here.
+      - 'CI'
+      - 'Lint'
+jobs:
+  merge:
+    name: Merge
+    runs-on: ubuntu-latest
+    steps:
+      - name: Auto merge
+        uses: ridedott/merge-me-action@v2
+        with:
+          GITHUB_LOGIN: 'dependabot*'
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
