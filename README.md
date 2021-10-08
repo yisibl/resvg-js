@@ -1,6 +1,6 @@
 # resvg-js
 
-![https://github.com/yisibl/resvg-js/actions](https://github.com/yisibl/resvg-js/workflows/CI/badge.svg)
+<a href="https://github.com/yisibl/resvg-js/actions"><img alt="GitHub CI Status" src="https://github.com/yisibl/resvg-js/workflows/CI/badge.svg?branch=main"></a>
 
 > A high-performance SVG renderer, powered by Rust based [resvg](https://github.com/RazrFalcon/resvg/) and [napi-rs](https://github.com/napi-rs/napi-rs).
 
@@ -84,12 +84,6 @@ $ ava --verbose
 ```
 
 ## Release package
-
-Ensure you have set you **NPM_TOKEN** in `GitHub` project setting.
-
-In `Settings -> Secrets`, add **NPM_TOKEN** into it.
-
-When you want release package:
 
 ```
 npm version [xxx]
