@@ -294,7 +294,7 @@
             <use xlink:href="#path-1"></use>
         </mask>
         <g></g>
-        <text mask="url(#mask-2)" font-family="HYXiXingKaiW" font-size="66" font-weight="normal" line-spacing="80" fill="#283E5D">
+        <text mask="url(#mask-2)" font-family="serif" font-size="66" font-weight="normal" line-spacing="80" fill="#283E5D">
             <tspan x="788" y="194">竹外桃花三两枝</tspan>
             <tspan x="788" y="274">春江水暖鸭先知</tspan>
         </text>

@@ -11,11 +11,11 @@ crate-type = ["cdylib"]
 [dependencies]
 napi = { version = "1.7.6", features = ["serde-json"] }
 napi-derive = "1"
-resvg = { version = "0.18.0", default-features = false, features = ["filter"] }
-usvg = { version = "0.18.0", default-features = false, features = ["export", "filter", "text"] }
+resvg = { version = "0.19.0", default-features = false, features = ["filter"] }
+usvg = { version = "0.19.0", default-features = false, features = ["export", "filter", "text"] }
 svgtypes = "0.8.0"
 tiny-skia = "0.6.1"
-fontdb = "0.6.2"
+fontdb = "0.7.0"
 log = "0.4.11"
 png = "0.17.1"
 serde = { version = "1", features = ["derive"] }

@@ -3,20 +3,21 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 use crate::options::*;
+use usvg::fontdb::Database;
 
 /// Loads fonts.
-pub fn load_fonts(font_options: &JsFontOptions) -> usvg::fontdb::Database {
+pub fn load_fonts(font_options: &JsFontOptions) -> Database {
   // Create a new font database
-  let mut fontdb = usvg::fontdb::Database::new();
+  let mut fontdb = Database::new();
   let now = std::time::Instant::now();
 
-  // Load system fonts
+  // 加载系统字体
   // https://github.com/RazrFalcon/fontdb/blob/052d74b9eb45f2c4f446846a53f33bd965e2662d/src/lib.rs#L261
   if font_options.load_system_fonts {
     fontdb.load_system_fonts();
   }
 
-  // Load font paths
+  // 加载指定路径的字体
   for path in &font_options.font_files {
     if let Err(e) = fontdb.load_font_file(path) {
       log::warn!("Failed to load '{}' cause {}.", path, e);
@@ -57,7 +58,7 @@ pub fn load_fonts(font_options: &JsFontOptions) -> usvg::fontdb::Database {
   match fontdb.query(&query) {
     Some(id) => {
       let (src, index) = fontdb.face_source(id).unwrap();
-      if let fontdb::Source::File(ref path) = &*src {
+      if let fontdb::Source::File(ref path) = &src {
         println!(
           "Font '{}':{} found in {}ms.",
           path.display(),
