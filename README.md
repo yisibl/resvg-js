@@ -50,7 +50,6 @@ Font './example/SourceHanSerifCN-Light-subset.ttf':0 found in 0.006ms.
 | Linux arm64 gnu  | ✓      | ✓      | ✓      |
 | Linux arm64 musl | ✓      | ✓      | ✓      |
 | Android arm64    | ✓      | ✓      | ✓      |
-| FreeBSD x64      | ✓      | ✓      | ✓      |
 
 ## Build
 
