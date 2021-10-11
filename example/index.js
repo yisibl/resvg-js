@@ -9,7 +9,7 @@ async function main() {
   const svgString = svg.toString('utf-8')
   const t0 = performance.now()
   const pngData = render(svgString, {
-    // background: '#eeebe6',
+    background: '#eeebe6',
     fitTo: {
       mode: 'width',
       value: 1200,
