@@ -9,7 +9,7 @@ async function main() {
   const svgString = svg.toString('utf-8')
   const t0 = performance.now()
   const pngData = render(svgString, {
-    background: '#eeebe6',
+    // background: '#eeebe6',
     fitTo: {
       mode: 'width',
       value: 1200,
@@ -19,6 +19,8 @@ async function main() {
       loadSystemFonts: false, // It will be faster to disable loading system fonts.
       defaultFontFamily: 'Source Han Serif CN Light',
     },
+    // imageRendering: 1,
+    // shapeRendering: 2,
   })
   const t1 = performance.now()
   // eslint-disable-next-line no-console

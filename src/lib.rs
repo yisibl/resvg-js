@@ -13,18 +13,10 @@ use std::convert::TryInto;
 
 /// Trys to parse an `Option<String>` into an `Option<usvg::Color>`
 fn parse_color(value: &Option<String>) -> Result<Option<usvg::Color>, svgtypes::Error> {
-  value.as_ref().map(|p| p.parse::<usvg::Color>()).transpose()
-}
-
-fn write_png(image: tiny_skia::Pixmap, out: impl std::io::Write) -> Result<(), png::EncodingError> {
-  let ref mut w = std::io::BufWriter::new(out);
-
-  let mut encoder = png::Encoder::new(w, image.width(), image.height());
-  encoder.set_color(png::ColorType::Rgba);
-  encoder.set_depth(png::BitDepth::Eight);
-
-  let mut writer = encoder.write_header()?;
-  writer.write_image_data(&image.data())
+  value
+    .as_ref()
+    .map(|color| color.parse::<usvg::Color>())
+    .transpose()
 }
 
 /// Renders an SVG
@@ -101,10 +93,10 @@ fn render(ctx: napi::CallContext) -> napi::Result<napi::JsBuffer> {
 
   // Write the image data to a buffer
   let mut buffer: Vec<u8> = vec![];
-  // let buffer = pixmap.encode_png().unwrap();
-  // Some(Uint8Array::from(buffer.as_slice()))
   if let Some(_) = image {
-    write_png(pixmap, &mut buffer).map_err(|e| napi::Error::from_reason(format!("{}", e)))?;
+    buffer = pixmap
+      .encode_png()
+      .map_err(|e| napi::Error::from_reason(format!("{}", e)))?;
   }
 
   ctx
