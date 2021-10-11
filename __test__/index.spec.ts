@@ -34,7 +34,6 @@ test('fit to width', async (t) => {
   t.is(result.height, 623)
 })
 
-
 test('Load custom font', async (t) => {
   const filePath = '../example/text.svg'
   const svg = await promises.readFile(join(__dirname, filePath))

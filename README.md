@@ -3,7 +3,6 @@
 <a href="https://github.com/yisibl/resvg-js/actions"><img alt="GitHub CI Status" src="https://github.com/yisibl/resvg-js/workflows/CI/badge.svg?branch=main"></a>
 <a href="https://www.npmjs.com/package/@resvg/resvg-js"><img src="https://img.shields.io/npm/v/@resvg/resvg-js.svg?sanitize=true" alt="npm version"></a>
 
-
 > A high-performance SVG renderer, powered by Rust based [resvg](https://github.com/RazrFalcon/resvg/) and [napi-rs](https://github.com/napi-rs/napi-rs).
 
 - Very fast, safe and zero dependencies!
@@ -56,6 +55,7 @@ Font './example/SourceHanSerifCN-Light-subset.ttf':0 found in 0.006ms.
 You can set the name of the generated `.node` file in `napi.name` of package.json.
 
 After `npm run build` command, you can see `resvgjs.[darwin|win32|linux].node` file in project root. This is the native addon built from [lib.rs](./src/lib.rs).
+
 ## Develop requirements
 
 - Install latest `Rust`
@@ -86,10 +86,15 @@ $ ava --verbose
 We use GitHub actions to automatically publish npm packages.
 
 ```
-npm version [xxx]
+# 1.0.0 => 1.0.1
+npm version patch
+
+# or 1.0.0 => 1.1.0
+npm version minor
 
 git push --follow-tags
 ```
+
 ## License
 
 [MPLv2.0](https://www.mozilla.org/en-US/MPL/)
