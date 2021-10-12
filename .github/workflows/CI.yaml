@@ -11,6 +11,15 @@ on:
       - main
     tags-ignore:
       - '**'
+    # 忽略以下文件
+    paths-ignore:
+      - '**/*.md'
+      - 'LICENSE'
+      - '**/*.gitignore'
+      - 'docs/**'
+      - 'example/*.png'
+      - '.editorconfig'
+
   pull_request:
 
 jobs:
