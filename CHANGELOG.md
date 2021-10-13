@@ -9,9 +9,14 @@ This changelog also contains important changes in dependencies.
 
 ## [Unreleased]
 
+### Added
+
+- feat: update typescript types definition
+
 ### Changed
 
 - chore: provides a better error prompt when the options type is wrong
+
 ### Removed
 
 - fix: remove the `path` option because we never implemented it
