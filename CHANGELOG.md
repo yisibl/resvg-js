@@ -9,7 +9,18 @@ This changelog also contains important changes in dependencies.
 
 ## [Unreleased]
 
+## [1.0.2] - 2021-10-13
+
+### Changed
+
+docs: add npm packages doc and npm badges for each platform
+chore: ci add ignored files and directories
+
 ## [1.0.1] - 2021-10-11
+
+npm has malfunctioned, which caused this version to fail to install.
+
+See also: https://status.npmjs.org/incidents/wy4002vc8ryc
 
 ### Changed
 
@@ -33,6 +44,7 @@ The first official version, use [resvg 0.18.0](https://github.com/RazrFalcon/res
 - Support custom fonts and system fonts.
 - Supports setting the background color of PNG.
 
-[Unreleased]: https://github.com/yisibl/resvg-js/compare/v1.0.0...HEAD
+[unreleased]: https://github.com/yisibl/resvg-js/compare/v1.0.0...HEAD
+[1.0.2]: https://github.com/yisibl/resvg-js/compare/v1.0.1...v1.0.2
 [1.0.1]: https://github.com/yisibl/resvg-js/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/yisibl/resvg-js/releases/tag/v1.0.0

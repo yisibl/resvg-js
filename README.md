@@ -36,19 +36,30 @@ Font './example/SourceHanSerifCN-Light-subset.ttf':0 found in 0.006ms.
 
 ## Support matrix
 
-|                  | node12 | node14 | node16 |
-| ---------------- | ------ | ------ | ------ |
-| Windows x64      | ✓      | ✓      | ✓      |
-| Windows x32      | ✓      | ✓      | ✓      |
-| Windows arm64    | ✓      | ✓      | ✓      |
-| macOS x64        | ✓      | ✓      | ✓      |
-| macOS arm64(M1)  | ✓      | ✓      | ✓      |
-| Linux x64 gnu    | ✓      | ✓      | ✓      |
-| Linux x64 musl   | ✓      | ✓      | ✓      |
-| Linux arm gnu    | ✓      | ✓      | ✓      |
-| Linux arm64 gnu  | ✓      | ✓      | ✓      |
-| Linux arm64 musl | ✓      | ✓      | ✓      |
-| Android arm64    | ✓      | ✓      | ✓      |
+|                  | node12 | node14 | node16 | npm                                                                                                                                                                     |
+| ---------------- | ------ | ------ | ------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Windows x64      | ✓      | ✓      | ✓      | [![npm version](https://img.shields.io/npm/v/@resvg/resvg-js-win32-x64-msvc.svg?sanitize=true)](https://www.npmjs.com/package/@resvg/resvg-js-win32-x64-msvc)           |
+|                  |
+| Windows x32      | ✓      | ✓      | ✓      | [![npm version](https://img.shields.io/npm/v/@resvg/resvg-js-win32-ia32-msvc.svg?sanitize=true)](https://www.npmjs.com/package/@resvg/resvg-js-win32-ia32-msvc)         |
+|                  |
+| Windows arm64    | ✓      | ✓      | ✓      | [![npm version](https://img.shields.io/npm/v/@resvg/resvg-js-win32-arm64-msvc.svg?sanitize=true)](https://www.npmjs.com/package/@resvg/resvg-js-win32-arm64-msvc)       |
+|                  |
+| macOS x64        | ✓      | ✓      | ✓      | [![npm version](https://img.shields.io/npm/v/@resvg/resvg-js-darwin-x64.svg?sanitize=true)](https://www.npmjs.com/package/@resvg/resvg-js-darwin-x64)                   |
+|                  |
+| macOS arm64(M1)  | ✓      | ✓      | ✓      | [![npm version](https://img.shields.io/npm/v/@resvg/resvg-js-darwin-arm64.svg?sanitize=true)](https://www.npmjs.com/package/@resvg/resvg-js-darwin-arm64)               |
+|                  |
+| Linux x64 gnu    | ✓      | ✓      | ✓      | [![npm version](https://img.shields.io/npm/v/@resvg/resvg-js-linux-x64-gnu.svg?sanitize=true)](https://www.npmjs.com/package/@resvg/resvg-js-linux-x64-gnu)             |
+|                  |
+| Linux x64 musl   | ✓      | ✓      | ✓      | [![npm version](https://img.shields.io/npm/v/@resvg/resvg-js-linux-x64-musl.svg?sanitize=true)](https://www.npmjs.com/package/@resvg/resvg-js-linux-x64-musl)           |
+|                  |
+| Linux arm gnu    | ✓      | ✓      | ✓      | [![npm version](https://img.shields.io/npm/v/@resvg/resvg-js-linux-arm-gnueabihf.svg?sanitize=true)](https://www.npmjs.com/package/@resvg/resvg-js-linux-arm-gnueabihf) |
+|                  |
+| Linux arm64 gnu  | ✓      | ✓      | ✓      | [![npm version](https://img.shields.io/npm/v/@resvg/resvg-js-linux-arm64-gnu.svg?sanitize=true)](https://www.npmjs.com/package/@resvg/resvg-js-linux-arm64-gnu)         |
+|                  |
+| Linux arm64 musl | ✓      | ✓      | ✓      | [![npm version](https://img.shields.io/npm/v/@resvg/resvg-js-linux-arm64-musl.svg?sanitize=true)](https://www.npmjs.com/package/@resvg/resvg-js-linux-arm64-musl)       |
+|                  |
+| Android arm64    | ✓      | ✓      | ✓      | [![npm version](https://img.shields.io/npm/v/@resvg/resvg-js-android-arm64.svg?sanitize=true)](https://www.npmjs.com/package/@resvg/resvg-js-android-arm64)             |
+|                  |
 
 ## Build
 
