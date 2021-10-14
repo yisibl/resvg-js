@@ -3,6 +3,7 @@ const { join } = require('path')
 const { performance } = require('perf_hooks')
 
 const { render } = require('../index')
+const svg2img = require('svg2img')
 
 async function main() {
   const svg = await fs.readFile(join(__dirname, './text.svg'))
@@ -28,6 +29,11 @@ async function main() {
   console.log('✨ Done in', t1 - t0, 'ms')
 
   await fs.writeFile(join(__dirname, './text-out.png'), pngData)
+
+  svg2img(svg, { width: 1200, preserveAspectRatio: true }, function (error, buffer) {
+    fs.writeFile(join(__dirname, './text.png'), buffer)
+  })
 }
 
+// sharp2()
 main()
