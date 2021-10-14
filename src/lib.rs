@@ -30,6 +30,8 @@ fn render(ctx: napi::CallContext) -> napi::Result<napi::JsBuffer> {
     options::JsOptions::default()
   };
 
+  let _ = env_logger::builder().filter_level(js_options.log_level).try_init();
+
   // Parse the background
   let background =
     parse_color(&js_options.background).map_err(|e| napi::Error::from_reason(format!("{}", e)))?;

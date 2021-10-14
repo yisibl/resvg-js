@@ -12,6 +12,7 @@ This changelog also contains important changes in dependencies.
 ### Added
 
 - feat: update typescript types definition
+- feat: add logLevel option
 
 ### Changed
 

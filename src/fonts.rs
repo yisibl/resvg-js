@@ -4,6 +4,7 @@
 
 use crate::options::*;
 use usvg::fontdb::Database;
+use log::{warn, debug, error};
 
 /// Loads fonts.
 pub fn load_fonts(font_options: &JsFontOptions) -> Database {
@@ -20,7 +21,7 @@ pub fn load_fonts(font_options: &JsFontOptions) -> Database {
   // 加载指定路径的字体
   for path in &font_options.font_files {
     if let Err(e) = fontdb.load_font_file(path) {
-      log::warn!("Failed to load '{}' cause {}.", path, e);
+      warn!("Failed to load '{}' cause {}.", path, e);
     }
   }
 
@@ -40,7 +41,7 @@ pub fn load_fonts(font_options: &JsFontOptions) -> Database {
   fontdb.set_cursive_family(&font_options.cursive_family);
   fontdb.set_fantasy_family(&font_options.fantasy_family);
   fontdb.set_monospace_family(&font_options.monospace_family);
-  println!(
+  debug!(
     "Loaded {} font faces in {}ms.",
     fontdb.len(),
     now.elapsed().as_millis()
@@ -59,7 +60,7 @@ pub fn load_fonts(font_options: &JsFontOptions) -> Database {
     Some(id) => {
       let (src, index) = fontdb.face_source(id).unwrap();
       if let fontdb::Source::File(ref path) = &src {
-        println!(
+        debug!(
           "Font '{}':{} found in {}ms.",
           path.display(),
           index,
@@ -68,8 +69,7 @@ pub fn load_fonts(font_options: &JsFontOptions) -> Database {
       }
     }
     None => {
-      // log::warn!("Error: The default font '{}' not found.", font_family);
-      eprintln!("Error: The default font '{}' not found.", font_family);
+      error!("Error: The default font '{}' not found.", font_family);
     }
   }
 

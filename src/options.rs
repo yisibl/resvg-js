@@ -25,6 +25,20 @@ enum FitToDef {
   Zoom(f32),
 }
 
+#[derive(Deserialize)]
+#[serde(
+  rename_all = "lowercase",
+  remote = "log::LevelFilter"
+)]
+enum LogLevelDef {
+  Off,
+  Error,
+  Warn,
+  Info,
+  Debug,
+  Trace,
+}
+
 /// The javascript options passed to `render()`.
 #[derive(Deserialize)]
 #[serde(rename_all = "camelCase", default, deny_unknown_fields)]
@@ -85,6 +99,9 @@ pub struct JsOptions {
 
   /// Crop options
   pub crop: JsCropOptions,
+
+  #[serde(with = "LogLevelDef")]
+  pub log_level: log::LevelFilter,
 }
 
 impl Default for JsOptions {
@@ -99,6 +116,7 @@ impl Default for JsOptions {
       fit_to: usvg::FitTo::Original,
       background: None,
       crop: JsCropOptions::default(),
+      log_level: log::LevelFilter::Error
     }
   }
 }
