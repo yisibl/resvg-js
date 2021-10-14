@@ -29,13 +29,6 @@ enum FitToDef {
 #[derive(Deserialize)]
 #[serde(rename_all = "camelCase", default, deny_unknown_fields)]
 pub struct JsOptions {
-  /// SVG image path.
-  ///
-  /// Used to resolve relative image paths.
-  ///
-  /// Default: `None`
-  pub path: Option<String>,
-
   /// Font related options.
   pub font: JsFontOptions,
 
@@ -97,7 +90,6 @@ pub struct JsOptions {
 impl Default for JsOptions {
   fn default() -> JsOptions {
     JsOptions {
-      path: None,
       font: JsFontOptions::default(),
       dpi: 96.0,
       languages: vec!["en".to_string()],

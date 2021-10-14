@@ -9,12 +9,18 @@ This changelog also contains important changes in dependencies.
 
 ## [Unreleased]
 
+### Changed
+
+- chore: provides a better error prompt when the options type is wrong
+### Removed
+
+- fix: remove the `path` option because we never implemented it
 ## [1.0.2] - 2021-10-13
 
 ### Changed
 
-docs: add npm packages doc and npm badges for each platform
-chore: ci add ignored files and directories
+- docs: add npm packages doc and npm badges for each platform
+- chore: ci add ignored files and directories
 
 ## [1.0.1] - 2021-10-11
 

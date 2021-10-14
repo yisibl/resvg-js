@@ -39,7 +39,7 @@ fn render(ctx: napi::CallContext) -> napi::Result<napi::JsBuffer> {
 
   // Build the SVG options
   let svg_options = usvg::Options {
-    resources_dir: js_options.path.map(|p| p.into()),
+    resources_dir: None,
     dpi: js_options.dpi,
     font_family: js_options.font.default_font_family,
     font_size: js_options.font.default_font_size,
