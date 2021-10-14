@@ -229,7 +229,7 @@ where
         1 => Ok(usvg::ShapeRendering::CrispEdges),
         2 => Ok(usvg::ShapeRendering::GeometricPrecision),
         n => Err(serde::de::Error::custom(format_args!(
-            "Invalid ShapeRendering value: {}. Expected 0 (OptimizeSpeed), 1 (CrispEdges), or 2 (GeometricPrecision).",
+            "Invalid ShapeRendering value: {}. Must be these numbers: 0 (OptimizeSpeed), 1 (CrispEdges), or 2 (GeometricPrecision).",
             n
         ))),
     }
@@ -245,7 +245,7 @@ where
         1 => Ok(usvg::TextRendering::OptimizeLegibility),
         2 => Ok(usvg::TextRendering::GeometricPrecision),
         n => Err(serde::de::Error::custom(format_args!(
-            "Invalid TextRendering value: {}. Expected 0 (OptimizeSpeed), 1 (OptimizeLegibility), or 2 (GeometricPrecision).",
+            "Invalid TextRendering value: {}. Must be these numbers: 0 (OptimizeSpeed), 1 (OptimizeLegibility), or 2 (GeometricPrecision).",
             n
         ))),
     }
@@ -260,7 +260,7 @@ where
     0 => Ok(usvg::ImageRendering::OptimizeQuality),
     1 => Ok(usvg::ImageRendering::OptimizeSpeed),
     n => Err(serde::de::Error::custom(format_args!(
-      "Invalid ImageRendering value: {}. Expected 0 (OptimizeQuality) or 1 (OptimizeSpeed).",
+      "Invalid ImageRendering value: {}. Must be these numbers: 0 (OptimizeQuality) or 1 (OptimizeSpeed).",
       n
     ))),
   }
