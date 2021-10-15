@@ -3,8 +3,8 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 use crate::options::*;
+use log::{debug, error, warn};
 use usvg::fontdb::Database;
-use log::{warn, debug, error};
 
 /// Loads fonts.
 pub fn load_fonts(font_options: &JsFontOptions) -> Database {

@@ -26,10 +26,7 @@ enum FitToDef {
 }
 
 #[derive(Deserialize)]
-#[serde(
-  rename_all = "lowercase",
-  remote = "log::LevelFilter"
-)]
+#[serde(rename_all = "lowercase", remote = "log::LevelFilter")]
 enum LogLevelDef {
   Off,
   Error,
@@ -116,7 +113,7 @@ impl Default for JsOptions {
       fit_to: usvg::FitTo::Original,
       background: None,
       crop: JsCropOptions::default(),
-      log_level: log::LevelFilter::Error
+      log_level: log::LevelFilter::Error,
     }
   }
 }
