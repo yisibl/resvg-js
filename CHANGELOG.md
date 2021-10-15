@@ -9,6 +9,8 @@ This changelog also contains important changes in dependencies.
 
 ## [Unreleased]
 
+## [1.0.3] - 2021-10-15
+
 ### Added
 
 - feat: update typescript types definition. @axelhzf
@@ -25,6 +27,7 @@ This changelog also contains important changes in dependencies.
 ### Removed
 
 - fix: remove the `path` option because we never implemented it
+
 ## [1.0.2] - 2021-10-13
 
 ### Changed
