@@ -11,7 +11,10 @@
     "node-resvg",
     "resvg-js",
     "resvg-node",
-    "rust"
+    "rust",
+    "svg2png",
+    "svg2img",
+    "svg to png"
   ],
   "files": [
     "index.d.ts",

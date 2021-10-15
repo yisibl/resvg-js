@@ -5,7 +5,7 @@
 
 > A high-performance SVG renderer, powered by Rust based [resvg](https://github.com/RazrFalcon/resvg/) and [napi-rs](https://github.com/napi-rs/napi-rs).
 
-- Very fast, safe and zero dependencies!
+- Fast, safe and zero dependencies!
 - Cross-platform support, including [Apple M1](https://www.apple.com/newsroom/2020/11/apple-unleashes-m1/).
 - No need for node-gyp and postinstall, the `.node` file has been compiled for you.
 - Support system fonts and custom fonts in SVG text.
