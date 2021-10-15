@@ -21,6 +21,7 @@ async function main() {
     },
     // imageRendering: 1,
     // shapeRendering: 2,
+    logLevel: 'debug',
   })
   const t1 = performance.now()
   // eslint-disable-next-line no-console

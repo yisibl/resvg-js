@@ -11,12 +11,16 @@ This changelog also contains important changes in dependencies.
 
 ### Added
 
-- feat: update typescript types definition
-- feat: add logLevel option
+- feat: update typescript types definition. @axelhzf
+- feat: add `logLevel` option, the font loading log is no longer output by default. @axelhzf
 
 ### Changed
 
 - chore: provides a better error prompt when the options type is wrong
+
+### Fixed
+
+- fix: loaded font faces time changed from milliseconds to ms
 
 ### Removed
 

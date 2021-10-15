@@ -44,7 +44,7 @@ pub fn load_fonts(font_options: &JsFontOptions) -> Database {
   debug!(
     "Loaded {} font faces in {}ms.",
     fontdb.len(),
-    now.elapsed().as_millis()
+    now.elapsed().as_micros() as f64 / 1000.0
   );
 
   // 查找指定字体的路径
