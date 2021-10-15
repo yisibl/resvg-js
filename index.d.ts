@@ -38,6 +38,7 @@ export type ResvgRenderOptions = {
     right?: number
     bottom?: number
   }
+  logLevel?: 'off' | 'error' | 'warn' | 'info' | 'debug' | 'trace'
 }
 
 export function render(svg: string, options?: ResvgRenderOptions): Buffer
