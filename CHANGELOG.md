@@ -9,6 +9,26 @@ This changelog also contains important changes in dependencies.
 
 ## [Unreleased]
 
+### Added
+
+- feat: `background` option supports alpha channel, currently only supports [CSS Colors 3](https://www.w3.org/TR/css-color-3/#colorunits).
+  CSS color parse depends on [svgtypes](https://github.com/RazrFalcon/svgtypes/commit/266ee2caff9bd6a75d9a63b6e9850554f6de87b4).
+
+```js
+render(svgString, {
+  // Support
+  background: 'rgba(77, 25, 230, .8)',
+  background: 'rgb(77, 25, 230, .8)',
+  background: 'rgba(77%, 25%, 230%, .8)',
+  background: 'hsla(255, 80%, 50%, .8)',
+  background: 'hsl(255, 80%, 50%, .8)',
+  // Not support
+  background: 'rgb(77 25 230 / 80%)',
+  background: 'rgb(77 25 230 / .8)',
+  background: 'hsl(255deg 80% 50% / 80%)',
+})
+```
+
 ## [1.0.3] - 2021-10-15
 
 ### Added

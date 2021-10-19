@@ -10,6 +10,8 @@ extern crate napi;
 extern crate napi_derive;
 
 use std::convert::TryInto;
+use tiny_skia::Color;
+use tiny_skia::Pixmap;
 
 /// Trys to parse an `Option<String>` into an `Option<usvg::Color>`
 fn parse_color(value: &Option<String>) -> Result<Option<usvg::Color>, svgtypes::Error> {
@@ -66,14 +68,14 @@ fn render(ctx: napi::CallContext) -> napi::Result<napi::JsBuffer> {
     .ok_or_else(|| napi::Error::from_reason("target size is zero".to_string()))?;
 
   // Unwrap is safe, because `size` is already valid.
-  let mut pixmap = tiny_skia::Pixmap::new(pixmap_size.width(), pixmap_size.height()).unwrap();
+  let mut pixmap = Pixmap::new(pixmap_size.width(), pixmap_size.height()).unwrap();
 
   if let Some(background) = background {
-    pixmap.fill(tiny_skia::Color::from_rgba8(
+    pixmap.fill(Color::from_rgba8(
       background.red,
       background.green,
       background.blue,
-      255,
+      background.alpha,
     ));
   }
 
