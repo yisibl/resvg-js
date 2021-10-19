@@ -9,9 +9,12 @@ This changelog also contains important changes in dependencies.
 
 ## [Unreleased]
 
+## [1.0.4] - 2021-10-19
+
 ### Added
 
 - feat: `background` option supports alpha channel, currently only supports [CSS Colors 3](https://www.w3.org/TR/css-color-3/#colorunits).
+
   CSS color parse depends on [svgtypes](https://github.com/RazrFalcon/svgtypes/commit/266ee2caff9bd6a75d9a63b6e9850554f6de87b4).
 
 ```js
@@ -83,8 +86,9 @@ The first official version, use [resvg 0.18.0](https://github.com/RazrFalcon/res
 - Support custom fonts and system fonts.
 - Supports setting the background color of PNG.
 
-[unreleased]: https://github.com/yisibl/resvg-js/compare/v1.0.3...HEAD
-[1.0.2]: https://github.com/yisibl/resvg-js/compare/v1.0.2...v1.0.3
+[unreleased]: https://github.com/yisibl/resvg-js/compare/v1.0.4...HEAD
+[1.0.4]: https://github.com/yisibl/resvg-js/compare/v1.0.3...v1.0.4
+[1.0.3]: https://github.com/yisibl/resvg-js/compare/v1.0.2...v1.0.3
 [1.0.2]: https://github.com/yisibl/resvg-js/compare/v1.0.1...v1.0.2
 [1.0.1]: https://github.com/yisibl/resvg-js/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/yisibl/resvg-js/releases/tag/v1.0.0
