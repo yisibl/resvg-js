@@ -147,7 +147,12 @@ jobs:
         shell: bash
 
       - name: 'Install dependencies'
-        run: yarn install --ignore-scripts --frozen-lockfile --registry https://registry.npmjs.org --network-timeout 300000
+        # 
+        run: |
+          npm -v
+          npm install --platform=win32 --arch=ia32 sharp
+          npm install @node-rs/helper
+          yarn install --ignore-scripts --frozen-lockfile --registry https://registry.npmjs.org --network-timeout 300000
 
       - name: 'Build'
         run: ${{ matrix.settings.build }}

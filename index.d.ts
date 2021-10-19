@@ -27,11 +27,11 @@ export type ResvgRenderOptions = {
     | 0 // optimizeQuality
     | 1 // optimizeSpeed
   fitTo?:
-    | { mode: 'width'; value: number }
     | { mode: 'original' }
+    | { mode: 'width'; value: number }
     | { mode: 'height'; value: number }
     | { mode: 'zoom'; value: number }
-  background?: string
+  background?: string // Support CSS3 color, e.g. rgba(255, 255, 255, .8)
   crop?: {
     left: number
     top: number
