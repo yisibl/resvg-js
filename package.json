@@ -106,6 +106,7 @@
     "extensions": [
       "ts"
     ],
+    "timeout": "3m",
     "environmentVariables": {
       "TS_NODE_PROJECT": "./tsconfig.json"
     }
