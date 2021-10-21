@@ -34,6 +34,23 @@ Font './example/SourceHanSerifCN-Light-subset.ttf':0 found in 0.006ms.
 | ---------------------------------------- | -------------------------------------------- |
 | <img width="390" src="example/text.svg"> | <img width="390" src="example/text-out.png"> |
 
+## Benchmark
+
+```shell
+Running "resize width" suite...
+  resvg-js(Rust):
+    12 ops/s, ±22.66%   | fastest 🚀
+
+  sharp:
+    9 ops/s, ±64.52%    | 25% slower
+
+  skr-canvas(Rust):
+    7 ops/s, ±3.72%    | 41.67% slower
+
+  svg2img(canvg and node-canvas):
+    6 ops/s, ±16.94%    | slowest, 50% slower
+```
+
 ## Support matrix
 
 |                  | node12 | node14 | node16 | npm                                                                                                                                                                     |
