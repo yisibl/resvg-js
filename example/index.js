@@ -16,8 +16,8 @@ async function main() {
       value: 1200,
     },
     font: {
-      fontFiles: ['./example/SourceHanSerifCN-Light-subset.ttf'], // Load custom fonts.
       loadSystemFonts: false, // It will be faster to disable loading system fonts.
+      fontFiles: ['./example/SourceHanSerifCN-Light-subset.ttf'], // Load custom fonts.
       defaultFontFamily: 'Source Han Serif CN Light',
     },
     // imageRendering: 1,
