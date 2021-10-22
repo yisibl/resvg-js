@@ -78,37 +78,31 @@ Running "resize width" suite...
 | Android arm64    | ✓      | ✓      | ✓      | [![npm version](https://img.shields.io/npm/v/@resvg/resvg-js-android-arm64.svg?sanitize=true)](https://www.npmjs.com/package/@resvg/resvg-js-android-arm64)             |
 |                  |
 
-## Build
-
-You can set the name of the generated `.node` file in `napi.name` of package.json.
-
-After `npm run build` command, you can see `resvgjs.[darwin|win32|linux].node` file in project root. This is the native addon built from [lib.rs](./src/lib.rs).
-
 ## Develop requirements
+
+
+
+## Test in local
 
 - Install latest `Rust`
 - Install `Node.js@10+` which fully supported `Node-API`
 - Install `yarn@1.x`
 
-## Test in local
-
-- yarn
-- yarn build
-- yarn test
-
-And you will see:
-
 ```bash
-$ ava --verbose
-
-  ✔ sync function from native code
-  ✔ sleep function from native code (201ms)
-  ─
-
-  2 tests passed
-✨  Done in 1.12s.
+yarn
+yarn build
+yarn test
 ```
+## Roadmap
 
+I will consider implementing the following features, if you happen to be interested,
+please feel free to discuss with me or submit a PR.
+
+- [ ] Support for getting SVG Bounding box
+- [ ] Output usvg-simplified SVG string
+- [ ] Support for generating more lossless bitmap formats, e.g. avif, webp, JPEG XL
+- [ ] Support async API (dependent on [napi-rs PR #760](https://github.com/napi-rs/napi-rs/pull/760))
+- [ ] Support WebAssembly(.wasm)
 ## Release package
 
 We use GitHub actions to automatically publish npm packages.
