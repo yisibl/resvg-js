@@ -32,6 +32,7 @@ Font './example/SourceHanSerifCN-Light-subset.ttf':0 found in 0.006ms.
 
 | SVG                                      | PNG                                          |
 | ---------------------------------------- | -------------------------------------------- |
+| <img width="390" src="example/anime_girl.svg"> | <img width="390" src="example/out-resvg-js.png"> |
 | <img width="390" src="example/text.svg"> | <img width="390" src="example/text-out.png"> |
 
 ## Benchmark
