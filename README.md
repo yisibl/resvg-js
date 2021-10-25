@@ -30,10 +30,10 @@ Font './example/SourceHanSerifCN-Light-subset.ttf':0 found in 0.006ms.
 ✨ Done in 55.65491008758545 ms
 ```
 
-| SVG                                      | PNG                                          |
-| ---------------------------------------- | -------------------------------------------- |
-| <img width="390" src="example/anime_girl.svg"> | <img width="390" src="example/out-resvg-js.png"> |
-| <img width="390" src="example/text.svg"> | <img width="390" src="example/text-out.png"> |
+| SVG                                            | PNG                                                                 |
+| ---------------------------------------------- | ------------------------------------------------------------------- |
+| <img width="500" src="example/anime_girl.svg"> | <img width="500" src="example/out-resvg-js.png" alt="Anime girl" /> |
+| <img width="500" src="example/text.svg">       | <img width="500" src="example/text-out.png">                        |
 
 ## Benchmark
 
@@ -81,8 +81,6 @@ Running "resize width" suite...
 
 ## Develop requirements
 
-
-
 ## Test in local
 
 - Install latest `Rust`
@@ -94,6 +92,7 @@ yarn
 yarn build
 yarn test
 ```
+
 ## Roadmap
 
 I will consider implementing the following features, if you happen to be interested,
@@ -104,6 +103,7 @@ please feel free to discuss with me or submit a PR.
 - [ ] Support for generating more lossless bitmap formats, e.g. avif, webp, JPEG XL
 - [ ] Support async API (dependent on [napi-rs PR #760](https://github.com/napi-rs/napi-rs/pull/760))
 - [ ] Support WebAssembly(.wasm)
+
 ## Release package
 
 We use GitHub actions to automatically publish npm packages.
