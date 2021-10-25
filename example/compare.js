@@ -13,7 +13,7 @@ async function main() {
   const pngData = render(svgString, {
     fitTo: {
       mode: 'width',
-      value: 2104,
+      value: 1052,
     },
     font: {
       loadSystemFonts: false, // It will be faster to disable loading system fonts.
@@ -24,8 +24,8 @@ async function main() {
   console.log('✨ resvg-js done in', t1 - t0, 'ms')
   await fs.writeFile(join(__dirname, './out-resvg-js.png'), pngData)
   
-  sharpToPng('example/anime_girl.svg', 2104)
-  skrCanvas(svg, 2104, 1488)
+  sharpToPng('example/anime_girl.svg', 1052)
+  skrCanvas(svg, 1052, 744)
 }
 
 async function sharpToPng(file, width) {
