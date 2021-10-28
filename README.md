@@ -3,11 +3,11 @@
 <a href="https://github.com/yisibl/resvg-js/actions"><img alt="GitHub CI Status" src="https://github.com/yisibl/resvg-js/workflows/CI/badge.svg?branch=main"></a>
 <a href="https://www.npmjs.com/package/@resvg/resvg-js"><img src="https://img.shields.io/npm/v/@resvg/resvg-js.svg?sanitize=true" alt="npm version"></a>
 
-> A high-performance SVG renderer, powered by Rust based [resvg](https://github.com/RazrFalcon/resvg/) and [napi-rs](https://github.com/napi-rs/napi-rs).
+> resvg-js is a high-performance SVG renderer, powered by Rust based [resvg](https://github.com/RazrFalcon/resvg/) and [napi-rs](https://github.com/napi-rs/napi-rs).
 
 - Fast, safe and zero dependencies!
-- Cross-platform support, including [Apple M1](https://www.apple.com/newsroom/2020/11/apple-unleashes-m1/).
 - No need for node-gyp and postinstall, the `.node` file has been compiled for you.
+- Cross-platform support, including [Apple M1](https://www.apple.com/newsroom/2020/11/apple-unleashes-m1/).
 - Support system fonts and custom fonts in SVG text.
 
 ## Installation
@@ -30,10 +30,10 @@ Font './example/SourceHanSerifCN-Light-subset.ttf':0 found in 0.006ms.
 ✨ Done in 55.65491008758545 ms
 ```
 
-| SVG                                            | PNG                                                                 |
-| ---------------------------------------------- | ------------------------------------------------------------------- |
-| <img width="500" src="example/anime_girl.svg"> | <img width="500" src="example/out-resvg-js.png" alt="Anime girl" /> |
-| <img width="500" src="example/text.svg">       | <img width="500" src="example/text-out.png">                        |
+| SVG                                                                 | PNG                                                                     |
+| ------------------------------------------------------------------- | ----------------------------------------------------------------------- |
+| <img width="500" src="example/anime_girl.svg" alt="Anime girl SVG"> | <img width="500" src="example/out-resvg-js.png" alt="Anime girl png" /> |
+| <img width="500" src="example/text.svg">                            | <img width="500" src="example/text-out.png">                            |
 
 ## Benchmark
 
@@ -79,21 +79,18 @@ Running "resize width" suite...
 | Android arm64    | ✓      | ✓      | ✓      | [![npm version](https://img.shields.io/npm/v/@resvg/resvg-js-android-arm64.svg?sanitize=true)](https://www.npmjs.com/package/@resvg/resvg-js-android-arm64)             |
 |                  |
 
-## Develop requirements
-
 ## Test in local
 
 - Install latest `Rust`
 - Install `Node.js@10+` which fully supported `Node-API`
-- Install `yarn@1.x`
 
 ```bash
-yarn
-yarn build
-yarn test
+npm i
+npm build
+npm test
 ```
 
-## Roadmap
+## Roadmap & Contributing
 
 I will consider implementing the following features, if you happen to be interested,
 please feel free to discuss with me or submit a PR.
