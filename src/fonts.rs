@@ -69,7 +69,7 @@ pub fn load_fonts(font_options: &JsFontOptions) -> Database {
       }
     }
     None => {
-      error!("Error: The default font '{}' not found.", font_family);
+      warn!("Warning: The default font '{}' not found.", font_family);
     }
   }
 
