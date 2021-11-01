@@ -10,7 +10,7 @@ import { createCanvas, Image } from '@napi-rs/canvas'
 async function run() {
   const svg1 = await fs.readFile(join(__dirname, '../example/text.svg'))
   const tiger = await fs.readFile(join(__dirname, '../__test__/tiger.svg'))
-  const iconHeart = await fs.readFile(join(__dirname, '../__test__/icon-heart.svg'))
+  const iconHeart = await fs.readFile(join(__dirname, '../__test__/icon-alarm.svg'))
 
   await b.suite(
     'resize width',
@@ -82,7 +82,7 @@ async function run() {
     b.add('sharp', async () => {
       await sharp('__test__/icon-heart.svg', {
         // https://github.com/lovell/sharp/issues/1421#issuecomment-514446234
-        density: (72 * 386) / 48, // 72 * width / actual width
+        density: (72 * 386) / 24, // 72 * width / actual width
       })
         .resize(386)
         .toBuffer()
