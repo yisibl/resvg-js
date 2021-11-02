@@ -3,25 +3,22 @@ name = "resvg-js"
 version = "1.0.0"
 authors = ["yisibl <percyley@qq.com>"]
 license = "MPL-2.0"
-edition = "2018"
+edition = "2021"
 
 [lib]
 crate-type = ["cdylib"]
 
 [dependencies]
-napi = { version = "1.7.6", features = ["serde-json"] }
+napi = { version = "1", features = ["serde-json"] }
 napi-derive = "1"
 resvg = { version = "0.19.0", default-features = false, features = ["filter"] }
 usvg = { version = "0.19.0", default-features = false, features = ["export", "filter", "text"] }
 svgtypes = "0.8.0"
 tiny-skia = "0.6.1"
 fontdb = "0.7.0"
-log = "0.4.11"
+log = "0.4"
 env_logger = "0.9.0"
 serde = { version = "1", features = ["derive"] }
-
-[target.'cfg(all(any(windows, unix), target_arch = "x86_64", not(target_env = "musl")))'.dependencies]
-mimalloc = {version = "0.1"}
 
 [build-dependencies]
 napi-build = "1"
