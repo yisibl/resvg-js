@@ -3,7 +3,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 use crate::options::*;
-use log::{debug, error, warn};
+use log::{debug, warn};
 use usvg::fontdb::Database;
 
 /// Loads fonts.
