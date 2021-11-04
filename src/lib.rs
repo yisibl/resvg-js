@@ -62,8 +62,8 @@ fn render(ctx: napi::CallContext) -> napi::Result<napi::JsBuffer> {
   let tree = usvg::Tree::from_str(&svg_string, &svg_options.to_ref())
     .map_err(|e| napi::Error::from_reason(format!("{}", e)))?;
 
-  let pixmap_size = js_options
-    .fit_to
+  let fit_to = js_options.fit_to;
+  let pixmap_size = fit_to
     .fit_to(tree.svg_node().size.to_screen_size())
     .ok_or_else(|| napi::Error::from_reason("target size is zero".to_string()))?;
 
@@ -80,7 +80,7 @@ fn render(ctx: napi::CallContext) -> napi::Result<napi::JsBuffer> {
   }
 
   // Render the tree
-  let image = resvg::render(&tree, js_options.fit_to, pixmap.as_mut());
+  let image = resvg::render(&tree, fit_to, pixmap.as_mut());
 
   // Crop the SVG
   let crop_rect = tiny_skia::IntRect::from_ltrb(
