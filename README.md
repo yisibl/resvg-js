@@ -95,10 +95,11 @@ npm test
 I will consider implementing the following features, if you happen to be interested,
 please feel free to discuss with me or submit a PR.
 
+- [x] Support async API
+- [x] Upgrade to napi-rs v2
 - [ ] Support for getting SVG Bounding box
 - [ ] Output usvg-simplified SVG string
 - [ ] Support for generating more lossless bitmap formats, e.g. avif, webp, JPEG XL
-- [ ] Support async API (dependent on [napi-rs PR #760](https://github.com/napi-rs/napi-rs/pull/760))
 - [ ] Support WebAssembly(.wasm)
 
 ## Release package

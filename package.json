@@ -1,12 +1,27 @@
 {
   "name": "@resvg/resvg-js",
-  "version": "1.0.4",
+  "version": "1.1.0",
   "description": "A high-performance SVG renderer, powered by Rust based resvg and napi-rs",
   "main": "index.js",
   "repository": "git@github.com:yisibl/resvg-js.git",
   "license": "MPL-2.0",
-  "keywords": ["resvg", "svg", "node-resvg", "resvg-js", "resvg-node", "rust", "svg2png", "svg2img", "svg to png"],
-  "files": ["index.d.ts", "index.js", "js-binding.js", "js-binding.d.ts"],
+  "keywords": [
+    "resvg",
+    "svg",
+    "node-resvg",
+    "resvg-js",
+    "resvg-node",
+    "rust",
+    "svg2png",
+    "svg2img",
+    "svg to png"
+  ],
+  "files": [
+    "index.d.ts",
+    "index.js",
+    "js-binding.js",
+    "js-binding.d.ts"
+  ],
   "napi": {
     "name": "resvgjs",
     "triples": {
@@ -75,15 +90,30 @@
     "typescript": "^4.4.4"
   },
   "lint-staged": {
-    "*.@(js|ts|tsx)": ["prettier --write", "eslint -c .eslintrc.yml --fix"],
-    "*.@(yml|yaml)": ["prettier --parser yaml --write"],
-    "*.md": ["prettier --parser markdown --write"],
-    "*.json": ["prettier --parser json --write"],
-    "*.svg": ["prettier --parser html --write"]
+    "*.@(js|ts|tsx)": [
+      "prettier --write",
+      "eslint -c .eslintrc.yml --fix"
+    ],
+    "*.@(yml|yaml)": [
+      "prettier --parser yaml --write"
+    ],
+    "*.md": [
+      "prettier --parser markdown --write"
+    ],
+    "*.json": [
+      "prettier --parser json --write"
+    ],
+    "*.svg": [
+      "prettier --parser html --write"
+    ]
   },
   "ava": {
-    "require": ["@swc-node/register"],
-    "extensions": ["ts"],
+    "require": [
+      "@swc-node/register"
+    ],
+    "extensions": [
+      "ts"
+    ],
     "timeout": "3m",
     "environmentVariables": {
       "TS_NODE_PROJECT": "./tsconfig.json"
