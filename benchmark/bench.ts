@@ -1,11 +1,12 @@
 import { promises as fs } from 'fs'
 import { join } from 'path'
-import b from 'benny'
 
-import { render } from '../index'
+import { createCanvas, Image } from '@napi-rs/canvas'
+import b from 'benny'
 import sharp from 'sharp'
 import svg2img from 'svg2img'
-import { createCanvas, Image } from '@napi-rs/canvas'
+
+import { render } from '../index'
 
 async function run() {
   const svg1 = await fs.readFile(join(__dirname, '../example/text.svg'))
@@ -15,7 +16,7 @@ async function run() {
   await b.suite(
     'resize width',
     b.add('resvg-js(Rust)', () => {
-      render(svg1.toString('utf-8'), {
+      render(svg1, {
         background: '#eeebe6',
         fitTo: {
           mode: 'width',
@@ -33,7 +34,7 @@ async function run() {
     }),
 
     // test from https://github.com/Brooooooklyn/canvas/blob/main/example/resize-svg.js
-    b.add('skr-canvas(Rust)', async () => {
+    b.add('skr-canvas(Rust)', () => {
       const image = new Image()
       image.src = svg1
 
@@ -50,11 +51,11 @@ async function run() {
 
       // fill the canvas with the image
       ctx.drawImage(image, 0, 0)
-      await canvas.encode('png')
+      canvas.toBuffer('image/png')
     }),
 
     b.add('svg2img(canvg and node-canvas)', () => {
-      svg2img(svg1, { width: 1200, height: 623 }, function (error, buffer) {})
+      svg2img(svg1.toString('utf8'), { width: 1200, height: 623 }, function (_error, _buffer) {})
     }),
 
     b.cycle(),
@@ -64,7 +65,7 @@ async function run() {
   await b.suite(
     'resize icon width',
     b.add('resvg-js(Rust)', () => {
-      render(icon.toString('utf-8'), {
+      render(icon, {
         fitTo: {
           mode: 'width',
           value: 386,
@@ -77,7 +78,7 @@ async function run() {
     }),
 
     b.add('sharp', async () => {
-      await sharp('__test__/icon-alarm.svg', {
+      await sharp(icon, {
         // https://github.com/lovell/sharp/issues/1421#issuecomment-514446234
         density: (72 * 386) / 24, // 72 * width / actual width
       })
@@ -86,7 +87,7 @@ async function run() {
     }),
 
     // test from https://github.com/Brooooooklyn/canvas/blob/main/example/resize-svg.js
-    b.add('skr-canvas(Rust)', async () => {
+    b.add('skr-canvas(Rust)', () => {
       const image = new Image()
       image.src = icon
 
@@ -103,11 +104,11 @@ async function run() {
 
       // fill the canvas with the image
       ctx.drawImage(image, 0, 0)
-      await canvas.encode('png')
+      canvas.toBuffer('image/png')
     }),
 
     b.add('svg2img(canvg and node-canvas)', () => {
-      svg2img(icon, { width: 386, height: 386 }, function (error, buffer) {})
+      svg2img(icon.toString('utf8'), { width: 386, height: 386 }, function (_error, _buffer) {})
     }),
 
     b.cycle(),
@@ -117,7 +118,7 @@ async function run() {
   await b.suite(
     'default options and no text',
     b.add('resvg-js(Rust)', () => {
-      render(tiger.toString('utf-8'), {
+      render(tiger, {
         font: {
           loadSystemFonts: false,
         },
@@ -126,10 +127,10 @@ async function run() {
     }),
 
     b.add('sharp', async () => {
-      await sharp('__test__/tiger.svg').toBuffer()
+      await sharp(tiger).toBuffer()
     }),
 
-    b.add('skr-canvas(Rust)', async () => {
+    b.add('skr-canvas(Rust)', () => {
       const image = new Image()
       image.src = tiger
 
@@ -146,11 +147,11 @@ async function run() {
 
       // fill the canvas with the image
       ctx.drawImage(image, 0, 0)
-      await canvas.encode('png')
+      canvas.toBuffer('image/png')
     }),
 
     b.add('svg2img(canvg and node-canvas)', () => {
-      svg2img(tiger, { width: 900, height: 900 }, function (error, buffer) {})
+      svg2img(tiger.toString('utf8'), { width: 900, height: 900 }, function (_error, _buffer) {})
     }),
 
     b.cycle(),
@@ -158,4 +159,6 @@ async function run() {
   )
 }
 
-run()
+run().catch((e) => {
+  console.error(e)
+})

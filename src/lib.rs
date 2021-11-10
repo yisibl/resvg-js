@@ -2,40 +2,34 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-mod fonts;
-mod options;
+use std::result;
 
-extern crate napi;
-#[macro_use]
-extern crate napi_derive;
-
-use std::convert::TryInto;
+use napi::bindgen_prelude::*;
+use napi_derive::napi;
 use tiny_skia::Color;
 use tiny_skia::Pixmap;
 
-/// Trys to parse an `Option<String>` into an `Option<usvg::Color>`
-fn parse_color(value: &Option<String>) -> Result<Option<usvg::Color>, svgtypes::Error> {
+mod fonts;
+mod options;
+
+#[cfg(all(
+  not(debug_assertions),
+  not(all(target_os = "windows", target_arch = "aarch64")),
+  not(all(target_os = "linux", target_arch = "aarch64", target_env = "musl")),
+))]
+#[global_allocator]
+static ALLOC: mimalloc_rust::GlobalMiMalloc = mimalloc_rust::GlobalMiMalloc;
+
+/// Try to parse an `Option<String>` into an `Option<usvg::Color>`
+fn parse_color(value: &Option<String>) -> result::Result<Option<usvg::Color>, svgtypes::Error> {
   value
     .as_ref()
     .map(|color| color.parse::<usvg::Color>())
     .transpose()
 }
 
-/// Renders an SVG
-#[js_function(2)]
-fn render(ctx: napi::CallContext) -> napi::Result<napi::JsBuffer> {
-  let svg_string: String = ctx.get::<napi::JsString>(0)?.into_utf8()?.try_into()?;
-
-  let js_options: options::JsOptions = if ctx.length > 1 {
-    ctx.env.from_js_value(ctx.get::<napi::JsUnknown>(1)?)?
-  } else {
-    options::JsOptions::default()
-  };
-
-  let _ = env_logger::builder()
-    .filter_level(js_options.log_level)
-    .try_init();
-
+#[inline]
+fn render_svg(svg: &Either<String, Buffer>, js_options: &options::JsOptions) -> Result<Vec<u8>> {
   // Parse the background
   let background =
     parse_color(&js_options.background).map_err(|e| napi::Error::from_reason(format!("{}", e)))?;
@@ -47,20 +41,23 @@ fn render(ctx: napi::CallContext) -> napi::Result<napi::JsBuffer> {
   let svg_options = usvg::Options {
     resources_dir: None,
     dpi: js_options.dpi,
-    font_family: js_options.font.default_font_family,
+    font_family: js_options.font.default_font_family.clone(),
     font_size: js_options.font.default_font_size,
-    languages: js_options.languages,
+    languages: js_options.languages.clone(),
     shape_rendering: js_options.shape_rendering,
     text_rendering: js_options.text_rendering,
     image_rendering: js_options.image_rendering,
     keep_named_groups: false,
-    default_size: usvg::Size::new(100.0 as f64, 100.0 as f64).unwrap(),
+    default_size: usvg::Size::new(100.0_f64, 100.0_f64).unwrap(),
     fontdb,
   };
 
   // Parse the SVG string into a tree.
-  let tree = usvg::Tree::from_str(&svg_string, &svg_options.to_ref())
-    .map_err(|e| napi::Error::from_reason(format!("{}", e)))?;
+  let tree = match svg {
+    Either::A(a) => usvg::Tree::from_str(a.as_str(), &svg_options.to_ref()),
+    Either::B(b) => usvg::Tree::from_data(b.as_ref(), &svg_options.to_ref()),
+  }
+  .map_err(|e| napi::Error::from_reason(format!("{}", e)))?;
 
   let fit_to = js_options.fit_to;
   let pixmap_size = fit_to
@@ -99,20 +96,69 @@ fn render(ctx: napi::CallContext) -> napi::Result<napi::JsBuffer> {
 
   // Write the image data to a buffer
   let mut buffer: Vec<u8> = vec![];
-  if let Some(_) = image {
+  if image.is_some() {
     buffer = pixmap
       .encode_png()
       .map_err(|e| napi::Error::from_reason(format!("{}", e)))?;
   }
-
-  ctx
-    .env
-    .create_buffer_with_data(buffer)
-    .map(|v| v.into_raw())
+  Ok(buffer)
 }
 
-#[module_exports]
-fn init(mut exports: napi::JsObject, _env: napi::Env) -> napi::Result<()> {
-  exports.create_named_method("render", render)?;
-  Ok(())
+/// Renders an SVG
+#[napi]
+pub fn render(svg: Either<String, Buffer>, options: Option<String>) -> Result<Buffer> {
+  let js_options: options::JsOptions = options
+    .and_then(|o| serde_json::from_str(o.as_str()).ok())
+    .unwrap_or_default();
+
+  let _ = env_logger::builder()
+    .filter_level(js_options.log_level)
+    .try_init();
+
+  let buffer = render_svg(&svg, &js_options)?;
+
+  Ok(buffer.into())
+}
+
+pub struct AsyncRenderer {
+  options: options::JsOptions,
+  svg: Either<String, Buffer>,
+}
+
+#[napi]
+impl Task for AsyncRenderer {
+  type Output = Vec<u8>;
+  type JsValue = Buffer;
+
+  fn compute(&mut self) -> Result<Self::Output> {
+    render_svg(&self.svg, &self.options)
+  }
+
+  fn resolve(&mut self, _env: napi::Env, result: Self::Output) -> Result<Self::JsValue> {
+    Ok(result.into())
+  }
+}
+
+#[napi]
+pub fn render_async(
+  svg: Either<String, Buffer>,
+  options: Option<String>,
+  signal: Option<AbortSignal>,
+) -> AsyncTask<AsyncRenderer> {
+  let js_options: options::JsOptions = options
+    .and_then(|o| serde_json::from_str(o.as_str()).ok())
+    .unwrap_or_default();
+  match signal {
+    Some(s) => AsyncTask::with_signal(
+      AsyncRenderer {
+        options: js_options,
+        svg,
+      },
+      s,
+    ),
+    None => AsyncTask::new(AsyncRenderer {
+      options: js_options,
+      svg,
+    }),
+  }
 }

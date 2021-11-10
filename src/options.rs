@@ -191,7 +191,7 @@ impl Default for JsFontOptions {
 }
 
 /// The font options passed to `load_fonts()`.
-#[derive(Deserialize)]
+#[derive(Deserialize, Default)]
 #[serde(rename_all = "camelCase", default, deny_unknown_fields)]
 pub struct JsCropOptions {
   /// The rectangle's left x-axis coordinate.
@@ -213,17 +213,6 @@ pub struct JsCropOptions {
   ///
   /// Default: None
   pub bottom: Option<i32>,
-}
-
-impl Default for JsCropOptions {
-  fn default() -> JsCropOptions {
-    JsCropOptions {
-      left: 0,
-      top: 0,
-      right: None,
-      bottom: None,
-    }
-  }
 }
 
 /// Deserializes `usvg::ShapeRendering`

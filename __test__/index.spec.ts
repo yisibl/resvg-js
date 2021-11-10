@@ -4,7 +4,7 @@ import { join } from 'path'
 import test from 'ava'
 import jimp from 'jimp'
 
-import { render } from '../index'
+import { render, renderAsync } from '../index'
 
 test('fit to width', async (t) => {
   const filePath = '../example/text.svg'
@@ -62,4 +62,50 @@ test('Load custom font', async (t) => {
 
   t.is(result.getWidth(), 1324)
   t.is(result.getHeight(), 687)
+})
+
+test('Async rendering', async (t) => {
+  const filePath = '../example/text.svg'
+  const svg = await fs.readFile(join(__dirname, filePath))
+  const params = {
+    font: {
+      fontFiles: ['./example/SourceHanSerifCN-Light-subset.ttf'], // Load custom fonts.
+      loadSystemFonts: false, // It will be faster to disable loading system fonts.
+      defaultFontFamily: 'Source Han Serif CN Light',
+    },
+  }
+  const syncRenderingResult = render(svg, params)
+  const asyncRenderingResult = await renderAsync(svg, params)
+  t.is(syncRenderingResult.length, asyncRenderingResult.length)
+  // Do not run this assert in non-x64 environment.
+  // It's too slow
+  if (process.arch === 'x64') {
+    t.deepEqual(syncRenderingResult, asyncRenderingResult)
+  }
+})
+
+const MaybeTest = typeof AbortController !== 'undefined' ? test : test.skip
+
+MaybeTest('should be able to abort queued async rendering', async (t) => {
+  // fill the task queue
+  for (const _ of Array.from({ length: 100 })) {
+    process.nextTick(() => {})
+  }
+  const filePath = '../example/text.svg'
+  const svg = await fs.readFile(join(__dirname, filePath))
+  const params = {
+    font: {
+      fontFiles: ['./example/SourceHanSerifCN-Light-subset.ttf'], // Load custom fonts.
+      loadSystemFonts: false, // It will be faster to disable loading system fonts.
+      defaultFontFamily: 'Source Han Serif CN Light',
+    },
+  }
+  const controller = new AbortController()
+  const renderingPromise = renderAsync(svg, params, controller.signal)
+  // renderingPromise is in the queue now and have not started yet.
+  controller.abort()
+  const err = await t.throwsAsync(() => renderingPromise)
+  t.is(err.message, 'AbortError')
+  // @ts-expect-error
+  t.is(err.code, 'Cancelled')
 })
