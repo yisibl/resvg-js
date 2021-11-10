@@ -41,4 +41,9 @@ export type ResvgRenderOptions = {
   logLevel?: 'off' | 'error' | 'warn' | 'info' | 'debug' | 'trace'
 }
 
-export function render(svg: string, options?: ResvgRenderOptions): Buffer
+export function render(svg: string | Buffer, options?: ResvgRenderOptions | null): Buffer
+export function renderAsync(
+  svg: string | Buffer,
+  options?: ResvgRenderOptions | null,
+  signal?: AbortSignal | null,
+): Promise<Buffer>

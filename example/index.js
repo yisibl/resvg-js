@@ -24,8 +24,7 @@ async function main() {
     logLevel: 'debug',
   })
   const t1 = performance.now()
-  // eslint-disable-next-line no-console
-  console.log('✨ Done in', t1 - t0, 'ms')
+  console.info('✨ Done in', t1 - t0, 'ms')
 
   await promises.writeFile(join(__dirname, './text-out.png'), pngData)
 }

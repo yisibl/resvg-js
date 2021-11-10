@@ -2,15 +2,15 @@ const fs = require('fs').promises
 const { join } = require('path')
 const { performance } = require('perf_hooks')
 
-const { render } = require('../index')
-const sharp = require('sharp')
 const { createCanvas, Image } = require('@napi-rs/canvas')
+const sharp = require('sharp')
+
+const { render } = require('../index')
 
 async function main() {
   const svg = await fs.readFile(join(__dirname, './anime_girl.svg'))
-  const svgString = svg.toString('utf-8')
   const t0 = performance.now()
-  const pngData = render(svgString, {
+  const pngData = render(svg, {
     fitTo: {
       mode: 'width',
       value: 1052,
@@ -21,10 +21,11 @@ async function main() {
     logLevel: 'off',
   })
   const t1 = performance.now()
-  console.log('✨ resvg-js done in', t1 - t0, 'ms')
+  console.info('✨ resvg-js done in', t1 - t0, 'ms')
   await fs.writeFile(join(__dirname, './out-resvg-js.png'), pngData)
 
   sharpToPng('example/anime_girl.svg', 1052)
+  sharpToPng(svg, 1052)
   skrCanvas(svg, 1052, 744)
 }
 
@@ -37,7 +38,7 @@ async function sharpToPng(file, width) {
     // .flatten({ background: '#fff' })
     .toFile('example/out-sharp.png')
   const t1 = performance.now()
-  console.log('✨ sharp done in', t1 - t0, 'ms')
+  console.info('✨ sharp done in', t1 - t0, 'ms')
 }
 
 async function skrCanvas(file, width, height) {
@@ -59,10 +60,10 @@ async function skrCanvas(file, width, height) {
 
   // fill the canvas with the image
   ctx.drawImage(image, 0, 0)
-  var pngData = await canvas.encode('png')
+  const pngData = await canvas.encode('png')
   const t1 = performance.now()
 
-  console.log('✨ skr-canvas done in', t1 - t0, 'ms')
+  console.info('✨ skr-canvas done in', t1 - t0, 'ms')
 
   await fs.writeFile(join(__dirname, './out-skr-canvas.png'), pngData)
 }

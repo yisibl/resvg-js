@@ -1,24 +1,28 @@
 [package]
+authors = ["yisibl <percyley@qq.com>"]
+edition = "2021"
+license = "MPL-2.0"
 name = "resvg-js"
 version = "1.0.0"
-authors = ["yisibl <percyley@qq.com>"]
-license = "MPL-2.0"
-edition = "2021"
 
 [lib]
 crate-type = ["cdylib"]
 
 [dependencies]
-napi = { version = "1", features = ["serde-json"] }
-napi-derive = "1"
-resvg = { version = "0.19.0", default-features = false, features = ["filter"] }
-usvg = { version = "0.19.0", default-features = false, features = ["export", "filter", "text"] }
-svgtypes = "0.8.0"
-tiny-skia = "0.6.1"
+env_logger = "0.9.0"
 fontdb = "0.7.0"
 log = "0.4"
-env_logger = "0.9.0"
-serde = { version = "1", features = ["derive"] }
+napi = {version = "2.0.0-alpha.2", features = ["serde-json"]}
+napi-derive = "2.0.0-alpha.3"
+resvg = {version = "0.19.0", default-features = false, features = ["filter"]}
+serde = {version = "1", features = ["derive"]}
+serde_json = "1"
+svgtypes = "0.8.0"
+tiny-skia = "0.6.1"
+usvg = {version = "0.19.0", default-features = false, features = ["export", "filter", "text"]}
+
+[target.'cfg(all(not(all(target_os = "linux", target_arch = "aarch64", target_env = "musl")), not(all(target_os = "windows", target_arch = "aarch64"))))'.dependencies]
+mimalloc-rust = {version = "0.1"}
 
 [build-dependencies]
 napi-build = "1"
