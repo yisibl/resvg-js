@@ -1,28 +1,12 @@
 {
   "name": "@resvg/resvg-js-win32-ia32-msvc",
   "version": "1.0.4",
-  "os": [
-    "win32"
-  ],
-  "cpu": [
-    "ia32"
-  ],
+  "os": ["win32"],
+  "cpu": ["ia32"],
   "main": "resvgjs.win32-ia32-msvc.node",
-  "files": [
-    "resvgjs.win32-ia32-msvc.node"
-  ],
+  "files": ["resvgjs.win32-ia32-msvc.node"],
   "description": "A high-performance SVG renderer, powered by Rust based resvg and napi-rs",
-  "keywords": [
-    "resvg",
-    "svg",
-    "node-resvg",
-    "resvg-js",
-    "resvg-node",
-    "rust",
-    "svg2png",
-    "svg2img",
-    "svg to png"
-  ],
+  "keywords": ["resvg", "svg", "node-resvg", "resvg-js", "resvg-node", "rust", "svg2png", "svg2img", "svg to png"],
   "license": "MPL-2.0",
   "engines": {
     "node": ">= 10"

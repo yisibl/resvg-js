@@ -29,10 +29,7 @@ async function run() {
     }),
 
     b.add('sharp', async () => {
-      await sharp('example/text.svg')
-        .flatten({ background: '#eeebe6' })
-        .resize(1200)
-        .toBuffer()
+      await sharp('example/text.svg').flatten({ background: '#eeebe6' }).resize(1200).toBuffer()
     }),
 
     // test from https://github.com/Brooooooklyn/canvas/blob/main/example/resize-svg.js
@@ -110,7 +107,7 @@ async function run() {
     }),
 
     b.add('svg2img(canvg and node-canvas)', () => {
-      svg2img(icon, { width: 386, height: 386, }, function (error, buffer) { })
+      svg2img(icon, { width: 386, height: 386 }, function (error, buffer) {})
     }),
 
     b.cycle(),
@@ -159,7 +156,6 @@ async function run() {
     b.cycle(),
     b.complete(),
   )
-
 }
 
 run()

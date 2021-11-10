@@ -23,7 +23,7 @@ async function main() {
   const t1 = performance.now()
   console.log('✨ resvg-js done in', t1 - t0, 'ms')
   await fs.writeFile(join(__dirname, './out-resvg-js.png'), pngData)
-  
+
   sharpToPng('example/anime_girl.svg', 1052)
   skrCanvas(svg, 1052, 744)
 }
