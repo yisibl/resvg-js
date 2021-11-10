@@ -10,7 +10,7 @@ import { createCanvas, Image } from '@napi-rs/canvas'
 async function run() {
   const svg1 = await fs.readFile(join(__dirname, '../example/text.svg'))
   const tiger = await fs.readFile(join(__dirname, '../__test__/tiger.svg'))
-  const iconHeart = await fs.readFile(join(__dirname, '../__test__/icon-alarm.svg'))
+  const icon = await fs.readFile(join(__dirname, '../__test__/icon-alarm.svg'))
 
   await b.suite(
     'resize width',
@@ -67,7 +67,7 @@ async function run() {
   await b.suite(
     'resize icon width',
     b.add('resvg-js(Rust)', () => {
-      render(iconHeart.toString('utf-8'), {
+      render(icon.toString('utf-8'), {
         fitTo: {
           mode: 'width',
           value: 386,
@@ -80,7 +80,7 @@ async function run() {
     }),
 
     b.add('sharp', async () => {
-      await sharp('__test__/icon-heart.svg', {
+      await sharp('__test__/icon-alarm.svg', {
         // https://github.com/lovell/sharp/issues/1421#issuecomment-514446234
         density: (72 * 386) / 24, // 72 * width / actual width
       })
@@ -91,7 +91,7 @@ async function run() {
     // test from https://github.com/Brooooooklyn/canvas/blob/main/example/resize-svg.js
     b.add('skr-canvas(Rust)', async () => {
       const image = new Image()
-      image.src = iconHeart
+      image.src = icon
 
       const w = 386
       const h = 386
@@ -110,7 +110,7 @@ async function run() {
     }),
 
     b.add('svg2img(canvg and node-canvas)', () => {
-      svg2img(iconHeart, { width: 386, height: 386, }, function (error, buffer) { })
+      svg2img(icon, { width: 386, height: 386, }, function (error, buffer) { })
     }),
 
     b.cycle(),
