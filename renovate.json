@@ -1,5 +1,17 @@
 {
-  "extends": [
-    "config:base"
-  ]
+  "extends": ["config:base", ":preserveSemverRanges"],
+  "timezone": "Asia/Shanghai",
+  "schedule": "after 10pm on tuesday",
+  "packageRules": [
+    {
+      "automerge": true,
+      "matchUpdateTypes": ["minor", "patch", "pin", "digest"]
+    }
+  ],
+  "lockFileMaintenance": {
+    "enabled": true,
+    "extends": [
+      "schedule:monthly"
+    ]
+  }
 }
