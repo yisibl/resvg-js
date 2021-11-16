@@ -64,7 +64,7 @@
     "version": "napi version"
   },
   "devDependencies": {
-    "@napi-rs/canvas": "^0.1.14",
+    "@napi-rs/canvas": "0.1.15",
     "@napi-rs/cli": "^2.0.0-alpha.3",
     "@swc-node/register": "^1.4.0",
     "@types/node": "^16.11.7",
