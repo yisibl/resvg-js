@@ -13,7 +13,7 @@ env_logger = "0.9.0"
 fontdb = "0.7.0"
 log = "0.4"
 napi = {version = "2.0.0-alpha.4", features = ["serde-json"]}
-napi-derive = "2.0.0-alpha.6"
+napi-derive = "2.0.0-alpha.7"
 resvg = {version = "0.19.0", default-features = false, features = ["filter"]}
 serde = {version = "1", features = ["derive"]}
 serde_json = "1"
