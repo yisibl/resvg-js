@@ -73,7 +73,7 @@
     "@typescript-eslint/parser": "^5.3.1",
     "ava": "^3.15.0",
     "benny": "^3.7.1",
-    "chalk": "^4.1.2",
+    "chalk": "^5.0.0",
     "esbuild": "^0.13.13",
     "eslint": "^8.2.0",
     "eslint-config-prettier": "^8.3.0",
