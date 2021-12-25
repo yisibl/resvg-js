@@ -9,6 +9,18 @@ This changelog also contains important changes in dependencies.
 
 ## [Unreleased]
 
+## [1.2.0] - 2021-12-25
+
+### Added
+
+- feat: upgrading to napi-rs v2.
+- feat: support Android armv7(@resvg/resvg-js-android-arm-eabi).
+
+### Changed
+
+- fix: default_font_family changed from Times New Roman to Arial.
+  This is closer to the default rendering font in the browser.
+
 ## [1.1.0] - 2021-11-11
 
 ### Added
@@ -115,7 +127,8 @@ The first official version, use [resvg 0.18.0](https://github.com/RazrFalcon/res
 - Support custom fonts and system fonts.
 - Supports setting the background color of PNG.
 
-[unreleased]: https://github.com/yisibl/resvg-js/compare/v1.1.0...HEAD
+[unreleased]: https://github.com/yisibl/resvg-js/compare/v1.2.0...HEAD
+[1.2.0]: https://github.com/yisibl/resvg-js/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/yisibl/resvg-js/compare/v1.0.4...v1.1.0
 [1.0.4]: https://github.com/yisibl/resvg-js/compare/v1.0.3...v1.0.4
 [1.0.3]: https://github.com/yisibl/resvg-js/compare/v1.0.2...v1.0.3
