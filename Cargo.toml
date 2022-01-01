@@ -14,12 +14,12 @@ fontdb = "0.7.0"
 log = "0.4"
 napi = {version = "2", features = ["serde-json"]}
 napi-derive = "2"
-resvg = {version = "0.19.0", default-features = false, features = ["filter"]}
+resvg = {version = "0.20.0", default-features = false, features = ["filter"]}
+usvg = {version = "0.20.0", default-features = false, features = ["export", "filter", "text"]}
 serde = {version = "1", features = ["derive"]}
 serde_json = "1"
 svgtypes = "0.8.0"
-tiny-skia = "0.6.1"
-usvg = {version = "0.19.0", default-features = false, features = ["export", "filter", "text"]}
+tiny-skia = "0.6.2"
 
 [target.'cfg(all(not(all(target_os = "linux", target_arch = "aarch64", target_env = "musl")), not(all(target_os = "windows", target_arch = "aarch64"))))'.dependencies]
 mimalloc-rust = {version = "0.1"}

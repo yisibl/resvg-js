@@ -7,7 +7,7 @@ const { render } = require('../index')
 async function main() {
   const svg = await promises.readFile(join(__dirname, './text.svg'))
   const svgString = svg.toString('utf-8')
-  const t0 = performance.now()
+  const t = performance.now()
   const pngData = render(svgString, {
     background: 'rgba(238, 235, 230, .9)',
     fitTo: {
@@ -23,8 +23,7 @@ async function main() {
     // shapeRendering: 2,
     logLevel: 'debug',
   })
-  const t1 = performance.now()
-  console.info('✨ Done in', t1 - t0, 'ms')
+  console.info('✨ Done in', performance.now() - t, 'ms')
 
   await promises.writeFile(join(__dirname, './text-out.png'), pngData)
 }

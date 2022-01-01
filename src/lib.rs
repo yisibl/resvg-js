@@ -21,11 +21,16 @@ mod options;
 static ALLOC: mimalloc_rust::GlobalMiMalloc = mimalloc_rust::GlobalMiMalloc;
 
 /// Try to parse an `Option<String>` into an `Option<usvg::Color>`
-fn parse_color(value: &Option<String>) -> result::Result<Option<usvg::Color>, svgtypes::Error> {
+fn parse_color(value: &Option<String>) -> result::Result<Option<svgtypes::Color>, svgtypes::Error> {
   value
     .as_ref()
-    .map(|color| color.parse::<usvg::Color>())
+    .map(|color| color.parse::<svgtypes::Color>())
     .transpose()
+}
+
+#[inline]
+fn svg_to_skia_color(color: svgtypes::Color) -> tiny_skia::Color {
+  Color::from_rgba8(color.red, color.green, color.blue, color.alpha)
 }
 
 #[inline]
@@ -68,16 +73,16 @@ fn render_svg(svg: &Either<String, Buffer>, js_options: &options::JsOptions) -> 
   let mut pixmap = Pixmap::new(pixmap_size.width(), pixmap_size.height()).unwrap();
 
   if let Some(background) = background {
-    pixmap.fill(Color::from_rgba8(
-      background.red,
-      background.green,
-      background.blue,
-      background.alpha,
-    ));
+    pixmap.fill(svg_to_skia_color(background));
   }
 
   // Render the tree
-  let image = resvg::render(&tree, fit_to, pixmap.as_mut());
+  let image = resvg::render(
+    &tree,
+    fit_to,
+    tiny_skia::Transform::default(),
+    pixmap.as_mut(),
+  );
 
   // Crop the SVG
   let crop_rect = tiny_skia::IntRect::from_ltrb(
