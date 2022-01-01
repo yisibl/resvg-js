@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 This changelog also contains important changes in dependencies.
 
 ## [Unreleased]
+### Added
+
+- feat: upgrade to resvg 0.20.0(tiny-skia to 0.6.2).
+- chore: add oslllo-svg2 to the examples and bench.
 
 ## [1.2.0] - 2021-12-25
 

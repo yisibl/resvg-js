@@ -35,6 +35,18 @@ test('Set the background with alpha by rgba().', async (t) => {
   t.is(result.hasAlpha(), true)
 })
 
+test('Set the background with alpha by rgb().', async (t) => {
+  const filePath = './tiger.svg'
+  const svg = await fs.readFile(join(__dirname, filePath))
+  const svgString = svg.toString('utf-8')
+  const pngData = render(svgString, {
+    background: 'rgb(255, 0, 0, .832)',
+  })
+  const result = await jimp.read(pngData)
+
+  t.is(result.hasAlpha(), true)
+})
+
 test('Set the background without alpha by hsla()', async (t) => {
   const filePath = './tiger.svg'
   const svg = await fs.readFile(join(__dirname, filePath))
