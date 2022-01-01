@@ -1181,10 +1181,10 @@ camelcase@^6.2.0:
   resolved "https://registry.npmmirror.com/camelcase/download/camelcase-6.2.1.tgz?cache=0&sync_timestamp=1636945198738&other_urls=https%3A%2F%2Fregistry.npmmirror.com%2Fcamelcase%2Fdownload%2Fcamelcase-6.2.1.tgz#250fd350cfd555d0d2160b1d51510eaf8326e86e"
   integrity sha512-tVI4q5jjFV5CavAU8DXfza/TJcZutVKo/5Foskmsqcm0MsL91moHvwiGNnqaa2o6PF/7yT5ikDRcVcl8Rj6LCA==
 
-canvas@^2.6.0:
+canvas@^2.6.0, canvas@^2.8.0:
   version "2.8.0"
-  resolved "https://registry.nlark.com/canvas/download/canvas-2.8.0.tgz#f99ca7f25e6e26686661ffa4fec1239bbef74461"
-  integrity sha1-+Zyn8l5uJmhmYf+k/sEjm773RGE=
+  resolved "https://registry.npmjs.org/canvas/-/canvas-2.8.0.tgz#f99ca7f25e6e26686661ffa4fec1239bbef74461"
+  integrity sha512-gLTi17X8WY9Cf5GZ2Yns8T5lfBOcGgFehDFb+JQwDqdOoBOcECS9ZWMEAqMSVcMYwXD659J8NyzjRY/2aE+C2Q==
   dependencies:
     "@mapbox/node-pre-gyp" "^1.0.0"
     nan "^2.14.0"
@@ -2879,10 +2879,10 @@ js-yaml@^4.1.0:
   dependencies:
     argparse "^2.0.1"
 
-jsdom@^16.3.0:
+jsdom@^16.3.0, jsdom@^16.5.3, jsdom@^16.7.0:
   version "16.7.0"
-  resolved "https://registry.npmmirror.com/jsdom/download/jsdom-16.7.0.tgz#918ae71965424b197c819f8183a754e18977b710"
-  integrity sha1-kYrnGWVCSxl8gZ+Bg6dU4Yl3txA=
+  resolved "https://registry.npmjs.org/jsdom/-/jsdom-16.7.0.tgz#918ae71965424b197c819f8183a754e18977b710"
+  integrity sha512-u9Smc2G1USStM+s/x1ru5Sxrl6mPYCbByG1U/hUmqaVsm4tbNyS7CicOSRyuGQYZhTu0h84qkZZQ/I+dzizSVw==
   dependencies:
     abab "^2.0.5"
     acorn "^8.2.4"
@@ -3529,6 +3529,24 @@ ora@^5.2.0:
     log-symbols "^4.1.0"
     strip-ansi "^6.0.0"
     wcwidth "^1.0.1"
+
+oslllo-svg2@^0.3.1:
+  version "0.3.1"
+  resolved "https://registry.npmjs.org/oslllo-svg2/-/oslllo-svg2-0.3.1.tgz#21b08922663129e2a9952712f44d5720852574f0"
+  integrity sha512-9cIiglv/HgXCSvCNnc+0m28IbccGQUVst9CtnPrgUDb/2YdrTeh4lFviDLUwxZ8L13fJhTWoHaUdAHrHg3rfKg==
+  dependencies:
+    canvas "^2.8.0"
+    jimp "^0.16.1"
+    jsdom "^16.7.0"
+    oslllo-validator "2.0.1"
+
+oslllo-validator@2.0.1:
+  version "2.0.1"
+  resolved "https://registry.npmjs.org/oslllo-validator/-/oslllo-validator-2.0.1.tgz#c5faf33b8bf3879ae2cd1d4569986b389634cd1e"
+  integrity sha512-VmRpVinOUIvFjK6aPrDOZgNOJ/K6aVT6nYPyoBsHkbSa2QZhJvHBZDmXWBnziSKJjkhUrqOUKK7XzBzAZydAwA==
+  dependencies:
+    jsdom "^16.5.3"
+    validator "^13.6.0"
 
 p-cancelable@^1.0.0:
   version "1.1.0"
@@ -4751,6 +4769,11 @@ validate-npm-package-license@^3.0.1:
   dependencies:
     spdx-correct "^3.0.0"
     spdx-expression-parse "^3.0.0"
+
+validator@^13.6.0:
+  version "13.7.0"
+  resolved "https://registry.npmjs.org/validator/-/validator-13.7.0.tgz#4f9658ba13ba8f3d82ee881d3516489ea85c0857"
+  integrity sha512-nYXQLCBkpJ8X6ltALua9dRrZDHVYxjJ1wgskNt1lH9fzGjs3tgojGSCBjmEPwkWS1y29+DrizMTW19Pr9uB2nw==
 
 w3c-hr-time@^1.0.2:
   version "1.0.2"
