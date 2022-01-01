@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 This changelog also contains important changes in dependencies.
 
 ## [Unreleased]
+
+## [1.3.0] - 2022-01-01
+
 ### Added
 
 - feat: upgrade to resvg 0.20.0(tiny-skia to 0.6.2).
@@ -131,7 +134,8 @@ The first official version, use [resvg 0.18.0](https://github.com/RazrFalcon/res
 - Support custom fonts and system fonts.
 - Supports setting the background color of PNG.
 
-[unreleased]: https://github.com/yisibl/resvg-js/compare/v1.2.0...HEAD
+[unreleased]: https://github.com/yisibl/resvg-js/compare/v1.3.0...HEAD
+[1.3.0]: https://github.com/yisibl/resvg-js/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/yisibl/resvg-js/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/yisibl/resvg-js/compare/v1.0.4...v1.1.0
 [1.0.4]: https://github.com/yisibl/resvg-js/compare/v1.0.3...v1.0.4

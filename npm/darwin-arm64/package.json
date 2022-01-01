@@ -1,6 +1,6 @@
 {
   "name": "@resvg/resvg-js-darwin-arm64",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "os": [
     "darwin"
   ],
