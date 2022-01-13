@@ -49,7 +49,7 @@
   "scripts": {
     "artifacts": "napi artifacts",
     "bench": "node -r @swc-node/register benchmark/bench.ts",
-    "build": "napi build --platform --release --js js-binding.js --dts js-binding.d.ts",
+    "build": "napi build --platform --release --strip --js js-binding.js --dts js-binding.d.ts",
     "build:debug": "napi build --platform --js js-binding.js --dts js-binding.d.ts",
     "format": "run-p format:md format:json format:yaml format:source format:rs",
     "format:md": "prettier --parser markdown --write './**/*.md'",
@@ -66,7 +66,7 @@
   },
   "devDependencies": {
     "@napi-rs/canvas": "^0.1.19",
-    "@napi-rs/cli": "^2.3.0",
+    "@napi-rs/cli": "^2.4.2",
     "@swc-node/register": "^1.4.2",
     "@types/node": "^17.0.1",
     "@types/sharp": "^0.29.5",

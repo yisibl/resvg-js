@@ -473,10 +473,10 @@
     "@napi-rs/canvas-linux-x64-musl" "0.1.19"
     "@napi-rs/canvas-win32-x64-msvc" "0.1.19"
 
-"@napi-rs/cli@^2.3.0":
-  version "2.3.0"
-  resolved "https://registry.npmjs.org/@napi-rs/cli/-/cli-2.3.0.tgz#fb3c9179bf2ff1088f19b235108208acaf051b6f"
-  integrity sha512-sDhyEuUVmgQvm37teoHgJP07+XJy57jfbnDBFVrgOw/+vbr/6yhcn68R3oYxxNLkp3+d57ChVyHxglEFJ6j4Hg==
+"@napi-rs/cli@^2.4.2":
+  version "2.4.2"
+  resolved "https://registry.npmjs.org/@napi-rs/cli/-/cli-2.4.2.tgz#89b32c7d8776004bc9617915605aea769339cf6f"
+  integrity sha512-+yCOuPqernvD8BMphbadF87ElaJ0rjanOZrbnauaEdR07YyoalGw3FTk15HHyflIwQKlYd69gkG5EM4WFkICKw==
 
 "@napi-rs/triples@^1.1.0":
   version "1.1.0"
