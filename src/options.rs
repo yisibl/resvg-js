@@ -2,7 +2,11 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+use crate::error::Error;
+#[cfg(not(target_arch = "wasm32"))]
+use napi::{bindgen_prelude::Buffer, Either};
 use serde::{Deserialize, Deserializer};
+use tiny_skia::Pixmap;
 
 /// Image fit options.
 /// This provides the deserializer for `usvg::FitTo`.
@@ -34,6 +38,32 @@ enum LogLevelDef {
   Info,
   Debug,
   Trace,
+}
+
+pub(crate) trait ResvgReadable {
+  fn load(&self, options: &usvg::Options) -> Result<usvg::Tree, usvg::Error>;
+}
+
+impl<'a> ResvgReadable for &'a str {
+  fn load(&self, options: &usvg::Options) -> Result<usvg::Tree, usvg::Error> {
+    usvg::Tree::from_str(&self, &options.to_ref())
+  }
+}
+
+impl<'a> ResvgReadable for &'a [u8] {
+  fn load(&self, options: &usvg::Options) -> Result<usvg::Tree, usvg::Error> {
+    usvg::Tree::from_data(self, &options.to_ref())
+  }
+}
+
+#[cfg(not(target_arch = "wasm32"))]
+impl<'a> ResvgReadable for &'a Either<String, Buffer> {
+  fn load(&self, options: &usvg::Options) -> Result<usvg::Tree, usvg::Error> {
+    match self {
+      Either::A(s) => s.as_str().load(options),
+      Either::B(b) => b.as_ref().load(options),
+    }
+  }
 }
 
 /// The javascript options passed to `render()`.
@@ -115,6 +145,77 @@ impl Default for JsOptions {
       crop: JsCropOptions::default(),
       log_level: log::LevelFilter::Error,
     }
+  }
+}
+
+impl JsOptions {
+  pub(crate) fn render<T: ResvgReadable>(&self, data: T) -> Result<Vec<u8>, Error> {
+    // Parse the background
+    let background = self
+      .background
+      .as_ref()
+      .map(|color| color.parse::<svgtypes::Color>())
+      .transpose()?;
+
+    // Load fonts
+    let fontdb = crate::fonts::load_fonts(&self.font);
+
+    // Build the SVG options
+    let svg_options = usvg::Options {
+      resources_dir: None,
+      dpi: self.dpi,
+      font_family: self.font.default_font_family.clone(),
+      font_size: self.font.default_font_size,
+      languages: self.languages.clone(),
+      shape_rendering: self.shape_rendering,
+      text_rendering: self.text_rendering,
+      image_rendering: self.image_rendering,
+      keep_named_groups: false,
+      default_size: usvg::Size::new(100.0_f64, 100.0_f64).unwrap(),
+      fontdb,
+    };
+
+    let tree = data.load(&svg_options)?;
+
+    let fit_to = self.fit_to;
+    let pixmap_size = fit_to
+      .fit_to(tree.svg_node().size.to_screen_size())
+      .ok_or_else(|| Error::ZeroSized)?;
+
+    // Unwrap is safe, because `size` is already valid.
+    let mut pixmap = Pixmap::new(pixmap_size.width(), pixmap_size.height()).unwrap();
+
+    if let Some(bg) = background {
+      let color = tiny_skia::Color::from_rgba8(bg.red, bg.green, bg.blue, bg.alpha);
+      pixmap.fill(color);
+    }
+
+    // Render the tree
+    let image = resvg::render(
+      &tree,
+      fit_to,
+      tiny_skia::Transform::default(),
+      pixmap.as_mut(),
+    );
+
+    // Crop the SVG
+    let crop_rect = tiny_skia::IntRect::from_ltrb(
+      self.crop.left,
+      self.crop.top,
+      self.crop.right.unwrap_or(pixmap_size.width() as i32),
+      self.crop.bottom.unwrap_or(pixmap_size.height() as i32),
+    );
+
+    if let Some(crop_rect) = crop_rect {
+      pixmap = pixmap.clone_rect(crop_rect).unwrap_or(pixmap);
+    }
+
+    // Write the image data to a buffer
+    let mut buffer: Vec<u8> = vec![];
+    if image.is_some() {
+      buffer = pixmap.encode_png()?;
+    }
+    Ok(buffer)
   }
 }
 
