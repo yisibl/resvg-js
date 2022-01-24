@@ -3,6 +3,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 use crate::error::Error;
+use fontdb::Database;
 #[cfg(not(target_arch = "wasm32"))]
 use napi::{bindgen_prelude::Buffer, Either};
 use serde::{Deserialize, Deserializer};
@@ -158,7 +159,11 @@ impl JsOptions {
       .transpose()?;
 
     // Load fonts
-    let fontdb = crate::fonts::load_fonts(&self.font);
+    let fontdb = if cfg!(target_arch = "wasm32") {
+      Database::new()
+    } else {
+      crate::fonts::load_fonts(&self.font)
+    };
 
     // Build the SVG options
     let svg_options = usvg::Options {
