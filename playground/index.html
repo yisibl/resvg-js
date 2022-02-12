@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>resvg-js playground</title>
+  <style>
+    html {
+      box-sizing: border-box;
+    }
+
+    *, *:before, *:after {
+      box-sizing: inherit;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+    }
+
+    img {
+      max-width: 100%;
+      height: auto;
+      max-height: 100%;
+    }
+
+    header {
+      padding: 16px 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    main {
+      display: flex;
+      flex-direction: column;
+      /* max-width: 96vw; */
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    input:not([type="color"]) {
+      height: 30px;
+      padding: 0 .5em;
+      font-size: 16px;
+    }
+
+    .box {
+      display: flex;
+      flex: 1;
+      margin-top: 30px;
+    }
+
+    #svg {
+      width: 100%;
+      min-height: 80vh;
+      resize: vertical;
+      font-size: 14px;
+      line-height: 1.2;
+      padding: .5em .8em;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      box-shadow: 0px 1px 6px rgba(0, 0, 0, 0.2);
+    }
+
+    .cell {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-left: 26px;
+      margin-right: 26px;
+    }
+
+    .opts {
+      display: flex;
+      justify-content: center;
+      border: 1px solid #ddd;
+      width: 100%;
+      padding: 20px 0;
+      margin-top: 10px;
+      position: sticky;
+      top: 0;
+      left: 0;
+      background-color: #fff;
+    }
+
+    .opts-cell {
+      display: flex;
+      align-items: center;
+      margin-left: 16px;
+      margin-right: 16px;
+    }
+
+    .opts-cell label {
+      margin-right: .5em;
+    }
+    .github {
+      fill: #151513;
+      color: #fff;
+      position: fixed;
+      top: 0;
+      right: 0;
+      z-index: 1024;
+    }
+
+    @keyframes octocat-wave {
+      0%, 100% { transform:rotate(0) }
+      20%, 60% { transform:rotate(-25deg) }
+      40%, 80% { transform:rotate(10deg) }
+    }
+
+    .github:hover .octo-arm {
+      animation: octocat-wave 560ms ease-in-out;
+    }
+  </style>
+  <script type="module">
+    import { render, initialize } from './index.mjs'
+
+    await initialize(fetch('./index_bg.wasm'))
+
+    const output = document.getElementById('output')
+    const svgElement = document.querySelector('#svg')
+    let svgString = svgElement.value
+    let resvgOpts = {
+      fitTo: {
+          mode: 'width',
+          value: 500,
+      },
+    }
+
+    svg2png(svgString, resvgOpts)
+
+    function svg2png(svgString, opts) {
+      const png = render(svgString, opts)
+      output.src = URL.createObjectURL(
+        new Blob([png], { type: 'image/png' }),
+      )
+    }
+
+    addMultipleEventListener(svgElement, ['change', 'keyup', 'paste'], function(event) {
+      const svgString = event.target.value
+      if (!svgString) return
+      svg2png(svgString, resvgOpts)
+    })
+
+    function addMultipleEventListener(element, events, handler) {
+      events.forEach(e => element.addEventListener(e, handler))
+    }
+
+    const colorPickerElement = document.querySelector('#color-picker')
+    colorPickerElement.addEventListener('change', function(event) {
+      const value = event.target.value
+      if (!value) return
+
+
+      resvgOpts.background = value
+      console.log(resvgOpts)
+      svg2png(svgString, resvgOpts)
+    })
+
+    const svgSizeElement = document.querySelector('#svg-size')
+    svgSizeElement.addEventListener('change', function(event) {
+      const value = event.target.value
+      if (!value) return
+
+      resvgOpts.fitTo.value = parseInt(value, 10)
+      console.log(resvgOpts)
+      svg2png(svgString, resvgOpts)
+    })
+  </script>
+</head>
+<body>
+  <main>
+    <header>
+      <h1>resvg-js playground</h1>
+      <a href="https://github.com/yisibl/resvg-js" title="View source on GitHub">
+        <svg width="80" height="80" viewBox="0 0 250 250" class="github">
+          <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path>
+          <path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path>
+          <path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body">
+          </path>
+        </svg>
+      </a>
+    </header>
+    <div class="opts">
+      <div class="opts-cell">
+        <label for="color-picker">Change background:</label>
+        <input type="color" name="color-picker" id="color-picker">
+      </div>
+      <div class="opts-cell">
+        <label for="svg-size">Change width:</label>
+        <input type="number" placeholder="500" name="svg-size" id="svg-size">
+      </div>
+    </div>
+    <div class="box">
+      <div class="cell">
+        <textarea name="svg" id="svg" placeholder="Enter the svg string" cols="30" rows="10">
+
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-0.2 -1 379 334">
+  <path id="puddle" fill="#9CDAF1" d="m296.94 295.43c0 20.533-47.56 37.176-106.22 37.176-58.67 0-106.23-16.643-106.23-37.176s47.558-37.18 106.23-37.18c58.66 0 106.22 16.65 106.22 37.18z"/>
+  <g id="shadow-legs" fill="#7DBBE6">
+   <path d="m161.85 331.22v-26.5c0-3.422-.619-6.284-1.653-8.701 6.853 5.322 7.316 18.695 7.316 18.695v17.004c6.166.481 12.534.773 19.053.861l-.172-16.92c-.944-23.13-20.769-25.961-20.769-25.961-7.245-1.645-7.137 1.991-6.409 4.34-7.108-12.122-26.158-10.556-26.158-10.556-6.611 2.357-.475 6.607-.475 6.607 10.387 3.775 11.33 15.105 11.33 15.105v23.622c5.72.98 11.71 1.79 17.94 2.4z"/>
+   <path d="m245.4 283.48s-19.053-1.566-26.16 10.559c.728-2.35.839-5.989-6.408-4.343 0 0-19.824 2.832-20.768 25.961l-.174 16.946c6.509-.025 12.876-.254 19.054-.671v-17.219s.465-13.373 7.316-18.695c-1.034 2.417-1.653 5.278-1.653 8.701v26.775c6.214-.544 12.211-1.279 17.937-2.188v-24.113s.944-11.33 11.33-15.105c0-.01 6.13-4.26-.48-6.62z"/>
+  </g>
+  <path id="cat" d="m378.18 141.32l.28-1.389c-31.162-6.231-63.141-6.294-82.487-5.49 3.178-11.451 4.134-24.627 4.134-39.32 0-21.073-7.917-37.931-20.77-50.759 2.246-7.25 5.246-23.351-2.996-43.963 0 0-14.541-4.617-47.431 17.396-12.884-3.22-26.596-4.81-40.328-4.81-15.109 0-30.376 1.924-44.615 5.83-33.94-23.154-48.923-18.411-48.923-18.411-9.78 24.457-3.733 42.566-1.896 47.063-11.495 12.406-18.513 28.243-18.513 47.659 0 14.658 1.669 27.808 5.745 39.237-19.511-.71-50.323-.437-80.373 5.572l.276 1.389c30.231-6.046 61.237-6.256 80.629-5.522.898 2.366 1.899 4.661 3.021 6.879-19.177.618-51.922 3.062-83.303 11.915l.387 1.36c31.629-8.918 64.658-11.301 83.649-11.882 11.458 21.358 34.048 35.152 74.236 39.484-5.704 3.833-11.523 10.349-13.881 21.374-7.773 3.718-32.379 12.793-47.142-12.599 0 0-8.264-15.109-24.082-16.292 0 0-15.344-.235-1.059 9.562 0 0 10.267 4.838 17.351 23.019 0 0 9.241 31.01 53.835 21.061v32.032s-.943 11.33-11.33 15.105c0 0-6.137 4.249.475 6.606 0 0 28.792 2.361 28.792-21.238v-34.929s-1.142-13.852 5.663-18.667v57.371s-.47 13.688-7.551 18.881c0 0-4.723 8.494 5.663 6.137 0 0 19.824-2.832 20.769-25.961l.449-58.06h4.765l.453 58.06c.943 23.129 20.768 25.961 20.768 25.961 10.383 2.357 5.663-6.137 5.663-6.137-7.08-5.193-7.551-18.881-7.551-18.881v-56.876c6.801 5.296 5.663 18.171 5.663 18.171v34.929c0 23.6 28.793 21.238 28.793 21.238 6.606-2.357.474-6.606.474-6.606-10.386-3.775-11.33-15.105-11.33-15.105v-45.786c0-17.854-7.518-27.309-14.87-32.3 42.859-4.25 63.426-18.089 72.903-39.591 18.773.516 52.557 2.803 84.873 11.919l.384-1.36c-32.131-9.063-65.692-11.408-84.655-11.96.898-2.172 1.682-4.431 2.378-6.755 19.25-.80 51.38-.79 82.66 5.46z"/>
+  <path id="face" fill="#F4CBB2" d="m258.19 94.132c9.231 8.363 14.631 18.462 14.631 29.343 0 50.804-37.872 52.181-84.585 52.181-46.721 0-84.589-7.035-84.589-52.181 0-10.809 5.324-20.845 14.441-29.174 15.208-13.881 40.946-6.531 70.147-6.531 29.07-.004 54.72-7.429 69.95 6.357z"/>
+  <path id="eyes" fill="#FFF" d="m160.1 126.06 c0 13.994-7.88 25.336-17.6 25.336-9.72 0-17.6-11.342-17.6-25.336 0-13.992 7.88-25.33 17.6-25.33 9.72.01 17.6 11.34 17.6 25.33z m94.43 0 c0 13.994-7.88 25.336-17.6 25.336-9.72 0-17.6-11.342-17.6-25.336 0-13.992 7.88-25.33 17.6-25.33 9.72.01 17.6 11.34 17.6 25.33z"/>
+  <g fill="#AD5C51">
+    <path id="pupils" d="m154.46 126.38 c0 9.328-5.26 16.887-11.734 16.887s-11.733-7.559-11.733-16.887c0-9.331 5.255-16.894 11.733-16.894 6.47 0 11.73 7.56 11.73 16.89z m94.42 0 c0 9.328-5.26 16.887-11.734 16.887s-11.733-7.559-11.733-16.887c0-9.331 5.255-16.894 11.733-16.894 6.47 0 11.73 7.56 11.73 16.89z"/>
+    <circle id="nose" cx="188.5" cy="148.56" r="4.401"/>
+    <path id="mouth" d="m178.23 159.69c-.26-.738.128-1.545.861-1.805.737-.26 1.546.128 1.805.861 1.134 3.198 4.167 5.346 7.551 5.346s6.417-2.147 7.551-5.346c.26-.738 1.067-1.121 1.805-.861s1.121 1.067.862 1.805c-1.529 4.324-5.639 7.229-10.218 7.229s-8.68-2.89-10.21-7.22z"/>
+  </g>
+  <path id="octo" fill="#C3E4D8" d="m80.641 179.82 c0 1.174-1.376 2.122-3.07 2.122-1.693 0-3.07-.948-3.07-2.122 0-1.175 1.377-2.127 3.07-2.127 1.694 0 3.07.95 3.07 2.13z m8.5 4.72 c0 1.174-1.376 2.122-3.07 2.122-1.693 0-3.07-.948-3.07-2.122 0-1.175 1.377-2.127 3.07-2.127 1.694 0 3.07.95 3.07 2.13z m5.193 6.14 c0 1.174-1.376 2.122-3.07 2.122-1.693 0-3.07-.948-3.07-2.122 0-1.175 1.377-2.127 3.07-2.127 1.694 0 3.07.95 3.07 2.13z m4.72 7.08 c0 1.174-1.376 2.122-3.07 2.122-1.693 0-3.07-.948-3.07-2.122 0-1.175 1.377-2.127 3.07-2.127 1.694 0 3.07.95 3.07 2.13z m5.188 6.61 c0 1.174-1.376 2.122-3.07 2.122-1.693 0-3.07-.948-3.07-2.122 0-1.175 1.377-2.127 3.07-2.127 1.694 0 3.07.95 3.07 2.13z m7.09 5.66 c0 1.174-1.376 2.122-3.07 2.122-1.693 0-3.07-.948-3.07-2.122 0-1.175 1.377-2.127 3.07-2.127 1.694 0 3.07.95 3.07 2.13z m9.91 3.78 c0 1.174-1.376 2.122-3.07 2.122-1.693 0-3.07-.948-3.07-2.122 0-1.175 1.377-2.127 3.07-2.127 1.694 0 3.07.95 3.07 2.13z m9.87 0 c0 1.174-1.376 2.122-3.07 2.122-1.693 0-3.07-.948-3.07-2.122 0-1.175 1.377-2.127 3.07-2.127 1.694 0 3.07.95 3.07 2.13z m10.01 -1.64 c0 1.174-1.376 2.122-3.07 2.122-1.693 0-3.07-.948-3.07-2.122 0-1.175 1.377-2.127 3.07-2.127 1.694 0 3.07.95 3.07 2.13z"/>
+  <path id="drop" fill="#9CDAF1" d="m69.369 186.12l-3.066 10.683s-.8 3.861 2.84 4.546c3.8-.074 3.486-3.627 3.223-4.781z"/>
+ </svg>
+        </textarea>
+      </div>
+      <div class="cell">
+        <img id="output">
+      </div>
+    </div>
+  </main>
+</body>
+</html>

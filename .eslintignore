@@ -1,3 +1,6 @@
 js-binding.js
 js-binding.d.ts
 target
+playground
+wasm-web
+wasm-node
