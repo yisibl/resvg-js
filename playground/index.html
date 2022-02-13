@@ -40,6 +40,15 @@
       margin-right: auto;
     }
 
+    input[type="color"] {
+      border: none;
+      background: none;
+    }
+
+    input[type="color"]::-webkit-color-swatch-wrapper {
+      padding: 0;
+    }
+
     input:not([type="color"]) {
       height: 30px;
       padding: 0 .5em;
@@ -118,57 +127,62 @@
   <script type="module">
     import { render, initWasm } from './index.mjs'
 
-    await initWasm(fetch('./index_bg.wasm'))
+    (async function () {
+      await initWasm(fetch('./index_bg.wasm'))
+      const output = document.getElementById('output')
+      const svgElement = document.querySelector('#svg')
+      let svgString = svgElement.value
+      let resvgOpts = {
+      }
 
-    const output = document.getElementById('output')
-    const svgElement = document.querySelector('#svg')
-    let svgString = svgElement.value
-    let resvgOpts = {
-      fitTo: {
-          mode: 'width',
-          value: 500,
-      },
-    }
-
-    svg2png(svgString, resvgOpts)
-
-    function svg2png(svgString, opts) {
-      const png = render(svgString, opts)
-      output.src = URL.createObjectURL(
-        new Blob([png], { type: 'image/png' }),
-      )
-    }
-
-    addMultipleEventListener(svgElement, ['change', 'keyup', 'paste'], function(event) {
-      const svgString = event.target.value
-      if (!svgString) return
       svg2png(svgString, resvgOpts)
-    })
 
-    function addMultipleEventListener(element, events, handler) {
-      events.forEach(e => element.addEventListener(e, handler))
-    }
+      function svg2png(svgString, opts) {
+        const png = render(svgString, opts)
+        output.src = URL.createObjectURL(
+          new Blob([png], { type: 'image/png' }),
+        )
+      }
 
-    const colorPickerElement = document.querySelector('#color-picker')
-    colorPickerElement.addEventListener('change', function(event) {
-      const value = event.target.value
-      if (!value) return
+      addMultipleEventListener(svgElement, ['change', 'keyup', 'paste'], function(event) {
+        const svgString = event.target.value
+        if (!svgString) return
+        svg2png(svgString, resvgOpts)
+      })
 
+      function addMultipleEventListener(element, events, handler) {
+        events.forEach(e => element.addEventListener(e, handler))
+      }
 
-      resvgOpts.background = value
-      console.log(resvgOpts)
-      svg2png(svgString, resvgOpts)
-    })
+      const colorPickerElement = document.querySelector('#color-picker')
+      colorPickerElement.addEventListener('change', function(event) {
+        const value = event.target.value
+        if (!value) return
 
-    const svgSizeElement = document.querySelector('#svg-size')
-    svgSizeElement.addEventListener('change', function(event) {
-      const value = event.target.value
-      if (!value) return
+        resvgOpts.background = value
+        console.log(resvgOpts)
+        svg2png(svgString, resvgOpts)
+      })
 
-      resvgOpts.fitTo.value = parseInt(value, 10)
-      console.log(resvgOpts)
-      svg2png(svgString, resvgOpts)
-    })
+      const svgSizeElement = document.querySelector('#svg-size')
+      svgSizeElement.addEventListener('change', function(event) {
+        const value = event.target.value
+        if (!value) {
+          Object.assign(resvgOpts, { fitTo: {
+            mode: 'original',
+          }})
+        } else {
+          Object.assign(resvgOpts, { fitTo: {
+            mode: 'width',
+            value: parseInt(value, 10),
+          }})
+        }
+
+        console.log(resvgOpts)
+        svg2png(svgString, resvgOpts)
+      })
+    })();
+
   </script>
 </head>
 <body>
@@ -191,7 +205,7 @@
       </div>
       <div class="opts-cell">
         <label for="svg-size">Change width:</label>
-        <input type="number" placeholder="500" name="svg-size" id="svg-size">
+        <input type="number" placeholder="" name="svg-size" id="svg-size">
       </div>
     </div>
     <div class="box">
