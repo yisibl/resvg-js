@@ -193,22 +193,22 @@ var wasm_web_default = init;
 
 // wasm-binding.ts
 var initialized = false;
-var initialize = async (mod) => {
+var initWasm = async (mod) => {
   if (initialized) {
-    throw new Error("Already initialized. The `initialize` function can be used only once.");
+    throw new Error("Already initialized. The `initWasm()` function can be used only once.");
   }
   await wasm_web_default(await mod);
   initialized = true;
 };
 var render2 = function render3(svg, options) {
   if (!initialized)
-    throw new Error("WASM has not been initialized. Call `initialize()` function.");
+    throw new Error("WASM has not been initialized. Call `initWasm()` function.");
   if (options) {
     return render(svg, JSON.stringify(options));
   }
   return render(svg);
 };
 export {
-  initialize,
+  initWasm,
   render2 as render
 };

@@ -6,13 +6,14 @@ let initialized = false
 
 /**
  * Initialize WASM module
- * @param mod WebAssembly Module or WASM url
+ * @param module_or_path WebAssembly Module or WASM url
+ *
  */
-export const initialize = async (mod: Promise<InitInput> | InitInput): Promise<void> => {
+export const initWasm = async (module_or_path: Promise<InitInput> | InitInput): Promise<void> => {
   if (initialized) {
-    throw new Error('Already initialized. The `initialize` function can be used only once.')
+    throw new Error('Already initialized. The `initWasm()` function can be used only once.')
   }
-  await init(await mod)
+  await init(await module_or_path)
   initialized = true
 }
 
@@ -23,7 +24,7 @@ export const initialize = async (mod: Promise<InitInput> | InitInput): Promise<v
  * @returns {Uint8Array}
  */
 export const render = function render(svg: Uint8Array | string, options?: ResvgRenderOptions) {
-  if (!initialized) throw new Error('WASM has not been initialized. Call `initialize()` function.')
+  if (!initialized) throw new Error('WASM has not been initialized. Call `initWasm()` function.')
 
   if (options) {
     return _render(svg, JSON.stringify(options))

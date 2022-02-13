@@ -51,7 +51,7 @@
     "bench": "node -r @swc-node/register benchmark/bench.ts",
     "bundle": "run-p bundle:*",
     "bundle:js": "node bundle.js",
-    "bundle:dts": "dts-bundle-generator --no-banner --external-types -o playground/index.d.ts wasm-binding.ts",
+    "bundle:dts": "dts-bundle-generator --external-types -o playground/index.d.ts wasm-binding.ts",
     "build": "napi build --platform --release --js js-binding.js --dts js-binding.d.ts",
     "build:debug": "napi build --platform --js js-binding.js --dts js-binding.d.ts",
     "build:wasm": "run-s copy-wasm bundle",
