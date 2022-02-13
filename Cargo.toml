@@ -10,10 +10,10 @@ crate-type = ["cdylib"]
 
 [dependencies]
 env_logger = "0.9.0"
-fontdb = "0.7.0"
+fontdb = "0.8.0"
 log = "0.4"
-resvg = { version = "0.20.0", default-features = false, features = ["filter"] }
-usvg = { version = "0.20.0", default-features = false, features = [
+resvg = { version = "0.21.0", default-features = false, features = ["filter"] }
+usvg = { version = "0.21.0", default-features = false, features = [
     "export",
     "filter",
     "text",

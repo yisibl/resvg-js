@@ -178,6 +178,7 @@ impl JsOptions {
       keep_named_groups: false,
       default_size: usvg::Size::new(100.0_f64, 100.0_f64).unwrap(),
       fontdb,
+      image_href_resolver: usvg::ImageHrefResolver::default(),
     };
 
     let tree = data.load(&svg_options)?;
