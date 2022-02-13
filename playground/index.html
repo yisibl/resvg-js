@@ -116,9 +116,9 @@
     }
   </style>
   <script type="module">
-    import { render, initialize } from './index.mjs'
+    import { render, initWasm } from './index.mjs'
 
-    await initialize(fetch('./index_bg.wasm'))
+    await initWasm(fetch('./index_bg.wasm'))
 
     const output = document.getElementById('output')
     const svgElement = document.querySelector('#svg')
