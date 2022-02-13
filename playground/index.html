@@ -82,6 +82,10 @@
       margin-right: 26px;
     }
 
+    .cell:nth-child(1) {
+      align-self: flex-start;
+    }
+
     .opts {
       display: flex;
       justify-content: center;
@@ -131,14 +135,13 @@
       await initWasm(fetch('./index_bg.wasm'))
       const output = document.getElementById('output')
       const svgElement = document.querySelector('#svg')
-      let svgString = svgElement.value
-      let resvgOpts = {
-      }
+      let resvgOpts = {}
 
-      svg2png(svgString, resvgOpts)
+      svg2png(svgElement.value, resvgOpts)
 
       function svg2png(svgString, opts) {
-        const png = render(svgString, opts)
+        let svg = svgString ? svgString : svgElement.value
+        const png = render(svg, opts)
         output.src = URL.createObjectURL(
           new Blob([png], { type: 'image/png' }),
         )
@@ -161,7 +164,7 @@
 
         resvgOpts.background = value
         console.log(resvgOpts)
-        svg2png(svgString, resvgOpts)
+        svg2png(null, resvgOpts)
       })
 
       const svgSizeElement = document.querySelector('#svg-size')
@@ -179,7 +182,7 @@
         }
 
         console.log(resvgOpts)
-        svg2png(svgString, resvgOpts)
+        svg2png(null, resvgOpts)
       })
     })();
 
@@ -211,7 +214,6 @@
     <div class="box">
       <div class="cell">
         <textarea name="svg" id="svg" placeholder="Enter the svg string" cols="30" rows="10">
-
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="-0.2 -1 379 334">
   <path id="puddle" fill="#9CDAF1" d="m296.94 295.43c0 20.533-47.56 37.176-106.22 37.176-58.67 0-106.23-16.643-106.23-37.176s47.558-37.18 106.23-37.18c58.66 0 106.22 16.65 106.22 37.18z"/>
   <g id="shadow-legs" fill="#7DBBE6">
