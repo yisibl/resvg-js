@@ -28,7 +28,7 @@ __export(wasm_binding_exports, {
   render: () => render2
 });
 
-// wasm-web/index.js
+// wasm/dist/index.js
 var wasm;
 var heap = new Array(32).fill(void 0);
 heap.push(void 0, null, true, false);
@@ -219,7 +219,7 @@ async function init(input) {
   init.__wbindgen_wasm_module = module2;
   return wasm;
 }
-var wasm_web_default = init;
+var dist_default = init;
 
 // wasm-binding.ts
 var initialized = false;
@@ -227,7 +227,7 @@ var initWasm = async (module_or_path) => {
   if (initialized) {
     throw new Error("Already initialized. The `initWasm()` function can be used only once.");
   }
-  await wasm_web_default(await module_or_path);
+  await dist_default(await module_or_path);
   initialized = true;
 };
 var render2 = function render3(svg, options) {

@@ -5,11 +5,11 @@ import { join } from 'path'
 import test from 'ava'
 import jimp from 'jimp'
 
-import { render, initWasm } from '../playground'
+import { render, initWasm } from '../wasm'
 
 // init wasm
 test.before(async () => {
-  await initWasm(fs.readFile(join(__dirname, '../playground/index_bg.wasm')))
+  await initWasm(fs.readFile(join(__dirname, '../wasm/index_bg.wasm')))
 })
 
 test('buffer input', async (t) => {

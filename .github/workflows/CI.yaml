@@ -184,6 +184,50 @@ jobs:
           name: bindings-${{ matrix.settings.target }}
           path: ${{ env.APP_NAME }}.*.node
           if-no-files-found: error
+
+  build-and-test-wasm:
+    name: Build and test wasm on Linux-x64-gnu - node@${{ matrix.node }}
+    strategy:
+      fail-fast: false
+      matrix:
+        node: ['12', '14', '16']
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup node
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node }}
+          check-latest: true
+
+      - name: Install
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          override: true
+
+      - name: Cache cargo
+        uses: Swatinem/rust-cache@v1
+        with:
+          key: ${{ matrix.settings.target }}-node@14-cargo-cache
+
+      - name: 'Install wasm-pack'
+        uses: jetli/wasm-pack-action@v0.3.0
+        with:
+          version: 'latest'
+
+      - name: Install dependencies
+        run: yarn install --ignore-scripts --frozen-lockfile --registry https://registry.npmjs.org --network-timeout 300000
+
+      - name: List packages
+        run: ls -R .
+        shell: bash
+
+      - name: Build and test wasm
+        run: yarn build:wasm && yarn test:wasm
+
   test-macOS-windows-binding:
     name: Test bindings on ${{ matrix.settings.target }} - node@${{ matrix.node }}
     needs:

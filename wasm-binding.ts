@@ -1,4 +1,4 @@
-import init, { render as _render, InitInput } from './wasm-web'
+import init, { render as _render, InitInput } from './wasm/dist'
 
 import { ResvgRenderOptions } from './index'
 
