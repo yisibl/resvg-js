@@ -121,3 +121,79 @@ MaybeTest('should be able to abort queued async rendering', async (t) => {
   // @ts-expect-error
   t.is(err.code, 'Cancelled')
 })
+
+// Generate a 100x100 transparent png starting from resvg 0.21.0
+// https://github.com/RazrFalcon/resvg/commit/5998e9b8411ff3f0171515371938ee1940be17c3
+test('should generate a 100x100 transparent png', async (t) => {
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg"></svg>`
+  const pngData = render(svg)
+  const result = await jimp.read(pngData)
+
+  t.is(result.hasAlpha(), true)
+  t.is(result.getWidth(), 100)
+  t.is(result.getHeight(), 100)
+})
+
+test('should generate a 128x128 png', async (t) => {
+  const svg = `<svg width="128" height="128" xmlns="http://www.w3.org/2000/svg"></svg>`
+  const pngData = render(svg, {
+    background: 'green',
+  })
+  const result = await jimp.read(pngData)
+
+  t.is(result.hasAlpha(), false)
+  t.is(result.getWidth(), 128)
+  t.is(result.getHeight(), 128)
+})
+
+test('should throw because invalid SVG attribute (width attribute is 0)', (t) => {
+  const error = t.throws(
+    () => {
+      render(`
+      <svg width="0" height="100px" viewBox="0 0 200 100" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+        <rect fill="#FCA6A6" x="0" y="0" width="200" height="100"></rect>
+      </svg>
+      `)
+    },
+    { instanceOf: Error },
+  )
+
+  t.is(error.message, 'SVG has an invalid size')
+})
+
+test('should throw because invalid options (width 0)', (t) => {
+  const error = t.throws(
+    () => {
+      render(
+        `<svg width="200px" height="100px" viewBox="0 0 200 100" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+          <rect fill="#FCA6A6" x="0" y="0" width="200" height="100"></rect>
+        </svg>`,
+        {
+          fitTo: {
+            mode: 'width',
+            value: 0,
+          },
+        },
+      )
+    },
+    { instanceOf: Error },
+  )
+
+  t.is(error.message, 'Target size is zero (please do not set the width/height/zoom options to 0)')
+})
+
+test('should throw because invalid options (zoom 0)', (t) => {
+  const error = t.throws(
+    () => {
+      render('<svg width="128" height="128" xmlns="http://www.w3.org/2000/svg"></svg>', {
+        fitTo: {
+          mode: 'zoom',
+          value: 0,
+        },
+      })
+    },
+    { instanceOf: Error },
+  )
+
+  t.is(error.message, 'Target size is zero (please do not set the width/height/zoom options to 0)')
+})
