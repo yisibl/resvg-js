@@ -78,10 +78,10 @@ Although we support the use of WASM packages in Node.js, this is not recommended
 #### Browser(ES Modules)
 
 ```js
-import { render, initWasm } from '@resvg/resvg-js-wasm'
+import { render, initWasm } from '@resvg/resvg-wasm'
 ;(async function () {
-  // The wasm must be initialized first
-  await initWasm(fetch('./index_bg.wasm'))
+  // The wasm must be initialized first,
+  await initWasm(fetch('/your/path/index_bg.wasm'))
   const opts = {
     fitTo: {
       mode: 'width',
