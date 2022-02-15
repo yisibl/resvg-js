@@ -185,7 +185,7 @@ jobs:
           path: ${{ env.APP_NAME }}.*.node
           if-no-files-found: error
 
-  build-and-test-wasm:
+  build-wasm:
     name: Build and test wasm on Linux-x64-gnu - node@${{ matrix.node }}
     strategy:
       fail-fast: false
@@ -226,7 +226,9 @@ jobs:
         shell: bash
 
       - name: Build and test wasm
-        run: yarn build:wasm && yarn test:wasm
+        run: |
+          yarn build:wasm
+          yarn test:wasm
 
   test-macOS-windows-binding:
     name: Test bindings on ${{ matrix.settings.target }} - node@${{ matrix.node }}
@@ -456,6 +458,7 @@ jobs:
     name: Publish
     runs-on: ubuntu-latest
     needs:
+      - build-wasm
       - test-macOS-windows-binding
       - test-linux-x64-gnu-binding
       - test-linux-x64-musl-binding
@@ -492,11 +495,21 @@ jobs:
         run: |
           if git log -1 --pretty=%B | grep "^[0-9]\+\.[0-9]\+\.[0-9]\+$";
           then
+            echo "Publishing node packages"
             echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
+            npm publish --access public
+
+            echo "Publishing WASM packages"
+            cd wasm
             npm publish --access public
           elif git log -1 --pretty=%B | grep "^[0-9]\+\.[0-9]\+\.[0-9]\+";
           then
+            echo "Publishing node packages"
             echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
+            npm publish --tag next --access public
+
+            echo "Publishing WASM packages"
+            cd wasm
             npm publish --tag next --access public
           else
             echo "Not a release, skipping publish"
