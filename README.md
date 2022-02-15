@@ -9,6 +9,7 @@
 - No need for node-gyp and postinstall, the `.node` file has been compiled for you.
 - Cross-platform support, including [Apple M1](https://www.apple.com/newsroom/2020/11/apple-unleashes-m1/).
 - Support system fonts and custom fonts in SVG text.
+- Support WebAssembly.
 
 ## Installation
 
@@ -34,6 +35,68 @@ Font './example/SourceHanSerifCN-Light-subset.ttf':0 found in 0.006ms.
 | ------------------------------------------------------------------- | ----------------------------------------------------------------------- |
 | <img width="500" src="example/anime_girl.svg" alt="Anime girl SVG"> | <img width="500" src="example/out-resvg-js.png" alt="Anime girl png" /> |
 | <img width="500" src="example/text.svg">                            | <img width="500" src="example/text-out.png">                            |
+
+## Usage
+
+### Node.js
+
+```js
+const { promises } = require('fs')
+const { join } = require('path')
+const { performance } = require('perf_hooks')
+
+const { render } = require('@resvg/resvg-js')
+
+async function main() {
+  const svg = await promises.readFile(join(__dirname, './text.svg'))
+  const t = performance.now()
+  const pngData = render(svg, {
+    background: 'rgba(238, 235, 230, .9)',
+    fitTo: {
+      mode: 'width',
+      value: 1200,
+    },
+    font: {
+      fontFiles: ['./example/SourceHanSerifCN-Light-subset.ttf'], // Load custom fonts.
+      loadSystemFonts: false, // It will be faster to disable loading system fonts.
+      defaultFontFamily: 'Source Han Serif CN Light',
+    },
+    logLevel: 'debug',
+  })
+  console.info('✨ Done in', performance.now() - t, 'ms')
+
+  await promises.writeFile(join(__dirname, './text-out.png'), pngData)
+}
+
+main()
+```
+
+### WebAssembly
+
+Although we support the use of WASM packages in Node.js, this is not recommended. The native addon performs better.
+
+#### Browser(ES Modules)
+
+```js
+import { render, initWasm } from '@resvg/resvg-js-wasm'
+;(async function () {
+  // The wasm must be initialized first
+  await initWasm(fetch('./index_bg.wasm'))
+  const opts = {
+    fitTo: {
+      mode: 'width',
+      value: 800,
+    },
+  }
+
+  const svg = '<svg> ... </svg>' // input svg, String or Uint8Array
+  const png = render(svg, opts) // PNG data, Uint8Array
+  const svgUrl = URL.createObjectURL(new Blob([png], { type: 'image/png' }))
+  document.getElementById('output').src = svgUrl
+})()
+```
+
+See [playground](playground/index.html).
 
 ## Benchmark
 
@@ -81,43 +144,57 @@ Running "resize width" suite...
 | Android armv7    | ✓      | ✓      | ✓      | [![npm version](https://img.shields.io/npm/v/@resvg/resvg-js-android-arm-eabi.svg?sanitize=true)](https://www.npmjs.com/package/@resvg/resvg-js-android-arm-eabi)       |
 |                  |
 
-## Test in local
+## Test or Contributing
 
 - Install latest `Rust`
 - Install `Node.js@10+` which fully supported `Node-API`
+- install `wasm-pack`
+  ```bash
+  curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
+  ```
+
+### Build Node.js bindings
 
 ```bash
 npm i
-npm build
+npm run build
 npm test
 ```
 
-## Roadmap & Contributing
+### Build WebAssembly bindings
+
+```bash
+npm i
+npm run build:wasm
+npm run test:wasm
+```
+
+## Roadmap
 
 I will consider implementing the following features, if you happen to be interested,
 please feel free to discuss with me or submit a PR.
 
 - [x] Support async API
 - [x] Upgrade to napi-rs v2
+- [x] Support WebAssembly(.wasm)
 - [ ] Support for getting SVG Bounding box
 - [ ] Output usvg-simplified SVG string
 - [ ] Support for generating more lossless bitmap formats, e.g. avif, webp, JPEG XL
-- [ ] Support WebAssembly(.wasm)
 
 ## Release package
 
 We use GitHub actions to automatically publish npm packages.
 
-```
+```bash
 # 1.0.0 => 1.0.1
 npm version patch
 
 # or 1.0.0 => 1.1.0
 npm version minor
-
-git push --follow-tags
 ```
 
 ## License
 
 [MPLv2.0](https://www.mozilla.org/en-US/MPL/)
+
+Copyright (c) 2021-present, yisibl(一丝)
