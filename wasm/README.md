@@ -9,3 +9,9 @@ This is the **WebAssembly** binary for [`@resvg/resvg-js`](https://github.com/yi
 ## Playground
 
 https://resvg-js.vercel.app
+
+## License
+
+[MPLv2.0](https://www.mozilla.org/en-US/MPL/)
+
+Copyright (c) 2021-present, yisibl(一丝)
