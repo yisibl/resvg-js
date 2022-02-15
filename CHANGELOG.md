@@ -9,6 +9,25 @@ This changelog also contains important changes in dependencies.
 
 ## [Unreleased]
 
+## [2.0.0-alpha.0] - 2022-02-15
+
+resvg-js now supports WebAssembly 🎉 What can I do now?
+
+- You can convert SVG to PNG in the browser or Web Worker
+- We provide Playground for direct use: https://resvg-js.vercel.app
+
+With WebAssembly, resvg-js gains broader cross-platform compatibility, all by loading only about 2MB of WASM files. And, the API is consistent with the Node.js side.
+
+The current version of WASM does not support loading fonts, so please submit an issue if you have a request.
+### Added
+
+- feat: support WebAssembly(wasm32 target) via wasm-bindgen (#51)
+- feat: add [WebAssembly playground](https://resvg-js.vercel.app)
+- feat: upgrade resvg to 0.21.0
+- feat: upgrade to napi-rs 2.1.0 (#60)
+- chore: improved error message when output PNG size is 0 (#58)
+- doc: add Node.js and WebAssembly usage documentation (#63)
+
 ## [1.4.0] - 2022-01-24
 
 ### Added
@@ -145,7 +164,8 @@ The first official version, use [resvg 0.18.0](https://github.com/RazrFalcon/res
 - Support custom fonts and system fonts.
 - Supports setting the background color of PNG.
 
-[unreleased]: https://github.com/yisibl/resvg-js/compare/v1.4.0...HEAD
+[unreleased]: https://github.com/yisibl/resvg-js/compare/v2.0.0-alpha.0...HEAD
+[2.0.0-alpha.0]: https://github.com/yisibl/resvg-js/compare/v1.4.0...v2.0.0-alpha.0
 [1.4.0]: https://github.com/yisibl/resvg-js/compare/v1.3.0...v1.4.0
 [1.3.0]: https://github.com/yisibl/resvg-js/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/yisibl/resvg-js/compare/v1.1.0...v1.2.0
