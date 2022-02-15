@@ -6,9 +6,8 @@ const { render } = require('../index')
 
 async function main() {
   const svg = await promises.readFile(join(__dirname, './text.svg'))
-  const svgString = svg.toString('utf-8')
   const t = performance.now()
-  const pngData = render(svgString, {
+  const pngData = render(svg, {
     background: 'rgba(238, 235, 230, .9)',
     fitTo: {
       mode: 'width',
