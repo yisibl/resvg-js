@@ -6,10 +6,8 @@
   "types": "index.d.ts",
   "exports": {
     ".": {
-      "require": "./index.js",
       "import": "./index.mjs",
-      "node": "./index.mjs",
-      "default": "./index.mjs"
+      "default": "./index.js"
     }
   },
   "files": [
