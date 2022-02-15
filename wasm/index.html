@@ -143,7 +143,7 @@
         let svg = svgString ? svgString : svgElement.value
         const png = render(svg, opts)
         output.src = URL.createObjectURL(
-          new Blob([png], { type: 'image/png' }),
+          new Blob([png], { type: 'image/png' })
         )
       }
 

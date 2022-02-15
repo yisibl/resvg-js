@@ -2,10 +2,10 @@ const fs = require('fs').promises
 const { join } = require('path')
 const { performance } = require('perf_hooks')
 
-const { render, initWasm } = require('../playground')
+const { render, initWasm } = require('../wasm')
 
 async function main() {
-  await initWasm(fs.readFile(join(__dirname, '../playground/index_bg.wasm')))
+  await initWasm(fs.readFile(join(__dirname, '../wasm/index_bg.wasm')))
 
   const svg = await fs.readFile(join(__dirname, './text.svg'))
   const opts = {

@@ -221,14 +221,16 @@ jobs:
       - name: Install dependencies
         run: yarn install --ignore-scripts --frozen-lockfile --registry https://registry.npmjs.org --network-timeout 300000
 
-      - name: List packages
-        run: ls -R ./wasm
-        shell: bash
-
       - name: Build and test wasm
         run: |
           yarn build:wasm
           yarn test:wasm
+
+      - name: List packages
+        run: |
+          ls -R ./wasm
+          ls -lt ./wasm/index_bg.wasm
+        shell: bash
 
   test-macOS-windows-binding:
     name: Test bindings on ${{ matrix.settings.target }} - node@${{ matrix.node }}
@@ -492,7 +494,9 @@ jobs:
         run: ls -R ./npm
         shell: bash
       - name: List wasm packages
-        run: ls -R ./wasm
+        run: |
+          ls -R ./wasm
+          ls -lt ./wasm/index_bg.wasm
         shell: bash
       - name: Publish to npm packages
         run: |
