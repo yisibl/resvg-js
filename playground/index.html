@@ -128,11 +128,10 @@
       animation: octocat-wave 560ms ease-in-out;
     }
   </style>
-  <script type="module">
-    import { render, initWasm } from './index.mjs'
-
+  <script src="https://unpkg.com/@resvg/resvg-wasm@2.0.0-alpha.0/index.min.js"></script>
+  <script>
     (async function () {
-      await initWasm(fetch('./index_bg.wasm'))
+      await resvg.initWasm(fetch('https://unpkg.com/@resvg/resvg-wasm/index_bg.wasm'))
       const output = document.getElementById('output')
       const svgElement = document.querySelector('#svg')
       let resvgOpts = {}
@@ -140,8 +139,8 @@
       svg2png(svgElement.value, resvgOpts)
 
       function svg2png(svgString, opts) {
-        let svg = svgString ? svgString : svgElement.value
-        const png = render(svg, opts)
+        const svg = svgString ? svgString : svgElement.value
+        const png = resvg.render(svg, opts)
         document.getElementById('output').src = URL.createObjectURL(
           new Blob([png], { type: 'image/png' })
         )
@@ -163,7 +162,6 @@
         if (!value) return
 
         resvgOpts.background = value
-        console.log(resvgOpts)
         svg2png(null, resvgOpts)
       })
 
@@ -181,7 +179,6 @@
           }})
         }
 
-        console.log(resvgOpts)
         svg2png(null, resvgOpts)
       })
     })();
