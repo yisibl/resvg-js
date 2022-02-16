@@ -84,7 +84,7 @@ import { render, initWasm } from '@resvg/resvg-wasm'
   await initWasm(fetch('/your/path/index_bg.wasm'))
   const opts = {
     fitTo: {
-      mode: 'width',
+      mode: 'width', // If you need to change the size
       value: 800,
     },
   }
@@ -148,7 +148,7 @@ Running "resize width" suite...
 
 - Install latest `Rust`
 - Install `Node.js@10+` which fully supported `Node-API`
-- install `wasm-pack`
+- Install `wasm-pack`
   ```bash
   curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
   ```
