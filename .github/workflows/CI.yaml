@@ -178,7 +178,7 @@ jobs:
         run: ${{ matrix.settings.build }}
         if: ${{ !matrix.settings.docker }}
         shell: bash
-      - name: Upload artifact
+      - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
           name: bindings-${{ matrix.settings.target }}
@@ -186,7 +186,7 @@ jobs:
           if-no-files-found: error
 
   build-wasm:
-    name: Build and test wasm on Linux-x64-gnu - node@${{ matrix.node }}
+    name: Build and test wasm - node@${{ matrix.node }}(Linux-x64-gnu)
     strategy:
       fail-fast: false
       matrix:
@@ -213,7 +213,7 @@ jobs:
         with:
           key: ${{ matrix.settings.target }}-node@14-cargo-cache
 
-      - name: 'Install wasm-pack'
+      - name: Install wasm-pack
         uses: jetli/wasm-pack-action@v0.3.0
         with:
           version: 'latest'
@@ -221,10 +221,17 @@ jobs:
       - name: Install dependencies
         run: yarn install --ignore-scripts --frozen-lockfile --registry https://registry.npmjs.org --network-timeout 300000
 
-      - name: Build and test wasm
-        run: |
-          yarn build:wasm
-          yarn test:wasm
+      - name: Build wasm
+        run: yarn build:wasm
+      
+      - name: Test wasm
+        run: yarn test:wasm
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: wasm32
+          path: wasm/dist/*.wasm
 
       - name: List packages
         run: |
@@ -456,6 +463,7 @@ jobs:
             set -e
             yarn test
             ls -la
+
   publish:
     name: Publish
     runs-on: ubuntu-latest
@@ -488,16 +496,22 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           path: artifacts
-      - name: Move artifacts
-        run: yarn artifacts
-      - name: List node packages
-        run: ls -R ./npm
-        shell: bash
+      - name: List artifacts
+        run: ls -R ./artifacts
+
+      - name: Move wasm artifacts
+        run: mv -f ./artifacts/wasm32/*.wasm ./wasm
       - name: List wasm packages
         run: |
           ls -R ./wasm
           ls -lt ./wasm/index_bg.wasm
+
+      - name: Move Node.js artifacts
+        run: yarn artifacts
+      - name: List node packages
+        run: ls -R ./npm
         shell: bash
+
       - name: Publish to npm packages
         run: |
           if git log -1 --pretty=%B | grep "^[0-9]\+\.[0-9]\+\.[0-9]\+$";
