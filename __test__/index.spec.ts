@@ -197,3 +197,18 @@ test('should throw because invalid options (zoom 0)', (t) => {
 
   t.is(error.message, 'Target size is zero (please do not set the width/height/zoom options to 0)')
 })
+
+// An SVG file must have a xmlns="http://www.w3.org/2000/svg" namespace.
+// https://github.com/RazrFalcon/resvg/issues/192
+test('should throw because missing namespace', (t) => {
+  const svg = `<svg viewBox="0 0 0 16
+                                     16"></svg>`
+  const error = t.throws(
+    () => {
+      render(svg)
+    },
+    { instanceOf: Error },
+  )
+
+  t.is(error.message, 'SVG data parsing failed cause the document does not have a root node')
+})
