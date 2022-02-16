@@ -122,6 +122,25 @@ MaybeTest('should be able to abort queued async rendering', async (t) => {
   t.is(err.code, 'Cancelled')
 })
 
+test('should generate a 80x80 png and opaque', async (t) => {
+  const svg = `<svg width="200px" height="200px" viewBox="0 0 200 200" version="1.1" xmlns="http://www.w3.org/2000/svg">
+    <rect fill="green" x="0" y="0" width="100" height="100"></rect>
+  </svg>`
+  const pngData = render(svg, {
+    crop: {
+      left: 20,
+      top: 20,
+      right: 100,
+      bottom: 100,
+    },
+  })
+  const result = await jimp.read(pngData)
+
+  t.is(result.getWidth(), 100 - 20)
+  t.is(result.getHeight(), 100 - 20)
+  t.is(result.hasAlpha(), false)
+})
+
 // Generate a 100x100 transparent png starting from resvg 0.21.0
 // https://github.com/RazrFalcon/resvg/commit/5998e9b8411ff3f0171515371938ee1940be17c3
 test('should generate a 100x100 transparent png', async (t) => {
