@@ -9,6 +9,26 @@ This changelog also contains important changes in dependencies.
 
 ## [Unreleased]
 
+## [2.0.0-alpha.1] - 2022-02-17
+
+### Added
+
+- feat: playground uses [unpkg.com's](https://unpkg.com/@resvg/resvg-wasm) online resources
+  ```html
+  <script src="https://unpkg.com/@resvg/resvg-wasm@2.0.0-alpha.0/index.min.js"></script>
+  ```
+- feat: preload wasm in the playground
+  ```html
+  <link rel="preload" as="fetch" type="application/wasm" href="https://unpkg.com/@resvg/resvg-wasm/index_bg.wasm" />
+  ```
+- chore: upload wasm file to artifacts
+  Switching from local to building in CI (Linux-x64-gnu) for `.wasm` files can reduce the file size a bit.
+
+  - Local, Mac-x64-darwin: 1969225 Byte
+  - CI, Linux-x64-gnu: 1949589 Byte
+
+  After gzip compression, the `.wasm` file is only about 700kB.
+
 ## [2.0.0-alpha.0] - 2022-02-15
 
 resvg-js now supports WebAssembly 🎉 What can I do now?
@@ -19,6 +39,7 @@ resvg-js now supports WebAssembly 🎉 What can I do now?
 With WebAssembly, resvg-js gains broader cross-platform compatibility, all by loading only about 2MB of WASM files. And, the API is consistent with the Node.js side.
 
 The current version of WASM does not support loading fonts, so please submit an issue if you have a request.
+
 ### Added
 
 - feat: support WebAssembly(wasm32 target) via wasm-bindgen (#51)
@@ -164,7 +185,8 @@ The first official version, use [resvg 0.18.0](https://github.com/RazrFalcon/res
 - Support custom fonts and system fonts.
 - Supports setting the background color of PNG.
 
-[unreleased]: https://github.com/yisibl/resvg-js/compare/v2.0.0-alpha.0...HEAD
+[unreleased]: https://github.com/yisibl/resvg-js/compare/v2.0.0-alpha.1...HEAD
+[2.0.0-alpha.1]: https://github.com/yisibl/resvg-js/compare/v2.0.0-alpha.0...v2.0.0-alpha.1
 [2.0.0-alpha.0]: https://github.com/yisibl/resvg-js/compare/v1.4.0...v2.0.0-alpha.0
 [1.4.0]: https://github.com/yisibl/resvg-js/compare/v1.3.0...v1.4.0
 [1.3.0]: https://github.com/yisibl/resvg-js/compare/v1.2.0...v1.3.0
