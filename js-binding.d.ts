@@ -5,7 +5,6 @@
 
 export function renderAsync(svg: string | Buffer, options?: string | undefined | null, signal?: AbortSignal | undefined | null): Promise<Buffer>
 export class Resvg {
-  constructor(svg: string | Buffer)
   get width(): number
   get height(): number
 }
