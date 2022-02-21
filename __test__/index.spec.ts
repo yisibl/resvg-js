@@ -165,6 +165,25 @@ test('should generate a 128x128 png', async (t) => {
   t.is(result.getHeight(), 128)
 })
 
+// The four green <rect> must be tiled, with no alpha channel.
+// View more test cases: https://github.com/RazrFalcon/resvg/commit/0eb347f2b6b9d76ffcb8e6b66ebefcd0f09da6a7
+test('should render `<use xlink:href>` to an `<svg>` element', async (t) => {
+  const svg = `
+  <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <svg id="svg1" xmlns="http://www.w3.org/2000/svg">
+      <rect width="50%" height="50%" fill="green" />
+    </svg>
+    <use id="use1" x="50%" y="50%" xlink:href="#svg1" />
+    <use id="use2" x="50%" y="0" xlink:href="#svg1" />
+    <use id="use3" x="0" y="50%" xlink:href="#svg1" />
+  </svg>
+  `
+  const pngData = render(svg)
+  const result = await jimp.read(pngData)
+
+  t.is(result.hasAlpha(), false)
+})
+
 test('should throw because invalid SVG attribute (width attribute is 0)', (t) => {
   const error = t.throws(
     () => {

@@ -9,6 +9,28 @@ This changelog also contains important changes in dependencies.
 
 ## [Unreleased]
 
+### Added
+
+- feat: upgrade resvg to [0.22.0](https://github.com/RazrFalcon/resvg/blob/master/CHANGELOG.md#0220---2022-02-20)
+
+  Support `svg` referenced by `<use>`, this is often used in svg sprite.
+
+  ```html
+  <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <svg id="svg1" xmlns="http://www.w3.org/2000/svg">
+      <rect width="50%" height="50%" fill="green" />
+    </svg>
+    <use id="use1" x="50%" y="50%" xlink:href="#svg1" />
+  </svg>
+  ```
+
+- feat: upgrade fontdb to [0.9.0](https://github.com/RazrFalcon/fontdb/blob/master/CHANGELOG.md#added), loading system fonts will become faster.
+
+  There are many CJK fonts installed in my local OS, the test result is 2.5 times faster:
+
+  - Before: `Loaded 1085 font faces in 860.447ms.`
+  - After: `Loaded 1085 font faces in 339.665ms.`
+
 ## [2.0.0-alpha.1] - 2022-02-17
 
 ### Added
