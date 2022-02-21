@@ -4,19 +4,19 @@ import { join } from 'path'
 import test from 'ava'
 import jimp from 'jimp'
 
-import { render, renderAsync } from '../index'
+import { Resvg, renderAsync } from '../index'
 
 test('fit to width', async (t) => {
   const filePath = '../example/text.svg'
   const svg = await fs.readFile(join(__dirname, filePath))
-  const svgString = svg.toString('utf-8')
-  const pngData = render(svgString, {
+  const resvg = new Resvg(svg, {
     background: '#eeebe6',
     fitTo: {
       mode: 'width',
       value: 1200,
     },
   })
+  const pngData = resvg.render()
   const result = await jimp.read(pngData)
 
   t.is(result.getWidth(), 1200)
@@ -27,9 +27,10 @@ test('Set the background with alpha by rgba().', async (t) => {
   const filePath = './tiger.svg'
   const svg = await fs.readFile(join(__dirname, filePath))
   const svgString = svg.toString('utf-8')
-  const pngData = render(svgString, {
+  const resvg = new Resvg(svgString, {
     background: 'rgba(0, 0, 0, 0.6)',
   })
+  const pngData = resvg.render()
   const result = await jimp.read(pngData)
 
   t.is(result.hasAlpha(), true)
@@ -39,9 +40,10 @@ test('Set the background with alpha by rgb().', async (t) => {
   const filePath = './tiger.svg'
   const svg = await fs.readFile(join(__dirname, filePath))
   const svgString = svg.toString('utf-8')
-  const pngData = render(svgString, {
+  const resvg = new Resvg(svgString, {
     background: 'rgb(255, 0, 0, .832)',
   })
+  const pngData = resvg.render()
   const result = await jimp.read(pngData)
 
   t.is(result.hasAlpha(), true)
@@ -51,9 +53,10 @@ test('Set the background without alpha by hsla()', async (t) => {
   const filePath = './tiger.svg'
   const svg = await fs.readFile(join(__dirname, filePath))
   const svgString = svg.toString('utf-8')
-  const pngData = render(svgString, {
+  const resvg = new Resvg(svgString, {
     background: 'hsla(255, 80%, 50%, 1)',
   })
+  const pngData = resvg.render()
   const result = await jimp.read(pngData)
 
   t.is(result.hasAlpha(), false)
@@ -63,13 +66,14 @@ test('Load custom font', async (t) => {
   const filePath = '../example/text.svg'
   const svg = await fs.readFile(join(__dirname, filePath))
   const svgString = svg.toString('utf-8')
-  const pngData = render(svgString, {
+  const resvg = new Resvg(svgString, {
     font: {
       fontFiles: ['./example/SourceHanSerifCN-Light-subset.ttf'], // Load custom fonts.
       loadSystemFonts: false, // It will be faster to disable loading system fonts.
       defaultFontFamily: 'Source Han Serif CN Light',
     },
   })
+  const pngData = resvg.render()
   const result = await jimp.read(pngData)
 
   t.is(result.getWidth(), 1324)
@@ -86,13 +90,13 @@ test('Async rendering', async (t) => {
       defaultFontFamily: 'Source Han Serif CN Light',
     },
   }
-  const syncRenderingResult = render(svg, params)
+  const syncRenderingResult = new Resvg(svg, params)
   const asyncRenderingResult = await renderAsync(svg, params)
-  t.is(syncRenderingResult.length, asyncRenderingResult.length)
+  t.is(syncRenderingResult.render().length, asyncRenderingResult.length)
   // Do not run this assert in non-x64 environment.
   // It's too slow
   if (process.arch === 'x64') {
-    t.deepEqual(syncRenderingResult, asyncRenderingResult)
+    t.deepEqual(syncRenderingResult, syncRenderingResult)
   }
 })
 
@@ -126,7 +130,7 @@ test('should generate a 80x80 png and opaque', async (t) => {
   const svg = `<svg width="200px" height="200px" viewBox="0 0 200 200" version="1.1" xmlns="http://www.w3.org/2000/svg">
     <rect fill="green" x="0" y="0" width="100" height="100"></rect>
   </svg>`
-  const pngData = render(svg, {
+  const resvg = new Resvg(svg, {
     crop: {
       left: 20,
       top: 20,
@@ -134,6 +138,7 @@ test('should generate a 80x80 png and opaque', async (t) => {
       bottom: 100,
     },
   })
+  const pngData = resvg.render()
   const result = await jimp.read(pngData)
 
   t.is(result.getWidth(), 100 - 20)
@@ -145,7 +150,8 @@ test('should generate a 80x80 png and opaque', async (t) => {
 // https://github.com/RazrFalcon/resvg/commit/5998e9b8411ff3f0171515371938ee1940be17c3
 test('should generate a 100x100 transparent png', async (t) => {
   const svg = `<svg xmlns="http://www.w3.org/2000/svg"></svg>`
-  const pngData = render(svg)
+  const resvg = new Resvg(svg)
+  const pngData = resvg.render()
   const result = await jimp.read(pngData)
 
   t.is(result.hasAlpha(), true)
@@ -155,9 +161,10 @@ test('should generate a 100x100 transparent png', async (t) => {
 
 test('should generate a 128x128 png', async (t) => {
   const svg = `<svg width="128" height="128" xmlns="http://www.w3.org/2000/svg"></svg>`
-  const pngData = render(svg, {
+  const resvg = new Resvg(svg, {
     background: 'green',
   })
+  const pngData = resvg.render()
   const result = await jimp.read(pngData)
 
   t.is(result.hasAlpha(), false)
@@ -187,7 +194,7 @@ test('should render `<use xlink:href>` to an `<svg>` element', async (t) => {
 test('should throw because invalid SVG attribute (width attribute is 0)', (t) => {
   const error = t.throws(
     () => {
-      render(`
+      new Resvg(`
       <svg width="0" height="100px" viewBox="0 0 200 100" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
         <rect fill="#FCA6A6" x="0" y="0" width="200" height="100"></rect>
       </svg>
@@ -202,7 +209,7 @@ test('should throw because invalid SVG attribute (width attribute is 0)', (t) =>
 test('should throw because invalid options (width 0)', (t) => {
   const error = t.throws(
     () => {
-      render(
+      const resvg = new Resvg(
         `<svg width="200px" height="100px" viewBox="0 0 200 100" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
           <rect fill="#FCA6A6" x="0" y="0" width="200" height="100"></rect>
         </svg>`,
@@ -213,6 +220,8 @@ test('should throw because invalid options (width 0)', (t) => {
           },
         },
       )
+
+      resvg.render()
     },
     { instanceOf: Error },
   )
@@ -223,12 +232,14 @@ test('should throw because invalid options (width 0)', (t) => {
 test('should throw because invalid options (zoom 0)', (t) => {
   const error = t.throws(
     () => {
-      render('<svg width="128" height="128" xmlns="http://www.w3.org/2000/svg"></svg>', {
+      const resvg = new Resvg('<svg width="128" height="128" xmlns="http://www.w3.org/2000/svg"></svg>', {
         fitTo: {
           mode: 'zoom',
           value: 0,
         },
       })
+
+      resvg.render()
     },
     { instanceOf: Error },
   )
@@ -243,7 +254,7 @@ test('should throw because missing namespace', (t) => {
                                      16"></svg>`
   const error = t.throws(
     () => {
-      render(svg)
+      new Resvg(svg)
     },
     { instanceOf: Error },
   )

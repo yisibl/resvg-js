@@ -47,3 +47,9 @@ export function renderAsync(
   options?: ResvgRenderOptions | null,
   signal?: AbortSignal | null,
 ): Promise<Buffer>
+export class Resvg {
+  constructor(svg: Buffer | string, options?: ResvgRenderOptions | null)
+  render(): Buffer
+  get width(): number
+  get height(): number
+}

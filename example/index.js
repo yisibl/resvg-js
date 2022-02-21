@@ -2,7 +2,7 @@ const { promises } = require('fs')
 const { join } = require('path')
 const { performance } = require('perf_hooks')
 
-const { Resvg } = require('../js-binding')
+const { Resvg } = require('../index')
 
 async function main() {
   const svg = await promises.readFile(join(__dirname, './text.svg'))
@@ -23,15 +23,15 @@ async function main() {
   }
 
   const t = performance.now()
-  const rusty = new Resvg(svg, JSON.stringify(opts))
+  const rusty = new Resvg(svg, opts)
+  const pngData = rusty.render()
 
   console.info(rusty.width)
   console.info(rusty.height)
-  console.info(rusty)
-  // const pngData = rusty.render()
+  // console.info(rusty)
   console.info('✨ Done in', performance.now() - t, 'ms')
 
-  // await promises.writeFile(join(__dirname, './text-out.png'), pngData)
+  await promises.writeFile(join(__dirname, './text-out.png'), pngData)
 }
 
 main()
