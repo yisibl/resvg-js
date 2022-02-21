@@ -39,7 +39,7 @@ This changelog also contains important changes in dependencies.
 
 - feat: playground uses [unpkg.com's](https://unpkg.com/@resvg/resvg-wasm) online resources
   ```html
-  <script src="https://unpkg.com/@resvg/resvg-wasm@2.0.0-alpha.0/index.min.js"></script>
+  <script src="https://unpkg.com/@resvg/resvg-wasm@2.0.0-alpha.2/index.min.js"></script>
   ```
 - feat: preload wasm in the playground
   ```html
