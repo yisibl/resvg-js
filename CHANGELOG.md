@@ -9,6 +9,8 @@ This changelog also contains important changes in dependencies.
 
 ## [Unreleased]
 
+## [2.0.0-alpha.2] - 2022-02-21
+
 ### Added
 
 - feat: upgrade resvg to [0.22.0](https://github.com/RazrFalcon/resvg/blob/master/CHANGELOG.md#0220---2022-02-20)
@@ -207,7 +209,8 @@ The first official version, use [resvg 0.18.0](https://github.com/RazrFalcon/res
 - Support custom fonts and system fonts.
 - Supports setting the background color of PNG.
 
-[unreleased]: https://github.com/yisibl/resvg-js/compare/v2.0.0-alpha.1...HEAD
+[unreleased]: https://github.com/yisibl/resvg-js/compare/v2.0.0-alpha.2...HEAD
+[2.0.0-alpha.2]: https://github.com/yisibl/resvg-js/compare/v2.0.0-alpha.1...v2.0.0-alpha.2
 [2.0.0-alpha.1]: https://github.com/yisibl/resvg-js/compare/v2.0.0-alpha.0...v2.0.0-alpha.1
 [2.0.0-alpha.0]: https://github.com/yisibl/resvg-js/compare/v1.4.0...v2.0.0-alpha.0
 [1.4.0]: https://github.com/yisibl/resvg-js/compare/v1.3.0...v1.4.0
