@@ -1,4 +1,4 @@
-const { render: _render, renderAsync: _renderAsync } = require('./js-binding')
+const { render: _render, renderAsync: _renderAsync, Resvg } = require('./js-binding.js')
 
 module.exports.render = function render(svg, options) {
   if (options) {
@@ -13,3 +13,5 @@ module.exports.renderAsync = function renderAsync(svg, options, signal) {
   }
   return _renderAsync(svg, null, signal)
 }
+
+module.exports.Resvg = Resvg

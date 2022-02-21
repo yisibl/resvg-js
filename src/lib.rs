@@ -3,6 +3,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 #[cfg(not(target_arch = "wasm32"))]
 use napi::bindgen_prelude::{AbortSignal, AsyncTask, Buffer, Either, Error as NapiError, Task};
+// use napi::{Result as NapiResult};
 #[cfg(not(target_arch = "wasm32"))]
 use napi_derive::napi;
 #[cfg(target_arch = "wasm32")]
@@ -31,21 +32,55 @@ extern "C" {
   pub type IStringOrBuffer;
 }
 
-/// Renders an SVG
-#[cfg(not(target_arch = "wasm32"))]
 #[napi]
-pub fn render(svg: Either<String, Buffer>, options: Option<String>) -> Result<Buffer, NapiError> {
-  let js_options: options::JsOptions = options
-    .and_then(|o| serde_json::from_str(o.as_str()).ok())
-    .unwrap_or_default();
+pub struct Resvg {
+  tree: usvg::Tree,
+}
 
-  let _ = env_logger::builder()
-    .filter_level(js_options.log_level)
-    .try_init();
+#[napi]
+impl Resvg {
+  #[napi(constructor)]
+  pub fn new(svg: Either<String, Buffer>) -> Result<Resvg, NapiError> {
+    let opt = usvg::Options::default();
+    // let tree = usvg::Tree::from_str(&svg, &opt.to_ref()).unwrap();
 
-  let buffer = js_options.render(&svg)?;
+    // Parse the SVG string into a tree.
+    let tree = match svg {
+      Either::A(a) => usvg::Tree::from_str(a.as_str(), &opt.to_ref()),
+      Either::B(b) => usvg::Tree::from_data(b.as_ref(), &opt.to_ref()),
+    }
+    .map_err(|e| napi::Error::from_reason(format!("{}", e)))?;
 
-  Ok(buffer.into())
+    let svg = Resvg { tree };
+    Ok(svg)
+  }
+
+  #[napi(getter)]
+  pub fn width(&self) -> f64 {
+    self.tree.svg_node().size.width()
+  }
+
+  #[napi(getter)]
+  pub fn height(&self) -> f64 {
+    self.tree.svg_node().size.height()
+  }
+
+  // Renders an SVG
+  #[cfg(not(target_arch = "wasm32"))]
+  pub fn render(&self, options: Option<String>) -> Result<Buffer, NapiError> {
+    let js_options: options::JsOptions = options
+      .and_then(|o| serde_json::from_str(o.as_str()).ok())
+      .unwrap_or_default();
+
+    let _ = env_logger::builder()
+      .filter_level(js_options.log_level)
+      .try_init();
+
+    let buffer = js_options.render(&self)?;
+
+    Ok(buffer.into())
+  }
+
 }
 
 #[cfg(target_arch = "wasm32")]
