@@ -70,6 +70,7 @@ impl Resvg {
   }
 
   // Renders an SVG
+  #[napi]
   pub fn render(&self) -> Result<Buffer, NapiError> {
     let buffer = self.render_inner()?;
     Ok(buffer.into())
