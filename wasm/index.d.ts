@@ -2,6 +2,18 @@
 
 export type InitInput = RequestInfo | URL | Response | BufferSource | WebAssembly.Module;
 export type ResvgRenderOptions = {
+	font?: {
+		loadSystemFonts?: boolean;
+		fontFiles?: string[];
+		fontDirs?: string[];
+		defaultFontFamily?: string;
+		defaultFontSize?: number;
+		serifFamily?: string;
+		sansSerifFamily?: string;
+		cursiveFamily?: string;
+		fantasyFamily?: string;
+		monospaceFamily?: string;
+	};
 	dpi?: number;
 	languages?: string[];
 	shapeRendering?: 0 // optimizeSpeed
@@ -31,6 +43,7 @@ export type ResvgRenderOptions = {
 		right?: number;
 		bottom?: number;
 	};
+	logLevel?: "off" | "error" | "warn" | "info" | "debug" | "trace";
 };
 /**
  * Initialize WASM module
@@ -38,10 +51,13 @@ export type ResvgRenderOptions = {
  *
  */
 export declare const initWasm: (module_or_path: Promise<InitInput> | InitInput) => Promise<void>;
-/**
- * render svg to png
- * @param {Uint8Array | string} svg
- * @param {ResvgRenderOptions | undefined} options
- * @returns {Uint8Array}
- */
-export declare const render: (svg: Uint8Array | string, options?: ResvgRenderOptions | undefined) => Uint8Array;
+export declare const Resvg: {
+	new (svg: Uint8Array | string, options?: ResvgRenderOptions | undefined): {
+		free(): void;
+		render(): Uint8Array;
+		readonly height: number;
+		readonly width: number;
+	};
+};
+
+export {};

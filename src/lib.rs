@@ -69,7 +69,7 @@ impl Resvg {
     Ok(Resvg { tree, js_options })
   }
 
-  // Renders an SVG
+  // Renders an SVG in Node.js
   #[napi]
   pub fn render(&self) -> Result<Buffer, NapiError> {
     let buffer = self.render_inner()?;
@@ -128,6 +128,8 @@ impl Resvg {
     Ok(Resvg { tree, js_options })
   }
 
+  #[wasm_bindgen]
+  // Renders an SVG in WASM
   pub fn render(&self) -> Result<js_sys::Uint8Array, JsValue> {
     let buffer = self.render_inner()?;
     Ok(buffer.as_slice().into())

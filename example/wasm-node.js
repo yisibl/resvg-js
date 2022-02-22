@@ -2,7 +2,7 @@ const fs = require('fs').promises
 const { join } = require('path')
 const { performance } = require('perf_hooks')
 
-const { render, initWasm } = require('../wasm')
+const { Resvg, initWasm } = require('../wasm/index')
 
 async function main() {
   await initWasm(fs.readFile(join(__dirname, '../wasm/index_bg.wasm')))
@@ -16,7 +16,8 @@ async function main() {
     },
   }
   const t = performance.now()
-  const pngData = render(svg, opts)
+  const resvg = new Resvg(svg, opts)
+  const pngData = resvg.render()
   console.info('✨ Done in', performance.now() - t, 'ms')
 
   await fs.writeFile(join(__dirname, './text-out-wasm.png'), pngData)

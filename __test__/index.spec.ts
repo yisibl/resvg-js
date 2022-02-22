@@ -261,3 +261,15 @@ test('should throw because missing namespace', (t) => {
 
   t.is(error.message, 'SVG data parsing failed cause the document does not have a root node')
 })
+
+test('should throw (no input parameters)', (t) => {
+  const error = t.throws(
+    () => {
+      new Resvg()
+    },
+    { instanceOf: Error },
+  )
+
+  t.is(error.code, 'InvalidArg')
+  t.is(error.message, 'Expect type String or Object, but got Undefined')
+})

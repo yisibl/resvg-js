@@ -2,3 +2,4 @@ js-binding.js
 js-binding.d.ts
 target
 wasm
+wasm/dist
