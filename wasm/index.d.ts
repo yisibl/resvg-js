@@ -2,18 +2,6 @@
 
 export type InitInput = RequestInfo | URL | Response | BufferSource | WebAssembly.Module;
 export type ResvgRenderOptions = {
-	font?: {
-		loadSystemFonts?: boolean;
-		fontFiles?: string[];
-		fontDirs?: string[];
-		defaultFontFamily?: string;
-		defaultFontSize?: number;
-		serifFamily?: string;
-		sansSerifFamily?: string;
-		cursiveFamily?: string;
-		fantasyFamily?: string;
-		monospaceFamily?: string;
-	};
 	dpi?: number;
 	languages?: string[];
 	shapeRendering?: 0 // optimizeSpeed
@@ -43,7 +31,6 @@ export type ResvgRenderOptions = {
 		right?: number;
 		bottom?: number;
 	};
-	logLevel?: "off" | "error" | "warn" | "info" | "debug" | "trace";
 };
 /**
  * Initialize WASM module
@@ -59,5 +46,3 @@ export declare const Resvg: {
 		readonly width: number;
 	};
 };
-
-export {};

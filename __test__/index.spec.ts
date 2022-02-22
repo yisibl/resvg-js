@@ -23,6 +23,21 @@ test('fit to width', async (t) => {
   t.is(result.getHeight(), 623)
 })
 
+test('Get SVG original size', async (t) => {
+  const filePath = '../example/text.svg'
+  const svg = await fs.readFile(join(__dirname, filePath))
+  const resvg = new Resvg(svg, {
+    background: '#eeebe6',
+    fitTo: {
+      mode: 'width',
+      value: 1200, // The original size is not affected by the fitTo parameter
+    },
+  })
+
+  t.is(resvg.width, 1324)
+  t.is(resvg.height, 687)
+})
+
 test('Set the background with alpha by rgba().', async (t) => {
   const filePath = './tiger.svg'
   const svg = await fs.readFile(join(__dirname, filePath))
@@ -90,9 +105,11 @@ test('Async rendering', async (t) => {
       defaultFontFamily: 'Source Han Serif CN Light',
     },
   }
-  const syncRenderingResult = new Resvg(svg, params)
+  let syncRenderingResult = new Resvg(svg, params)
+  syncRenderingResult = syncRenderingResult.render()
+
   const asyncRenderingResult = await renderAsync(svg, params)
-  t.is(syncRenderingResult.render().length, asyncRenderingResult.length)
+  t.is(syncRenderingResult.length, asyncRenderingResult.length)
   // Do not run this assert in non-x64 environment.
   // It's too slow
   if (process.arch === 'x64') {

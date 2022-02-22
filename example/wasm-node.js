@@ -2,7 +2,7 @@ const fs = require('fs').promises
 const { join } = require('path')
 const { performance } = require('perf_hooks')
 
-const { Resvg, initWasm } = require('../wasm/index')
+const { Resvg, initWasm } = require('../wasm')
 
 async function main() {
   await initWasm(fs.readFile(join(__dirname, '../wasm/index_bg.wasm')))

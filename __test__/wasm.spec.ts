@@ -127,5 +127,5 @@ test('should throw (no input parameters)', (t) => {
     { instanceOf: TypeError },
   )
 
-  t.is(error.message, 'Input must be string or Uint8Array2')
+  t.is(error.message, 'Input must be string or Uint8Array')
 })
