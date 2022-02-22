@@ -1,0 +1,9 @@
+<svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+    <svg id="svg1">
+      <rect width="50%" height="50%" fill="green" />
+    </svg>
+  </defs>
+  <use id="use1" x="0" y="0" xlink:href="#svg1" />
+  <use id="use2" x="50%" y="50%" xlink:href="#svg1" />
+</svg>
