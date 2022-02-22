@@ -107,6 +107,56 @@ test('should generate a 80x80 png and opaque', async (t) => {
   t.is(result.hasAlpha(), false)
 })
 
+test('should render `<use xlink:href>` to an `<svg>` element', async (t) => {
+  const svg = `
+  <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <svg id="svg1" xmlns="http://www.w3.org/2000/svg">
+      <rect width="50%" height="50%" fill="green" />
+    </svg>
+    <use id="use1" x="50%" y="50%" xlink:href="#svg1" />
+    <use id="use2" x="50%" y="0" xlink:href="#svg1" />
+    <use id="use3" x="0" y="50%" xlink:href="#svg1" />
+  </svg>
+  `
+  const resvg = new Resvg(svg, {
+    fitTo: {
+      mode: 'height',
+      value: 800,
+    },
+  })
+  const pngData = resvg.render()
+  const result = await jimp.read(Buffer.from(pngData))
+
+  t.is(result.hasAlpha(), false)
+  t.is(result.getWidth(), 800)
+  t.is(result.getHeight(), 800)
+})
+
+test('should render `<use xlink:href>` to an `<defs>` element', async (t) => {
+  const svg = `<svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <defs>
+      <svg id="svg1">
+        <rect width="50%" height="50%" fill="green" />
+      </svg>
+    </defs>
+    <use id="use1" x="0" y="0" xlink:href="#svg1" />
+    <use id="use2" x="50%" y="50%" xlink:href="#svg1" />
+  </svg>`
+
+  const resvg = new Resvg(svg, {
+    fitTo: {
+      mode: 'width',
+      value: 900,
+    },
+  })
+  const pngData = resvg.render()
+  const result = await jimp.read(Buffer.from(pngData))
+
+  t.is(result.hasAlpha(), true)
+  t.is(result.getWidth(), 900)
+  t.is(result.getHeight(), 900)
+})
+
 // throws
 test('should throw because invalid SVG (blank string)', (t) => {
   const error = t.throws(
