@@ -9,6 +9,40 @@ This changelog also contains important changes in dependencies.
 
 ## [Unreleased]
 
+## [2.0.0-alpha.3] - 2022-03-01
+
+### Added
+
+- feat: add `.width` and `.height` to get the original size of the SVG.
+- feat: add `toString()` to convert SVG shapes or text to path.
+
+### Changed
+
+- refactor: change to Class API, now instead use `new Resvg()` to create the constructor.
+
+  With the new Class API, we can avoid rendering the SVG again when getting the SVG size. It also makes it easier to extend new APIs.
+
+#### Before
+
+```js
+const { render } = require('@resvg/resvg-js')
+const svg = '' // svg buffer or string
+const pngData = render(svg, opts)
+```
+
+#### After
+
+```js
+const { Resvg } = require('@resvg/resvg-js')
+const svg = '' // svg buffer or string
+const resvg = new Resvg(svg, opts)
+const pngData = resvg.render()
+
+// New!
+console.info('Simplified svg string \n', resvg.toString())
+console.info('SVG original size:', `${resvg.width} x ${resvg.height}px`)
+```
+
 ## [2.0.0-alpha.2] - 2022-02-21
 
 ### Added
@@ -209,7 +243,8 @@ The first official version, use [resvg 0.18.0](https://github.com/RazrFalcon/res
 - Support custom fonts and system fonts.
 - Supports setting the background color of PNG.
 
-[unreleased]: https://github.com/yisibl/resvg-js/compare/v2.0.0-alpha.2...HEAD
+[unreleased]: https://github.com/yisibl/resvg-js/compare/v2.0.0-alpha.3...HEAD
+[2.0.0-alpha.3]: https://github.com/yisibl/resvg-js/compare/v2.0.0-alpha.2...v2.0.0-alpha.3
 [2.0.0-alpha.2]: https://github.com/yisibl/resvg-js/compare/v2.0.0-alpha.1...v2.0.0-alpha.2
 [2.0.0-alpha.1]: https://github.com/yisibl/resvg-js/compare/v2.0.0-alpha.0...v2.0.0-alpha.1
 [2.0.0-alpha.0]: https://github.com/yisibl/resvg-js/compare/v1.4.0...v2.0.0-alpha.0
