@@ -18,6 +18,8 @@ async function main() {
   const resvg = new Resvg(svg, opts)
   const pngData = resvg.render()
 
+  console.info(resvg.toString())
+
   console.info('SVG original size:', `${resvg.width} x ${resvg.height}px`)
   console.info('✨ Done in', performance.now() - t, 'ms')
 
