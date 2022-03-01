@@ -6,6 +6,7 @@ use crate::error::Error;
 use fontdb::Database;
 #[cfg(not(target_arch = "wasm32"))]
 use napi::{bindgen_prelude::Buffer, Either};
+use resvg::ScreenSize;
 use serde::{Deserialize, Deserializer};
 use tiny_skia::Pixmap;
 
@@ -150,14 +151,7 @@ impl Default for JsOptions {
 }
 
 impl JsOptions {
-  pub(crate) fn render<T: ResvgReadable>(&self, data: T) -> Result<Vec<u8>, Error> {
-    // Parse the background
-    let background = self
-      .background
-      .as_ref()
-      .map(|color| color.parse::<svgtypes::Color>())
-      .transpose()?;
-
+  pub(crate) fn to_usvg_options(&self) -> usvg::Options {
     // Load fonts
     let fontdb = if cfg!(target_arch = "wasm32") {
       Database::new()
@@ -166,7 +160,7 @@ impl JsOptions {
     };
 
     // Build the SVG options
-    let svg_options = usvg::Options {
+    usvg::Options {
       resources_dir: None,
       dpi: self.dpi,
       font_family: self.font.default_font_family.clone(),
@@ -179,49 +173,25 @@ impl JsOptions {
       default_size: usvg::Size::new(100.0_f64, 100.0_f64).unwrap(),
       fontdb,
       image_href_resolver: usvg::ImageHrefResolver::default(),
-    };
+    }
+  }
 
-    let tree = data.load(&svg_options)?;
-
-    let fit_to = self.fit_to;
-    let pixmap_size = fit_to
-      .fit_to(tree.svg_node().size.to_screen_size())
-      .ok_or_else(|| Error::ZeroSized)?;
+  pub(crate) fn create_pixmap(&self, size: ScreenSize) -> Result<Pixmap, Error> {
+    // Parse the background
+    let background = self
+      .background
+      .as_ref()
+      .map(|color| color.parse::<svgtypes::Color>())
+      .transpose()?;
 
     // Unwrap is safe, because `size` is already valid.
-    let mut pixmap = Pixmap::new(pixmap_size.width(), pixmap_size.height()).unwrap();
+    let mut pixmap = Pixmap::new(size.width(), size.height()).unwrap();
 
     if let Some(bg) = background {
       let color = tiny_skia::Color::from_rgba8(bg.red, bg.green, bg.blue, bg.alpha);
       pixmap.fill(color);
     }
-
-    // Render the tree
-    let image = resvg::render(
-      &tree,
-      fit_to,
-      tiny_skia::Transform::default(),
-      pixmap.as_mut(),
-    );
-
-    // Crop the SVG
-    let crop_rect = tiny_skia::IntRect::from_ltrb(
-      self.crop.left,
-      self.crop.top,
-      self.crop.right.unwrap_or(pixmap_size.width() as i32),
-      self.crop.bottom.unwrap_or(pixmap_size.height() as i32),
-    );
-
-    if let Some(crop_rect) = crop_rect {
-      pixmap = pixmap.clone_rect(crop_rect).unwrap_or(pixmap);
-    }
-
-    // Write the image data to a buffer
-    let mut buffer: Vec<u8> = vec![];
-    if image.is_some() {
-      buffer = pixmap.encode_png()?;
-    }
-    Ok(buffer)
+    Ok(pixmap)
   }
 }
 

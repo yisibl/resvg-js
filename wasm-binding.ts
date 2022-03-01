@@ -1,4 +1,4 @@
-import init, { render as _render, InitInput } from './wasm/dist'
+import init, { Resvg as _Resvg, InitInput } from './wasm/dist'
 
 import { ResvgRenderOptions } from './index'
 
@@ -17,17 +17,13 @@ export const initWasm = async (module_or_path: Promise<InitInput> | InitInput): 
   initialized = true
 }
 
-/**
- * render svg to png
- * @param {Uint8Array | string} svg
- * @param {ResvgRenderOptions | undefined} options
- * @returns {Uint8Array}
- */
-export const render = function render(svg: Uint8Array | string, options?: ResvgRenderOptions) {
-  if (!initialized) throw new Error('WASM has not been initialized. Call `initWasm()` function.')
-
-  if (options) {
-    return _render(svg, JSON.stringify(options))
+export const Resvg = class extends _Resvg {
+  /**
+   * @param {Uint8Array | string} svg
+   * @param {ResvgRenderOptions | undefined} options
+   */
+  constructor(svg: Uint8Array | string, options?: ResvgRenderOptions) {
+    if (!initialized) throw new Error('WASM has not been initialized. Call `initWasm()` function.')
+    super(svg, JSON.stringify(options))
   }
-  return _render(svg)
 }

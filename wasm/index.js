@@ -24,8 +24,8 @@ var __toCommonJS = /* @__PURE__ */ ((cache) => {
 // wasm-binding.ts
 var wasm_binding_exports = {};
 __export(wasm_binding_exports, {
-  initWasm: () => initWasm,
-  render: () => render2
+  Resvg: () => Resvg2,
+  initWasm: () => initWasm
 });
 
 // wasm/dist/index.js
@@ -119,23 +119,74 @@ cachedTextDecoder.decode();
 function getStringFromWasm0(ptr, len) {
   return cachedTextDecoder.decode(getUint8Memory0().subarray(ptr, ptr + len));
 }
-function render(svg, options) {
-  try {
-    const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-    var ptr0 = isLikeNone(options) ? 0 : passStringToWasm0(options, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
-    var len0 = WASM_VECTOR_LEN;
-    wasm.render(retptr, addHeapObject(svg), ptr0, len0);
-    var r0 = getInt32Memory0()[retptr / 4 + 0];
-    var r1 = getInt32Memory0()[retptr / 4 + 1];
-    var r2 = getInt32Memory0()[retptr / 4 + 2];
-    if (r2) {
-      throw takeObject(r1);
-    }
-    return takeObject(r0);
-  } finally {
-    wasm.__wbindgen_add_to_stack_pointer(16);
+var Resvg = class {
+  static __wrap(ptr) {
+    const obj = Object.create(Resvg.prototype);
+    obj.ptr = ptr;
+    return obj;
   }
-}
+  __destroy_into_raw() {
+    const ptr = this.ptr;
+    this.ptr = 0;
+    return ptr;
+  }
+  free() {
+    const ptr = this.__destroy_into_raw();
+    wasm.__wbg_resvg_free(ptr);
+  }
+  get width() {
+    var ret = wasm.resvg_width(this.ptr);
+    return ret;
+  }
+  get height() {
+    var ret = wasm.resvg_height(this.ptr);
+    return ret;
+  }
+  toString() {
+    try {
+      const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+      wasm.resvg_toString(retptr, this.ptr);
+      var r0 = getInt32Memory0()[retptr / 4 + 0];
+      var r1 = getInt32Memory0()[retptr / 4 + 1];
+      return getStringFromWasm0(r0, r1);
+    } finally {
+      wasm.__wbindgen_add_to_stack_pointer(16);
+      wasm.__wbindgen_free(r0, r1);
+    }
+  }
+  constructor(svg, options) {
+    try {
+      const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+      var ptr0 = isLikeNone(options) ? 0 : passStringToWasm0(options, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+      var len0 = WASM_VECTOR_LEN;
+      wasm.resvg_new(retptr, addHeapObject(svg), ptr0, len0);
+      var r0 = getInt32Memory0()[retptr / 4 + 0];
+      var r1 = getInt32Memory0()[retptr / 4 + 1];
+      var r2 = getInt32Memory0()[retptr / 4 + 2];
+      if (r2) {
+        throw takeObject(r1);
+      }
+      return Resvg.__wrap(r0);
+    } finally {
+      wasm.__wbindgen_add_to_stack_pointer(16);
+    }
+  }
+  render() {
+    try {
+      const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+      wasm.resvg_render(retptr, this.ptr);
+      var r0 = getInt32Memory0()[retptr / 4 + 0];
+      var r1 = getInt32Memory0()[retptr / 4 + 1];
+      var r2 = getInt32Memory0()[retptr / 4 + 2];
+      if (r2) {
+        throw takeObject(r1);
+      }
+      return takeObject(r0);
+    } finally {
+      wasm.__wbindgen_add_to_stack_pointer(16);
+    }
+  }
+};
 async function load(module2, imports) {
   if (typeof Response === "function" && module2 instanceof Response) {
     if (typeof WebAssembly.instantiateStreaming === "function") {
@@ -230,12 +281,11 @@ var initWasm = async (module_or_path) => {
   await dist_default(await module_or_path);
   initialized = true;
 };
-var render2 = function render3(svg, options) {
-  if (!initialized)
-    throw new Error("WASM has not been initialized. Call `initWasm()` function.");
-  if (options) {
-    return render(svg, JSON.stringify(options));
+var Resvg2 = class extends Resvg {
+  constructor(svg, options) {
+    if (!initialized)
+      throw new Error("WASM has not been initialized. Call `initWasm()` function.");
+    super(svg, JSON.stringify(options));
   }
-  return render(svg);
 };
 module.exports = __toCommonJS(wasm_binding_exports);

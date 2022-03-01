@@ -38,10 +38,12 @@ export type ResvgRenderOptions = {
  *
  */
 export declare const initWasm: (module_or_path: Promise<InitInput> | InitInput) => Promise<void>;
-/**
- * render svg to png
- * @param {Uint8Array | string} svg
- * @param {ResvgRenderOptions | undefined} options
- * @returns {Uint8Array}
- */
-export declare const render: (svg: Uint8Array | string, options?: ResvgRenderOptions | undefined) => Uint8Array;
+export declare const Resvg: {
+	new (svg: Uint8Array | string, options?: ResvgRenderOptions | undefined): {
+		free(): void;
+		toString(): string;
+		render(): Uint8Array;
+		readonly height: number;
+		readonly width: number;
+	};
+};
