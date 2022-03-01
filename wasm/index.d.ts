@@ -41,6 +41,7 @@ export declare const initWasm: (module_or_path: Promise<InitInput> | InitInput) 
 export declare const Resvg: {
 	new (svg: Uint8Array | string, options?: ResvgRenderOptions | undefined): {
 		free(): void;
+		toString(): string;
 		render(): Uint8Array;
 		readonly height: number;
 		readonly width: number;

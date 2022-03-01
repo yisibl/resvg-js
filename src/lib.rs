@@ -113,6 +113,7 @@ impl Resvg {
 #[cfg(target_arch = "wasm32")]
 #[wasm_bindgen]
 impl Resvg {
+  #[wasm_bindgen(js_name = toString)]
   pub fn to_string(&self) -> String {
     self.tree.to_string(&usvg::XmlOptions::default())
   }
