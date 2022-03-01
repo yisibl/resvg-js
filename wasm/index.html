@@ -5,8 +5,8 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>resvg-js playground</title>
-  <link rel="preload" as="fetch" type="application/wasm" href="https://unpkg.com/@resvg/resvg-wasm/index_bg.wasm">
-  <script src="https://unpkg.com/@resvg/resvg-wasm@2.0.0-alpha.2/index.min.js"></script>
+  <link rel="preload" as="fetch" type="application/wasm" href="https://unpkg.com/@resvg/resvg-wasm@2.0.0-alpha.3/index_bg.wasm">
+  <script src="https://unpkg.com/@resvg/resvg-wasm@2.0.0-alpha.3/index.min.js"></script>
   <style>
     html {
       box-sizing: border-box;
@@ -88,6 +88,15 @@
       align-self: flex-start;
     }
 
+    #output {
+      flex-direction: column;
+    }
+
+    #svg-info {
+      margin-top: 12px;
+      color: #333;
+    }
+
     .opts {
       display: flex;
       justify-content: center;
@@ -133,7 +142,7 @@
 
 <script>
     (async function () {
-      await resvg.initWasm(fetch('https://unpkg.com/@resvg/resvg-wasm/index_bg.wasm'))
+      await resvg.initWasm(fetch('https://unpkg.com/@resvg/resvg-wasm@2.0.0-alpha.3/index_bg.wasm'))
       const output = document.getElementById('output')
       const svgElement = document.querySelector('#svg')
       let resvgOpts = {}
@@ -142,10 +151,14 @@
 
       function svg2png(svgString, opts) {
         const svg = svgString ? svgString : svgElement.value
-        const png = resvg.render(svg, opts)
-        document.getElementById('output').src = URL.createObjectURL(
-          new Blob([png], { type: 'image/png' })
+        const resvgJS = new resvg.Resvg(svg, opts)
+        const pngData = resvgJS.render()
+
+        document.querySelector('#output img').src = URL.createObjectURL(
+          new Blob([pngData], { type: 'image/png' })
         )
+        console.log('Simplified svg string: \n', resvgJS.toString())
+        document.querySelector('#svg-info').textContent = 'intrinsic size: ' + resvgJS.width + ' x ' + resvgJS.height + ' px'
       }
 
       addMultipleEventListener(svgElement, ['change', 'keyup', 'paste'], function(event) {
@@ -232,8 +245,9 @@
  </svg>
         </textarea>
       </div>
-      <div class="cell">
-        <img id="output">
+      <div class="cell" id="output">
+        <img>
+        <div id="svg-info"></div>
       </div>
     </div>
   </main>
