@@ -147,9 +147,12 @@ impl Resvg {
 
 impl Resvg {
   fn render_inner(&self) -> Result<Vec<u8>, Error> {
-    let mut pixmap = self
+    let pixmap_size = self
       .js_options
-      .create_pixmap(self.tree.svg_node().size.to_screen_size())?;
+      .fit_to
+      .fit_to(self.tree.svg_node().size.to_screen_size())
+      .ok_or_else(|| Error::ZeroSized)?;
+    let mut pixmap = self.js_options.create_pixmap(pixmap_size)?;
     // Render the tree
     let image = resvg::render(
       &self.tree,
@@ -157,11 +160,6 @@ impl Resvg {
       tiny_skia::Transform::default(),
       pixmap.as_mut(),
     );
-    let pixmap_size = self
-      .js_options
-      .fit_to
-      .fit_to(self.tree.svg_node().size.to_screen_size())
-      .ok_or_else(|| Error::ZeroSized)?;
 
     // Crop the SVG
     let crop_rect = tiny_skia::IntRect::from_ltrb(
