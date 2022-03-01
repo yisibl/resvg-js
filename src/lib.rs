@@ -75,6 +75,11 @@ impl Resvg {
     let buffer = self.render_inner()?;
     Ok(buffer.into())
   }
+
+  #[napi]
+  pub fn to_string(&self) -> String {
+    self.tree.to_string(&usvg::XmlOptions::default())
+  }
 }
 
 #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
@@ -108,6 +113,10 @@ impl Resvg {
 #[cfg(target_arch = "wasm32")]
 #[wasm_bindgen]
 impl Resvg {
+  pub fn to_string(&self) -> String {
+    self.tree.to_string(&usvg::XmlOptions::default())
+  }
+
   #[wasm_bindgen(constructor)]
   pub fn new(svg: IStringOrBuffer, options: Option<String>) -> Result<Resvg, JsValue> {
     let js_options: JsOptions = options
