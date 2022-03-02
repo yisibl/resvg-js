@@ -12,4 +12,14 @@ rustflags = [
 
 [target.aarch64-unknown-linux-musl]
 linker = "aarch64-linux-musl-gcc"
-rustflags = ["-C", "target-feature=-crt-static"]
+rustflags = ["-C","target-feature=-crt-static"]
+
+[target.x86_64-pc-windows-msvc]
+linker = "rust-lld"
+
+[target.aarch64-pc-windows-msvc]
+linker = "rust-lld"
+rustflags = [
+  "-Z",
+  "new-llvm-pass-manager=no",
+]

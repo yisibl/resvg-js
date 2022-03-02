@@ -100,13 +100,15 @@ impl Resvg {
   #[cfg(not(target_arch = "wasm32"))]
   #[napi(getter)]
   pub fn width(&self) -> f64 {
-    self.tree.svg_node().size.width()
+    dbg!(self.tree.svg_node().size.width())
+    // self.tree.svg_node().size.width()
   }
 
   #[cfg(not(target_arch = "wasm32"))]
   #[napi(getter)]
   pub fn height(&self) -> f64 {
-    self.tree.svg_node().size.height()
+    dbg!(self.tree.svg_node().size.height())
+    // self.tree.svg_node().size.height()
   }
 }
 

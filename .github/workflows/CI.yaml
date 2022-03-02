@@ -64,7 +64,7 @@ jobs:
           - host: macos-latest
             target: aarch64-apple-darwin
             build: |
-              yarn build --target=aarch64-apple-darwin
+              yarn build --target aarch64-apple-darwin
               strip -x *.node
           - host: ubuntu-latest
             architecture: x64
@@ -83,7 +83,7 @@ jobs:
               sudo apt-get update
               sudo apt-get install gcc-arm-linux-gnueabihf g++-arm-linux-gnueabihf -y
             build: |
-              yarn build --target=armv7-unknown-linux-gnueabihf
+              yarn build --target armv7-unknown-linux-gnueabihf
               arm-linux-gnueabihf-strip *.node
           - host: ubuntu-latest
             architecture: x64
@@ -223,7 +223,7 @@ jobs:
 
       - name: Build wasm
         run: yarn build:wasm
-      
+
       - name: Test wasm
         run: yarn test:wasm
 
