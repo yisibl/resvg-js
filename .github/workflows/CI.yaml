@@ -5,7 +5,7 @@ env:
   APP_NAME: resvgjs
   MACOSX_DEPLOYMENT_TARGET: '10.13'
 
-'on':
+on:
   push:
     branches:
       - main
@@ -19,12 +19,10 @@ env:
       - '.editorconfig'
       - 'docs/**'
       - 'example/*.png'
-
-  pull_request: null
+  pull_request:
 
 jobs:
   build:
-    if: "!contains(github.event.head_commit.message, 'skip ci')"
     strategy:
       fail-fast: false
       matrix:
@@ -123,8 +121,8 @@ jobs:
     name: stable - ${{ matrix.settings.target }} - node@16
     runs-on: ${{ matrix.settings.host }}
     steps:
-      - uses: actions/checkout@v2
-      - name: Setup node
+      - uses: actions/checkout@v3
+      - name: Set up Node.js
         uses: actions/setup-node@v3
         if: ${{ !matrix.settings.docker }}
         with:
@@ -154,7 +152,7 @@ jobs:
         with:
           path: ~/.cargo/git
           key: ${{ matrix.settings.target }}-cargo-index
-      - name: Cache NPM dependencies
+      - name: Cache npm dependencies
         uses: actions/cache@v2
         with:
           path: node_modules
@@ -179,7 +177,7 @@ jobs:
         if: ${{ !matrix.settings.docker }}
         shell: bash
       - name: Upload artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: bindings-${{ matrix.settings.target }}
           path: ${{ env.APP_NAME }}.*.node
@@ -194,9 +192,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
-      - name: Setup node
+      - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node }}
@@ -228,7 +226,7 @@ jobs:
         run: yarn test:wasm
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: wasm32
           path: wasm/dist/*.wasm
@@ -255,14 +253,14 @@ jobs:
           - '16'
     runs-on: ${{ matrix.settings.host }}
     steps:
-      - uses: actions/checkout@v2
-      - name: Setup node
+      - uses: actions/checkout@v3
+      - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node }}
           check-latest: true
           cache: yarn
-      - name: Cache NPM dependencies
+      - name: Cache npm dependencies
         uses: actions/cache@v2
         with:
           path: node_modules
@@ -270,7 +268,7 @@ jobs:
       - name: Install dependencies
         run: yarn install --ignore-scripts --frozen-lockfile --registry https://registry.npmjs.org --network-timeout 300000
       - name: Download artifacts
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: bindings-${{ matrix.settings.target }}
           path: .
@@ -292,14 +290,14 @@ jobs:
           - '16'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - name: Setup node
+      - uses: actions/checkout@v3
+      - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node }}
           check-latest: true
           cache: yarn
-      - name: Cache NPM dependencies
+      - name: Cache npm dependencies
         uses: actions/cache@v2
         with:
           path: node_modules
@@ -307,7 +305,7 @@ jobs:
       - name: Install dependencies
         run: yarn install --ignore-scripts --frozen-lockfile --registry https://registry.npmjs.org --network-timeout 300000
       - name: Download artifacts
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: bindings-x86_64-unknown-linux-gnu
           path: .
@@ -329,14 +327,14 @@ jobs:
           - '16'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - name: Setup node
+      - uses: actions/checkout@v3
+      - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node }}
           check-latest: true
           cache: yarn
-      - name: Cache NPM dependencies
+      - name: Cache npm dependencies
         uses: actions/cache@v2
         with:
           path: node_modules
@@ -344,7 +342,7 @@ jobs:
       - name: Install dependencies
         run: yarn install --ignore-scripts --frozen-lockfile --registry https://registry.npmjs.org --network-timeout 300000
       - name: Download artifacts
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: bindings-x86_64-unknown-linux-musl
           path: .
@@ -367,16 +365,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: docker run --rm --privileged multiarch/qemu-user-static:register --reset
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Download artifacts
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: bindings-aarch64-unknown-linux-gnu
           path: .
       - name: List packages
         run: ls -R .
         shell: bash
-      - name: Cache NPM dependencies
+      - name: Cache npm dependencies
         uses: actions/cache@v2
         with:
           path: node_modules
@@ -399,16 +397,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: docker run --rm --privileged multiarch/qemu-user-static:register --reset
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Download artifacts
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: bindings-aarch64-unknown-linux-musl
           path: .
       - name: List packages
         run: ls -R .
         shell: bash
-      - name: Cache NPM dependencies
+      - name: Cache npm dependencies
         uses: actions/cache@v2
         with:
           path: node_modules
@@ -438,16 +436,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: docker run --rm --privileged multiarch/qemu-user-static:register --reset
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Download artifacts
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: bindings-armv7-unknown-linux-gnueabihf
           path: .
       - name: List packages
         run: ls -R .
         shell: bash
-      - name: Cache NPM dependencies
+      - name: Cache npm dependencies
         uses: actions/cache@v2
         with:
           path: node_modules
@@ -476,14 +474,14 @@ jobs:
       - test-linux-aarch64-musl-binding
       - test-linux-arm-gnueabihf-binding
     steps:
-      - uses: actions/checkout@v2
-      - name: Setup node
+      - uses: actions/checkout@v3
+      - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: 16
           check-latest: true
           cache: yarn
-      - name: Cache NPM dependencies
+      - name: Cache npm dependencies
         uses: actions/cache@v2
         with:
           path: node_modules
@@ -493,7 +491,7 @@ jobs:
       - name: Install dependencies
         run: yarn install --ignore-scripts --frozen-lockfile --registry https://registry.npmjs.org --network-timeout 300000
       - name: Download all artifacts
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           path: artifacts
       - name: List artifacts
