@@ -270,7 +270,7 @@ jobs:
       - name: Install dependencies
         run: yarn install --ignore-scripts --frozen-lockfile --registry https://registry.npmjs.org --network-timeout 300000
       - name: Download artifacts
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: bindings-${{ matrix.settings.target }}
           path: .
@@ -307,7 +307,7 @@ jobs:
       - name: Install dependencies
         run: yarn install --ignore-scripts --frozen-lockfile --registry https://registry.npmjs.org --network-timeout 300000
       - name: Download artifacts
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: bindings-x86_64-unknown-linux-gnu
           path: .
@@ -344,7 +344,7 @@ jobs:
       - name: Install dependencies
         run: yarn install --ignore-scripts --frozen-lockfile --registry https://registry.npmjs.org --network-timeout 300000
       - name: Download artifacts
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: bindings-x86_64-unknown-linux-musl
           path: .
@@ -369,7 +369,7 @@ jobs:
       - run: docker run --rm --privileged multiarch/qemu-user-static:register --reset
       - uses: actions/checkout@v2
       - name: Download artifacts
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: bindings-aarch64-unknown-linux-gnu
           path: .
@@ -401,7 +401,7 @@ jobs:
       - run: docker run --rm --privileged multiarch/qemu-user-static:register --reset
       - uses: actions/checkout@v2
       - name: Download artifacts
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: bindings-aarch64-unknown-linux-musl
           path: .
@@ -440,7 +440,7 @@ jobs:
       - run: docker run --rm --privileged multiarch/qemu-user-static:register --reset
       - uses: actions/checkout@v2
       - name: Download artifacts
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: bindings-armv7-unknown-linux-gnueabihf
           path: .
@@ -493,7 +493,7 @@ jobs:
       - name: Install dependencies
         run: yarn install --ignore-scripts --frozen-lockfile --registry https://registry.npmjs.org --network-timeout 300000
       - name: Download all artifacts
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           path: artifacts
       - name: List artifacts
