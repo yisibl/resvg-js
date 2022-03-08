@@ -2,11 +2,17 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+#[cfg(not(target_arch = "wasm32"))]
 use crate::options::*;
+
+#[cfg(not(target_arch = "wasm32"))]
 use log::{debug, warn};
+
+#[cfg(not(target_arch = "wasm32"))]
 use usvg::fontdb::Database;
 
 /// Loads fonts.
+#[cfg(not(target_arch = "wasm32"))]
 pub fn load_fonts(font_options: &JsFontOptions) -> Database {
   // Create a new font database
   let mut fontdb = Database::new();

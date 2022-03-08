@@ -3,6 +3,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 use crate::error::Error;
+#[cfg(not(target_arch = "wasm32"))]
 use fontdb::Database;
 #[cfg(not(target_arch = "wasm32"))]
 use napi::{bindgen_prelude::Buffer, Either};
@@ -153,6 +154,7 @@ impl Default for JsOptions {
 impl JsOptions {
   pub(crate) fn to_usvg_options(&self) -> usvg::Options {
     // Load fonts
+    #[cfg(not(target_arch = "wasm32"))]
     let fontdb = if cfg!(target_arch = "wasm32") {
       Database::new()
     } else {
@@ -171,6 +173,7 @@ impl JsOptions {
       image_rendering: self.image_rendering,
       keep_named_groups: false,
       default_size: usvg::Size::new(100.0_f64, 100.0_f64).unwrap(),
+      #[cfg(not(target_arch = "wasm32"))]
       fontdb,
       image_href_resolver: usvg::ImageHrefResolver::default(),
     }

@@ -16,11 +16,7 @@ resvg = { version = "0.22.0", default-features = false, features = [
     "filter",
     "dump-svg",
 ] }
-usvg = { version = "0.22.0", default-features = false, features = [
-    "export",
-    "filter",
-    "text",
-] }
+
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 svgtypes = "0.8.0"
@@ -34,10 +30,19 @@ mimalloc-rust = { version = "0.1" }
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 wasm-bindgen = "0.2.79"
 js-sys = "0.3.56"
+usvg = { version = "0.22.0", default-features = false, features = [
+    "export",
+    "filter",
+]}
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
 napi = { version = "2", features = ["serde-json"] }
 napi-derive = "2"
+usvg = { version = "0.22.0", default-features = false, features = [
+    "export",
+    "filter",
+    "text",
+]}
 
 [build-dependencies]
 napi-build = "1"
