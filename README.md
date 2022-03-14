@@ -177,8 +177,8 @@ please feel free to discuss with me or submit a PR.
 - [x] Support async API
 - [x] Upgrade to napi-rs v2
 - [x] Support WebAssembly(.wasm)
+- [x] Output usvg-simplified SVG string
 - [ ] Support for getting SVG Bounding box
-- [ ] Output usvg-simplified SVG string
 - [ ] Support for generating more lossless bitmap formats, e.g. avif, webp, JPEG XL
 
 ## Release package
