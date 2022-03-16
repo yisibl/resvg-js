@@ -45,6 +45,46 @@ test('fit to width', async (t) => {
   t.is(result.getHeight(), 623)
 })
 
+test('Get SVG original size', async (t) => {
+  const filePath = '../example/text.svg'
+  const svg = await fs.readFile(join(__dirname, filePath))
+  const resvg = new Resvg(svg, {
+    background: '#eeebe6',
+    fitTo: {
+      mode: 'width',
+      value: 1200, // The original size is not affected by the fitTo parameter
+    },
+  })
+
+  t.is(resvg.width, 1324)
+  t.is(resvg.height, 687)
+})
+
+test('SVG size must be rounded to an integer', (t) => {
+  const svg = `<svg viewBox="0 0 200.5 126.49999" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <rect fill="#FCA6A6" x="0" y="0" width="100%" height="100%"></rect>
+  </svg>`
+  const resvg = new Resvg(svg)
+  const { width, height } = resvg
+
+  t.is(width, 201)
+  t.is(height, 126)
+})
+
+test('SVG size must be equal to PNG size', async (t) => {
+  const svg = `<svg viewBox="0 0 200.5 126.49999" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <rect fill="#FCA6A6" x="0" y="0" width="100%" height="100%"></rect>
+  </svg>`
+  const resvg = new Resvg(svg)
+
+  const pngData = resvg.render()
+  const result = await jimp.read(Buffer.from(pngData))
+  const { width, height } = resvg
+
+  t.is(width, result.getWidth())
+  t.is(height, result.getHeight())
+})
+
 test('Set the background with alpha by rgba().', async (t) => {
   const filePath = './tiger.svg'
   const svg = await fs.readFile(join(__dirname, filePath))

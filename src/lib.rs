@@ -88,25 +88,25 @@ impl Resvg {
   #[cfg(target_arch = "wasm32")]
   #[wasm_bindgen(getter)]
   pub fn width(&self) -> f64 {
-    self.tree.svg_node().size.width()
+    self.tree.svg_node().size.width().round()
   }
 
   #[cfg(target_arch = "wasm32")]
   #[wasm_bindgen(getter)]
   pub fn height(&self) -> f64 {
-    self.tree.svg_node().size.height()
+    self.tree.svg_node().size.height().round()
   }
 
   #[cfg(not(target_arch = "wasm32"))]
   #[napi(getter)]
   pub fn width(&self) -> f64 {
-    self.tree.svg_node().size.width()
+    self.tree.svg_node().size.width().round()
   }
 
   #[cfg(not(target_arch = "wasm32"))]
   #[napi(getter)]
   pub fn height(&self) -> f64 {
-    self.tree.svg_node().size.height()
+    self.tree.svg_node().size.height().round()
   }
 }
 
