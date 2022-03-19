@@ -9,6 +9,14 @@ This changelog also contains important changes in dependencies.
 
 ## [Unreleased]
 
+## [2.0.0-alpha.5] - 2022-03-19
+
+### Changed
+
+- feat: rounding width / height, this will further improve [#61](https://github.com/yisibl/resvg-js/issues/61).
+
+  Physical pixels cannot be decimal, and when SVG dimensions have decimals in them, the output PNG dimensions are rounded. This should be consistent when getting the PNG size through the width / height API.
+
 ## [2.0.0-alpha.4] - 2022-03-14
 
 ### Added
@@ -252,8 +260,9 @@ The first official version, use [resvg 0.18.0](https://github.com/RazrFalcon/res
 - Support custom fonts and system fonts.
 - Supports setting the background color of PNG.
 
-[unreleased]: https://github.com/yisibl/resvg-js/compare/v2.0.0-alpha.4...HEAD
-[2.0.0-alpha.4]: https://github.com/yisibl/resvg-js/compare/v2.0.0-alpha.4...v2.0.0-alpha.4
+[unreleased]: https://github.com/yisibl/resvg-js/compare/v2.0.0-alpha.5...HEAD
+[2.0.0-alpha.5]: https://github.com/yisibl/resvg-js/compare/v2.0.0-alpha.4...v2.0.0-alpha.5
+[2.0.0-alpha.4]: https://github.com/yisibl/resvg-js/compare/v2.0.0-alpha.3...v2.0.0-alpha.4
 [2.0.0-alpha.3]: https://github.com/yisibl/resvg-js/compare/v2.0.0-alpha.2...v2.0.0-alpha.3
 [2.0.0-alpha.2]: https://github.com/yisibl/resvg-js/compare/v2.0.0-alpha.1...v2.0.0-alpha.2
 [2.0.0-alpha.1]: https://github.com/yisibl/resvg-js/compare/v2.0.0-alpha.0...v2.0.0-alpha.1
