@@ -7,6 +7,9 @@
   "cpu": [
     "x64"
   ],
+  "libc": [
+    "musl"
+  ],
   "main": "resvgjs.linux-x64-musl.node",
   "files": [
     "resvgjs.linux-x64-musl.node"

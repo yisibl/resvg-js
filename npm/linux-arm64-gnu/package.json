@@ -7,6 +7,9 @@
   "cpu": [
     "arm64"
   ],
+  "libc": [
+    "glibc"
+  ],
   "main": "resvgjs.linux-arm64-gnu.node",
   "files": [
     "resvgjs.linux-arm64-gnu.node"

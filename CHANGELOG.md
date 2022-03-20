@@ -9,6 +9,14 @@ This changelog also contains important changes in dependencies.
 
 ## [Unreleased]
 
+### Changed
+
+- chore: add libc fields on linux platform packages
+
+  On Linux, it is not possible to tell exactly what kind of C library a native modules depends on just by os/cpu, so yarn 3.2 and cnpm added libc fields to further distinguish this case. This avoids downloading both `gnu` and `musl` packages at the same time.
+
+  Currently only [yarn 3.2+](https://github.com/yarnpkg/berry/pull/3981) and [cnpm](https://github.com/cnpm/npminstall/pull/387) are supported, the npm implementation is [still under discussion](https://github.com/npm/rfcs/pull/519).
+
 ## [2.0.0-alpha.5] - 2022-03-19
 
 ### Changed
