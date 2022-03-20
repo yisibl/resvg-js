@@ -9,6 +9,7 @@ This changelog also contains important changes in dependencies.
 
 ## [Unreleased]
 
+## [2.0.0-alpha.6] - 2022-03-20
 ### Changed
 
 - chore: add libc fields on linux platform packages
@@ -268,7 +269,8 @@ The first official version, use [resvg 0.18.0](https://github.com/RazrFalcon/res
 - Support custom fonts and system fonts.
 - Supports setting the background color of PNG.
 
-[unreleased]: https://github.com/yisibl/resvg-js/compare/v2.0.0-alpha.5...HEAD
+[unreleased]: https://github.com/yisibl/resvg-js/compare/v2.0.0-alpha.6...HEAD
+[2.0.0-alpha.6]: https://github.com/yisibl/resvg-js/compare/v2.0.0-alpha.5...v2.0.0-alpha.6
 [2.0.0-alpha.5]: https://github.com/yisibl/resvg-js/compare/v2.0.0-alpha.4...v2.0.0-alpha.5
 [2.0.0-alpha.4]: https://github.com/yisibl/resvg-js/compare/v2.0.0-alpha.3...v2.0.0-alpha.4
 [2.0.0-alpha.3]: https://github.com/yisibl/resvg-js/compare/v2.0.0-alpha.2...v2.0.0-alpha.3
