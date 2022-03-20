@@ -3,6 +3,12 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 #[cfg(not(target_arch = "wasm32"))]
 use napi::bindgen_prelude::{AbortSignal, AsyncTask, Buffer, Either, Error as NapiError, Task};
+use pathfinder_content::{
+  outline::{Contour, Outline},
+  stroke::{LineCap, LineJoin, OutlineStrokeToFill, StrokeStyle},
+};
+use pathfinder_geometry::rect::RectF;
+use pathfinder_geometry::vector::Vector2F;
 
 #[cfg(not(target_arch = "wasm32"))]
 use napi_derive::napi;
@@ -34,6 +40,15 @@ static ALLOC: mimalloc_rust::GlobalMiMalloc = mimalloc_rust::GlobalMiMalloc;
 extern "C" {
   #[wasm_bindgen(typescript_type = "Uint8Array | string")]
   pub type IStringOrBuffer;
+}
+
+#[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
+#[derive(Debug)]
+pub struct BBox {
+  pub x: f64,
+  pub y: f64,
+  pub width: f64,
+  pub height: f64,
 }
 
 #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
@@ -137,6 +152,37 @@ impl Resvg {
   pub fn to_string(&self) -> String {
     self.tree.to_string(&usvg::XmlOptions::default())
   }
+
+  /// Calculate a maximum bounding box of all visible elements in this
+  /// SVG.
+  ///
+  /// Note: path bounding box are approx. values
+  pub fn inner_bbox(&self) -> BBox {
+    let rect = self.tree.svg_node().view_box.rect;
+    let rect = points_to_rect(
+      usvg::Point::new(rect.x(), rect.y()),
+      usvg::Point::new(rect.right(), rect.bottom()),
+    );
+    let mut v = None;
+    for child in self.tree.root().children().skip(1) {
+      let child_viewbox = match self.node_bbox(child).and_then(|v| v.intersection(rect)) {
+        Some(v) => v,
+        None => continue,
+      };
+      if let Some(v) = v.as_mut() {
+        *v = child_viewbox.union_rect(*v);
+      } else {
+        v = Some(child_viewbox)
+      };
+    }
+    let v = v.unwrap();
+    BBox {
+      x: v.min_x().floor() as f64,
+      y: v.min_y().floor() as f64,
+      width: (v.max_x().ceil() - v.min_x().floor()) as f64,
+      height: (v.max_y().ceil() - v.min_y().floor()) as f64,
+    }
+  }
 }
 
 #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
@@ -208,6 +254,160 @@ impl Resvg {
 }
 
 impl Resvg {
+  fn node_by_id(&self, id: &str) -> Option<usvg::Node> {
+    for node in self.tree.root().descendants() {
+      if id == node.borrow().id() {
+        return Some(node);
+      }
+    }
+    None
+  }
+
+  fn node_bbox(&self, node: usvg::Node) -> Option<RectF> {
+    let transform = node.borrow().transform();
+    let bbox = match &*node.borrow() {
+      usvg::NodeKind::Path(p) => {
+        let no_fill = p.fill.is_none()
+          || p
+            .fill
+            .as_ref()
+            .map(|f| f.opacity.value() == 0.0)
+            .unwrap_or_default();
+        let no_stroke = p.stroke.is_none()
+          || p
+            .stroke
+            .as_ref()
+            .map(|f| f.opacity.value() == 0.0)
+            .unwrap_or_default();
+        if no_fill && no_stroke {
+          return None;
+        }
+        let mut outline = Outline::new();
+        let mut contour = Contour::new();
+        let mut iter = p.data.0.iter().peekable();
+        while let Some(seg) = iter.next() {
+          match seg {
+            usvg::PathSegment::MoveTo { x, y } => {
+              if !contour.is_empty() {
+                outline.push_contour(std::mem::replace(&mut contour, Contour::new()));
+              }
+              contour.push_endpoint(Vector2F::new(*x as f32, *y as f32));
+            }
+            usvg::PathSegment::LineTo { x, y } => {
+              let v = Vector2F::new(*x as f32, *y as f32);
+              if let Some(usvg::PathSegment::ClosePath) = iter.peek() {
+                let first = contour.position_of(0);
+                if (first - v).square_length() < 1.0 {
+                  continue;
+                }
+              }
+              contour.push_endpoint(v);
+            }
+            usvg::PathSegment::CurveTo {
+              x1,
+              y1,
+              x2,
+              y2,
+              x,
+              y,
+            } => {
+              contour.push_cubic(
+                Vector2F::new(*x1 as f32, *y1 as f32),
+                Vector2F::new(*x2 as f32, *y2 as f32),
+                Vector2F::new(*x as f32, *y as f32),
+              );
+            }
+            usvg::PathSegment::ClosePath => {
+              contour.close();
+              outline.push_contour(std::mem::replace(&mut contour, Contour::new()));
+            }
+          }
+        }
+        if !contour.is_empty() {
+          outline.push_contour(std::mem::replace(&mut contour, Contour::new()));
+        }
+        if let Some(stroke) = p.stroke.as_ref() {
+          if !no_stroke {
+            let mut style = StrokeStyle::default();
+            style.line_width = stroke.width.value() as f32;
+            style.line_join = LineJoin::Miter(style.line_width);
+            style.line_cap = match stroke.linecap {
+              usvg::LineCap::Butt => LineCap::Butt,
+              usvg::LineCap::Round => LineCap::Round,
+              usvg::LineCap::Square => LineCap::Square,
+            };
+            let mut filler = OutlineStrokeToFill::new(&outline, style);
+            filler.offset();
+            outline = filler.into_outline();
+          }
+        }
+        Some(outline.bounds())
+      }
+      usvg::NodeKind::Group(g) => {
+        let clippath = if let Some(clippath) = g
+          .clip_path
+          .as_ref()
+          .and_then(|cp| self.node_by_id(cp))
+          .and_then(|n| n.first_child())
+        {
+          self.node_bbox(clippath)
+        } else if let Some(mask) = g.mask.as_ref().and_then(|cp| self.node_by_id(cp)) {
+          self.node_bbox(mask)
+        } else {
+          Some(self.viewbox())
+        }?;
+        let mut v = None;
+        for child in node.children() {
+          let child_viewbox = match self.node_bbox(child).and_then(|v| v.intersection(clippath)) {
+            Some(v) => v,
+            None => continue,
+          };
+          if let Some(v) = v.as_mut() {
+            *v = child_viewbox.union_rect(*v);
+          } else {
+            v = Some(child_viewbox)
+          };
+        }
+        v.and_then(|v| v.intersection(self.viewbox()))
+      }
+      usvg::NodeKind::Image(image) => {
+        let rect = image.view_box.rect;
+        Some(points_to_rect(
+          usvg::Point::new(rect.x(), rect.y()),
+          usvg::Point::new(rect.right(), rect.bottom()),
+        ))
+      }
+      usvg::NodeKind::ClipPath(_) | usvg::NodeKind::Mask(_) => {
+        if let Some(child) = node.first_child() {
+          self.node_bbox(child)
+        } else {
+          None
+        }
+      }
+      _ => None,
+    }?;
+    let (x1, y1) = transform.apply(bbox.min_x() as f64, bbox.min_y() as f64);
+    let (x2, y2) = transform.apply(bbox.max_x() as f64, bbox.max_y() as f64);
+    let (x3, y3) = transform.apply(bbox.min_x() as f64, bbox.max_y() as f64);
+    let (x4, y4) = transform.apply(bbox.max_x() as f64, bbox.min_y() as f64);
+    let x_min = x1.min(x2).min(x3).min(x4);
+    let x_max = x1.max(x2).max(x3).max(x4);
+    let y_min = y1.min(y2).min(y3).min(y4);
+    let y_max = y1.max(y2).max(y3).max(y4);
+    let r = points_to_rect(
+      usvg::Point::new(x_min, y_min),
+      usvg::Point::new(x_max, y_max),
+    );
+    Some(r)
+  }
+
+  fn viewbox(&self) -> RectF {
+    RectF::new(
+      Vector2F::new(0.0, 0.0),
+      Vector2F::new(self.width() as f32, self.height() as f32),
+    )
+  }
+
   fn render_inner(&self) -> Result<RenderedImage, Error> {
     let pixmap_size = self
       .js_options
@@ -280,4 +480,10 @@ pub fn render_async(
     Some(s) => AsyncTask::with_signal(AsyncRenderer { options, svg }, s),
     None => AsyncTask::new(AsyncRenderer { options, svg }),
   }
+}
+
+fn points_to_rect(min: usvg::Point<f64>, max: usvg::Point<f64>) -> RectF {
+  let min = Vector2F::new(min.x as f32, min.y as f32);
+  let max = Vector2F::new(max.x as f32, max.y as f32);
+  RectF::new(min, max - min)
 }

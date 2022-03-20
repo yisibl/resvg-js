@@ -23,6 +23,9 @@ svgtypes = "0.8.0"
 tiny-skia = "0.6.3"
 thiserror = "1.0.30"
 png = "0.17.3"
+pathfinder_geometry = "0.5.1"
+pathfinder_content = { version = "0.5.0", default-features = false }
+pathfinder_simd = { version = "0.5.1", features = ["pf-no-simd"] }
 
 [target.'cfg(all(not(all(target_os = "linux", target_arch = "aarch64", target_env = "musl")), not(all(target_os = "windows", target_arch = "aarch64")), not(target_arch = "wasm32")))'.dependencies]
 mimalloc-rust = { version = "0.1" }
@@ -33,7 +36,7 @@ js-sys = "0.3.56"
 usvg = { version = "0.22.0", default-features = false, features = [
     "export",
     "filter",
-]}
+] }
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
 napi = { version = "2.2.0", features = ["serde-json"] }
@@ -42,7 +45,7 @@ usvg = { version = "0.22.0", default-features = false, features = [
     "export",
     "filter",
     "text",
-]}
+] }
 
 [build-dependencies]
 napi-build = "1"
