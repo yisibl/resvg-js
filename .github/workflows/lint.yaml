@@ -28,7 +28,7 @@ jobs:
           components: rustfmt, clippy
 
       - name: Cache NPM dependencies
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: node_modules
           key: npm-cache-lint-node@16-${{ hashFiles('yarn.lock') }}
