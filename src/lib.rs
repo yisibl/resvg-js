@@ -7,6 +7,7 @@ use napi::bindgen_prelude::{AbortSignal, AsyncTask, Buffer, Either, Error as Nap
 #[cfg(not(target_arch = "wasm32"))]
 use napi_derive::napi;
 use options::JsOptions;
+use tiny_skia::Pixmap;
 #[cfg(target_arch = "wasm32")]
 use wasm_bindgen::{
   prelude::{wasm_bindgen, JsValue},
@@ -42,6 +43,38 @@ pub struct Resvg {
   js_options: JsOptions,
 }
 
+#[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
+#[cfg_attr(not(target_arch = "wasm32"), napi)]
+pub struct RenderedImage {
+  pix: Pixmap,
+}
+
+#[cfg_attr(not(target_arch = "wasm32"), napi)]
+#[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
+impl RenderedImage {
+  #[cfg(not(target_arch = "wasm32"))]
+  pub fn as_png(&self) -> Result<Buffer, NapiError> {
+    let buffer = self.pix.encode_png().map_err(Error::from)?;
+    Ok(buffer.into())
+  }
+
+  #[cfg_attr(target_arch = "wasm32", wasm_bindgen(getter))]
+  pub fn width(&self) -> u32 {
+    self.pix.width()
+  }
+
+  #[cfg_attr(target_arch = "wasm32", wasm_bindgen(getter))]
+  pub fn height(&self) -> u32 {
+    self.pix.height()
+  }
+
+  #[cfg(target_arch = "wasm32")]
+  pub fn as_png(&self) -> Result<js_sys::Uint8Array, JsValue> {
+    let buffer = self.pix.encode_png().map_err(Error::from)?;
+    Ok(buffer.as_slice().into())
+  }
+}
+
 #[cfg(not(target_arch = "wasm32"))]
 #[napi]
 impl Resvg {
@@ -71,9 +104,8 @@ impl Resvg {
 
   // Renders an SVG in Node.js
   #[napi]
-  pub fn render(&self) -> Result<Buffer, NapiError> {
-    let buffer = self.render_inner()?;
-    Ok(buffer.into())
+  pub fn render(&self) -> Result<RenderedImage, NapiError> {
+    Ok(self.render_inner()?)
   }
 
   #[napi]
@@ -141,13 +173,12 @@ impl Resvg {
   #[wasm_bindgen]
   // Renders an SVG in WASM
   pub fn render(&self) -> Result<js_sys::Uint8Array, JsValue> {
-    let buffer = self.render_inner()?;
-    Ok(buffer.as_slice().into())
+    Ok(self.render_inner()?)
   }
 }
 
 impl Resvg {
-  fn render_inner(&self) -> Result<Vec<u8>, Error> {
+  fn render_inner(&self) -> Result<RenderedImage, Error> {
     let pixmap_size = self
       .js_options
       .fit_to
@@ -182,13 +213,7 @@ impl Resvg {
       pixmap = pixmap.clone_rect(crop_rect).unwrap_or(pixmap);
     }
 
-    // Write the image data to a buffer
-    let mut buffer: Vec<u8> = vec![];
-    if image.is_some() {
-      buffer = pixmap.encode_png().map_err(Error::from)?;
-    }
-
-    Ok(buffer)
+    Ok(RenderedImage { pix: pixmap })
   }
 }
 
@@ -201,16 +226,16 @@ pub struct AsyncRenderer {
 #[cfg(not(target_arch = "wasm32"))]
 #[napi]
 impl Task for AsyncRenderer {
-  type Output = Vec<u8>;
-  type JsValue = Buffer;
+  type Output = RenderedImage;
+  type JsValue = RenderedImage;
 
   fn compute(&mut self) -> Result<Self::Output, NapiError> {
     let resvg = Resvg::new_inner(&self.svg, self.options.clone())?;
-    Ok(resvg.render()?.into())
+    Ok(resvg.render()?)
   }
 
   fn resolve(&mut self, _env: napi::Env, result: Self::Output) -> Result<Self::JsValue, NapiError> {
-    Ok(result.into())
+    Ok(result)
   }
 }
 
