@@ -52,26 +52,48 @@ pub struct RenderedImage {
 #[cfg_attr(not(target_arch = "wasm32"), napi)]
 #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
 impl RenderedImage {
+  // Wasm
   #[cfg(not(target_arch = "wasm32"))]
+  #[napi]
   pub fn as_png(&self) -> Result<Buffer, NapiError> {
     let buffer = self.pix.encode_png().map_err(Error::from)?;
     Ok(buffer.into())
   }
 
-  #[cfg_attr(target_arch = "wasm32", wasm_bindgen(getter))]
+  #[cfg(target_arch = "wasm32")]
+  #[wasm_bindgen(getter)]
+  /// Get the SVG width
   pub fn width(&self) -> u32 {
     self.pix.width()
   }
 
-  #[cfg_attr(target_arch = "wasm32", wasm_bindgen(getter))]
+  #[cfg(target_arch = "wasm32")]
+  #[wasm_bindgen(getter)]
+  /// Get the PNG height
   pub fn height(&self) -> u32 {
     self.pix.height()
   }
 
+  // napi-rs
   #[cfg(target_arch = "wasm32")]
+  #[wasm_bindgen(js_name = asPng)]
   pub fn as_png(&self) -> Result<js_sys::Uint8Array, JsValue> {
     let buffer = self.pix.encode_png().map_err(Error::from)?;
     Ok(buffer.as_slice().into())
+  }
+
+  #[cfg(not(target_arch = "wasm32"))]
+  #[napi(getter)]
+  /// Get the SVG width
+  pub fn width(&self) -> u32 {
+    self.pix.width()
+  }
+
+  #[cfg(not(target_arch = "wasm32"))]
+  #[napi(getter)]
+  /// Get the PNG height
+  pub fn height(&self) -> u32 {
+    self.pix.height()
   }
 }
 
@@ -119,24 +141,28 @@ impl Resvg {
 impl Resvg {
   #[cfg(target_arch = "wasm32")]
   #[wasm_bindgen(getter)]
+  /// Get the SVG width
   pub fn width(&self) -> f64 {
     self.tree.svg_node().size.width().round()
   }
 
   #[cfg(target_arch = "wasm32")]
   #[wasm_bindgen(getter)]
+  /// Get the SVG height
   pub fn height(&self) -> f64 {
     self.tree.svg_node().size.height().round()
   }
 
   #[cfg(not(target_arch = "wasm32"))]
   #[napi(getter)]
+  /// Get the SVG width
   pub fn width(&self) -> f64 {
     self.tree.svg_node().size.width().round()
   }
 
   #[cfg(not(target_arch = "wasm32"))]
   #[napi(getter)]
+  /// Get the SVG height
   pub fn height(&self) -> f64 {
     self.tree.svg_node().size.height().round()
   }
@@ -172,7 +198,7 @@ impl Resvg {
 
   #[wasm_bindgen]
   // Renders an SVG in WASM
-  pub fn render(&self) -> Result<js_sys::Uint8Array, JsValue> {
+  pub fn render(&self) -> Result<RenderedImage, JsValue> {
     Ok(self.render_inner()?)
   }
 }
@@ -186,7 +212,7 @@ impl Resvg {
       .ok_or_else(|| Error::ZeroSized)?;
     let mut pixmap = self.js_options.create_pixmap(pixmap_size)?;
     // Render the tree
-    let image = resvg::render(
+    let _image = resvg::render(
       &self.tree,
       self.js_options.fit_to,
       tiny_skia::Transform::default(),
