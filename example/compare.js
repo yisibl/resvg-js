@@ -3,7 +3,6 @@ const { join } = require('path')
 const { performance } = require('perf_hooks')
 
 const { createCanvas, Image } = require('@napi-rs/canvas')
-// const Svg2 = require('oslllo-svg2')
 const sharp = require('sharp')
 
 const { Resvg } = require('../index')
@@ -36,7 +35,6 @@ async function main() {
 
   sharpToPng(svg, w)
   skrCanvas(svg, w, h)
-  osllloSvgToPng(svg, w, h)
 }
 
 async function sharpToPng(file, width) {
@@ -77,18 +75,6 @@ async function skrCanvas(file, width, height) {
   console.info('✨ skr-canvas done in', t1 - t0, 'ms')
 
   await fs.writeFile(join(__dirname, './out-skr-canvas.png'), pngData)
-}
-
-async function osllloSvgToPng(file, width, height) {
-  const t0 = performance.now()
-
-  const instance = await Svg2(file)
-  const svg = instance.svg
-  svg.resize({ width, height })
-  instance.png().toFile('example/out-oslllo-svg.png')
-
-  const t1 = performance.now()
-  console.info('✨ oslllo-svg2 done in', t1 - t0, 'ms')
 }
 
 main()
