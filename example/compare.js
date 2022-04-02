@@ -3,10 +3,10 @@ const { join } = require('path')
 const { performance } = require('perf_hooks')
 
 const { createCanvas, Image } = require('@napi-rs/canvas')
-const Svg2 = require('oslllo-svg2')
+// const Svg2 = require('oslllo-svg2')
 const sharp = require('sharp')
 
-const { render } = require('../index')
+const { Resvg } = require('../index')
 
 async function main() {
   const svg = await fs.readFile(join(__dirname, './anime_girl.svg'))
@@ -15,7 +15,7 @@ async function main() {
   const h = 744 * zoom // resize height
 
   const t0 = performance.now()
-  const pngData = render(svg, {
+  const opts = {
     fitTo: {
       mode: 'width',
       value: w,
@@ -24,10 +24,15 @@ async function main() {
       loadSystemFonts: false, // It will be faster to disable loading system fonts.
     },
     logLevel: 'off',
-  })
+  }
+
+  const resvg = new Resvg(svg, opts)
+  const pngData = resvg.render()
+  const pngBuffer = pngData.asPng()
   const t1 = performance.now()
+
   console.info('✨ resvg-js done in', t1 - t0, 'ms')
-  await fs.writeFile(join(__dirname, './out-resvg-js.png'), pngData)
+  await fs.writeFile(join(__dirname, './out-resvg-js.png'), pngBuffer)
 
   sharpToPng(svg, w)
   skrCanvas(svg, w, h)

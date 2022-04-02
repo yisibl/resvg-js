@@ -41,16 +41,29 @@ export type ResvgRenderOptions = {
   logLevel?: 'off' | 'error' | 'warn' | 'info' | 'debug' | 'trace'
 }
 
-export function render(svg: string | Buffer, options?: ResvgRenderOptions | null): Buffer
 export function renderAsync(
   svg: string | Buffer,
   options?: ResvgRenderOptions | null,
   signal?: AbortSignal | null,
-): Promise<Buffer>
+): Promise<RenderedImage>
 export class Resvg {
   constructor(svg: Buffer | string, options?: ResvgRenderOptions | null)
   toString(): string
-  render(): Buffer
+  render(): RenderedImage
+
+  /** Get the SVG width */
   get width(): number
+
+  /** Get the SVG height */
+  get height(): number
+}
+export class RenderedImage {
+  /** Get the PNG Buffer */
+  asPng(): Buffer
+
+  /** Get the PNG width */
+  get width(): number
+
+  /** Get the PNG height */
   get height(): number
 }

@@ -55,6 +55,7 @@ impl RenderedImage {
   // Wasm
   #[cfg(not(target_arch = "wasm32"))]
   #[napi]
+  /// Get the PNG Buffer
   pub fn as_png(&self) -> Result<Buffer, NapiError> {
     let buffer = self.pix.encode_png().map_err(Error::from)?;
     Ok(buffer.into())
@@ -62,7 +63,7 @@ impl RenderedImage {
 
   #[cfg(target_arch = "wasm32")]
   #[wasm_bindgen(getter)]
-  /// Get the SVG width
+  /// Get the PNG width
   pub fn width(&self) -> u32 {
     self.pix.width()
   }
@@ -77,6 +78,7 @@ impl RenderedImage {
   // napi-rs
   #[cfg(target_arch = "wasm32")]
   #[wasm_bindgen(js_name = asPng)]
+  /// Get the PNG Uint8Array
   pub fn as_png(&self) -> Result<js_sys::Uint8Array, JsValue> {
     let buffer = self.pix.encode_png().map_err(Error::from)?;
     Ok(buffer.as_slice().into())
@@ -84,7 +86,7 @@ impl RenderedImage {
 
   #[cfg(not(target_arch = "wasm32"))]
   #[napi(getter)]
-  /// Get the SVG width
+  /// Get the PNG width
   pub fn width(&self) -> u32 {
     self.pix.width()
   }
