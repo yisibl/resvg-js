@@ -23,15 +23,15 @@ async function main() {
   }
 
   const t = performance.now()
-  const rusty = new Resvg(svg, opts)
-  const pngData = rusty.render()
+  const resvg = new Resvg(svg, opts)
+  const pngData = resvg.render()
+  const pngBuffer = pngData.asPng()
 
-  console.info(rusty.width)
-  console.info(rusty.height)
-  // console.info(rusty)
+  console.info('Original SVG Size:', `${resvg.width} x ${resvg.height}`)
+  console.info('Output PNG Size  :', `${pngData.width} x ${pngData.height}`)
   console.info('✨ Done in', performance.now() - t, 'ms')
 
-  await promises.writeFile(join(__dirname, './text-out.png'), pngData)
+  await promises.writeFile(join(__dirname, './text-out.png'), pngBuffer)
 }
 
 main()

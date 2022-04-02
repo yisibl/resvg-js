@@ -3,7 +3,6 @@ import { join } from 'path'
 
 import { createCanvas, Image } from '@napi-rs/canvas'
 import b from 'benny'
-import Svg2 from 'oslllo-svg2'
 import sharp from 'sharp'
 import svg2img from 'svg2img'
 
@@ -59,13 +58,6 @@ async function run() {
       svg2img(svg1.toString('utf8'), { width: 1200, height: 623 }, function (_error, _buffer) {})
     }),
 
-    b.add('oslllo-svg2(jsdom + node-canvas)', async () => {
-      const instance = await Svg2(svg1)
-      const svg = instance.svg
-      svg.resize({ width: 1200, height: 623 })
-      instance.png().toBuffer()
-    }),
-
     b.cycle(),
     b.complete(),
   )
@@ -119,13 +111,6 @@ async function run() {
       svg2img(icon.toString('utf8'), { width: 386, height: 386 }, function (_error, _buffer) {})
     }),
 
-    b.add('oslllo-svg2(jsdom + node-canvas)', async () => {
-      const instance = await Svg2(icon)
-      const svg = instance.svg
-      svg.resize({ width: 386, height: 386 })
-      instance.png().toBuffer()
-    }),
-
     b.cycle(),
     b.complete(),
   )
@@ -167,10 +152,6 @@ async function run() {
 
     b.add('svg2img(canvg + node-canvas)', () => {
       svg2img(tiger.toString('utf8'), { width: 900, height: 900 }, function (_error, _buffer) {})
-    }),
-
-    b.add('oslllo-svg2(jsdom + node-canvas)', async () => {
-      await Svg2(tiger).png().toBuffer()
     }),
 
     b.cycle(),

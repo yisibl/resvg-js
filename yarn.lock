@@ -3577,24 +3577,6 @@ ora@^5.2.0:
     strip-ansi "^6.0.0"
     wcwidth "^1.0.1"
 
-oslllo-svg2@0.3.1:
-  version "0.3.1"
-  resolved "https://registry.npmjs.org/oslllo-svg2/-/oslllo-svg2-0.3.1.tgz#21b08922663129e2a9952712f44d5720852574f0"
-  integrity sha512-9cIiglv/HgXCSvCNnc+0m28IbccGQUVst9CtnPrgUDb/2YdrTeh4lFviDLUwxZ8L13fJhTWoHaUdAHrHg3rfKg==
-  dependencies:
-    canvas "^2.8.0"
-    jimp "^0.16.1"
-    jsdom "^16.7.0"
-    oslllo-validator "2.0.1"
-
-oslllo-validator@2.0.1:
-  version "2.0.1"
-  resolved "https://registry.npmjs.org/oslllo-validator/-/oslllo-validator-2.0.1.tgz#c5faf33b8bf3879ae2cd1d4569986b389634cd1e"
-  integrity sha512-VmRpVinOUIvFjK6aPrDOZgNOJ/K6aVT6nYPyoBsHkbSa2QZhJvHBZDmXWBnziSKJjkhUrqOUKK7XzBzAZydAwA==
-  dependencies:
-    jsdom "^16.5.3"
-    validator "^13.6.0"
-
 p-cancelable@^1.0.0:
   version "1.1.0"
   resolved "https://registry.nlark.com/p-cancelable/download/p-cancelable-1.1.0.tgz#d078d15a3af409220c886f1d9a0ca2e441ab26cc"

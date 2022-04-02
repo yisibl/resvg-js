@@ -17,7 +17,8 @@ test('fit to width', async (t) => {
     },
   })
   const pngData = resvg.render()
-  const result = await jimp.read(pngData)
+  const pngBuffer = pngData.asPng()
+  const result = await jimp.read(pngBuffer)
 
   t.is(result.getWidth(), 1200)
   t.is(result.getHeight(), 623)
@@ -56,7 +57,8 @@ test('SVG size must be equal to PNG size', async (t) => {
   const resvg = new Resvg(svg)
 
   const pngData = resvg.render()
-  const result = await jimp.read(pngData)
+  const pngBuffer = pngData.asPng()
+  const result = await jimp.read(pngBuffer)
   const { width, height } = resvg
 
   t.is(width, result.getWidth())
@@ -71,7 +73,8 @@ test('Set the background with alpha by rgba().', async (t) => {
     background: 'rgba(0, 0, 0, 0.6)',
   })
   const pngData = resvg.render()
-  const result = await jimp.read(pngData)
+  const pngBuffer = pngData.asPng()
+  const result = await jimp.read(pngBuffer)
 
   t.is(result.hasAlpha(), true)
 })
@@ -84,7 +87,8 @@ test('Set the background with alpha by rgb().', async (t) => {
     background: 'rgb(255, 0, 0, .832)',
   })
   const pngData = resvg.render()
-  const result = await jimp.read(pngData)
+  const pngBuffer = pngData.asPng()
+  const result = await jimp.read(pngBuffer)
 
   t.is(result.hasAlpha(), true)
 })
@@ -97,7 +101,8 @@ test('Set the background without alpha by hsla()', async (t) => {
     background: 'hsla(255, 80%, 50%, 1)',
   })
   const pngData = resvg.render()
-  const result = await jimp.read(pngData)
+  const pngBuffer = pngData.asPng()
+  const result = await jimp.read(pngBuffer)
 
   t.is(result.hasAlpha(), false)
 })
@@ -114,7 +119,8 @@ test('Load custom font', async (t) => {
     },
   })
   const pngData = resvg.render()
-  const result = await jimp.read(pngData)
+  const pngBuffer = pngData.asPng()
+  const result = await jimp.read(pngBuffer)
 
   t.is(result.getWidth(), 1324)
   t.is(result.getHeight(), 687)
@@ -181,7 +187,8 @@ test('should generate a 80x80 png and opaque', async (t) => {
     },
   })
   const pngData = resvg.render()
-  const result = await jimp.read(pngData)
+  const pngBuffer = pngData.asPng()
+  const result = await jimp.read(pngBuffer)
 
   t.is(result.getWidth(), 100 - 20)
   t.is(result.getHeight(), 100 - 20)
@@ -194,7 +201,8 @@ test('should generate a 100x100 transparent png', async (t) => {
   const svg = `<svg xmlns="http://www.w3.org/2000/svg"></svg>`
   const resvg = new Resvg(svg)
   const pngData = resvg.render()
-  const result = await jimp.read(pngData)
+  const pngBuffer = pngData.asPng()
+  const result = await jimp.read(pngBuffer)
 
   t.is(result.hasAlpha(), true)
   t.is(result.getWidth(), 100)
@@ -207,7 +215,8 @@ test('should generate a 128x128 png', async (t) => {
     background: 'green',
   })
   const pngData = resvg.render()
-  const result = await jimp.read(pngData)
+  const pngBuffer = pngData.asPng()
+  const result = await jimp.read(pngBuffer)
 
   t.is(result.hasAlpha(), false)
   t.is(result.getWidth(), 128)
@@ -234,7 +243,8 @@ test('should render `<use xlink:href>` to an `<svg>` element', async (t) => {
     },
   })
   const pngData = resvg.render()
-  const result = await jimp.read(pngData)
+  const pngBuffer = pngData.asPng()
+  const result = await jimp.read(pngBuffer)
 
   t.is(result.hasAlpha(), false)
   t.is(result.getWidth(), 800)
@@ -259,7 +269,8 @@ test('should render `<use xlink:href>` to an `<defs>` element', async (t) => {
     },
   })
   const pngData = resvg.render()
-  const result = await jimp.read(pngData)
+  const pngBuffer = pngData.asPng()
+  const result = await jimp.read(pngBuffer)
 
   t.is(result.hasAlpha(), true)
   t.is(result.getWidth(), 900)

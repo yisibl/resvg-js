@@ -236,7 +236,8 @@ if (!nativeBinding) {
   throw new Error(`Failed to load native binding`)
 }
 
-const { Resvg, renderAsync } = nativeBinding
+const { Resvg, RenderedImage, renderAsync } = nativeBinding
 
 module.exports.Resvg = Resvg
+module.exports.RenderedImage = RenderedImage
 module.exports.renderAsync = renderAsync
