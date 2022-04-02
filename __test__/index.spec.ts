@@ -55,11 +55,29 @@ test('SVG size must be equal to PNG size', async (t) => {
     <rect fill="#FCA6A6" x="0" y="0" width="100%" height="100%"></rect>
   </svg>`
   const resvg = new Resvg(svg)
-
   const pngData = resvg.render()
   const pngBuffer = pngData.asPng()
   const result = await jimp.read(pngBuffer)
   const { width, height } = resvg
+
+  t.is(width, result.getWidth())
+  t.is(height, result.getHeight())
+})
+
+test('render().width/height must be equal to PNG size', async (t) => {
+  const svg = `<svg viewBox="0 0 200.5 126.49999" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <rect fill="#FCA6A6" x="0" y="0" width="100%" height="100%"></rect>
+  </svg>`
+  const resvg = new Resvg(svg, {
+    fitTo: {
+      mode: 'height',
+      value: 300,
+    },
+  })
+  const pngData = resvg.render()
+  const pngBuffer = pngData.asPng()
+  const result = await jimp.read(pngBuffer)
+  const { width, height } = pngData
 
   t.is(width, result.getWidth())
   t.is(height, result.getHeight())
