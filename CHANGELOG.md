@@ -9,6 +9,16 @@ This changelog also contains important changes in dependencies.
 
 ## [Unreleased]
 
+## [2.0.0-beta.0] - 2022-04-02
+
+The resvg-js API is now largely stable.
+### Changed
+
+- feat: `render()` result as a new class
+
+  `render()` now no longer returns the `Buffer` directly, you need to get the buffer via the new `render().asPng()`, also added `render().width` and `render().height` to return the size of the PNG.
+
+
 ## [2.0.0-alpha.6] - 2022-03-20
 ### Changed
 
@@ -270,6 +280,7 @@ The first official version, use [resvg 0.18.0](https://github.com/RazrFalcon/res
 - Supports setting the background color of PNG.
 
 [unreleased]: https://github.com/yisibl/resvg-js/compare/v2.0.0-alpha.6...HEAD
+[2.0.0-beta.0]: https://github.com/yisibl/resvg-js/compare/v2.0.0-alpha.6...v2.0.0-beta.0
 [2.0.0-alpha.6]: https://github.com/yisibl/resvg-js/compare/v2.0.0-alpha.5...v2.0.0-alpha.6
 [2.0.0-alpha.5]: https://github.com/yisibl/resvg-js/compare/v2.0.0-alpha.4...v2.0.0-alpha.5
 [2.0.0-alpha.4]: https://github.com/yisibl/resvg-js/compare/v2.0.0-alpha.3...v2.0.0-alpha.4
