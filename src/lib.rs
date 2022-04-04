@@ -49,13 +49,13 @@ pub struct RenderedImage {
   pix: Pixmap,
 }
 
-#[cfg_attr(not(target_arch = "wasm32"), napi)]
 #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
+#[cfg_attr(not(target_arch = "wasm32"), napi)]
 impl RenderedImage {
   // Wasm
   #[cfg(not(target_arch = "wasm32"))]
   #[napi]
-  /// Get the PNG Buffer
+  /// Write the image data to Buffer
   pub fn as_png(&self) -> Result<Buffer, NapiError> {
     let buffer = self.pix.encode_png().map_err(Error::from)?;
     Ok(buffer.into())
@@ -78,7 +78,7 @@ impl RenderedImage {
   // napi-rs
   #[cfg(target_arch = "wasm32")]
   #[wasm_bindgen(js_name = asPng)]
-  /// Get the PNG Uint8Array
+  /// Write the image data to Uint8Array
   pub fn as_png(&self) -> Result<js_sys::Uint8Array, JsValue> {
     let buffer = self.pix.encode_png().map_err(Error::from)?;
     Ok(buffer.as_slice().into())

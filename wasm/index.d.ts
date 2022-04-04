@@ -3,7 +3,7 @@
 declare class RenderedImage {
 	free(): void;
 	/**
-	* Get the PNG Uint8Array
+	* Write the image data to Uint8Array
 	* @returns {Uint8Array}
 	*/
 	asPng(): Uint8Array;

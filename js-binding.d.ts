@@ -11,7 +11,7 @@ export class Resvg {
   get height(): number
 }
 export class RenderedImage {
-  /** Get the PNG Buffer */
+  /** Write the image data to Buffer */
   asPng(): Buffer
   /** Get the PNG width */
   get width(): number
