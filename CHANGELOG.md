@@ -130,9 +130,9 @@ resvg-js now supports WebAssembly 🎉 What can I do now?
 - You can convert SVG to PNG in the browser or Web Worker
 - We provide Playground for direct use: https://resvg-js.vercel.app
 
-With WebAssembly, resvg-js gains broader cross-platform compatibility, all by loading only about 2MB of WASM files. And, the API is consistent with the Node.js side.
+With WebAssembly, resvg-js gains broader cross-platform compatibility, all by loading only about 2MB of Wasm files. And, the API is consistent with the Node.js side.
 
-The current version of WASM does not support loading fonts, so please submit an issue if you have a request.
+The current version of Wasm does not support loading fonts, so please submit an issue if you have a request.
 
 ### Added
 

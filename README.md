@@ -5,18 +5,29 @@
 
 > resvg-js is a high-performance SVG renderer and toolkit, powered by Rust based [resvg](https://github.com/RazrFalcon/resvg/) and [napi-rs](https://github.com/napi-rs/napi-rs).
 
+## Features
+
 - Fast, safe and zero dependencies!
+- Convert SVG to PNG, includes cropping, scaling and setting the background color.
+- Support system fonts and custom fonts in SVG text.
+- `v2`: Gets the width and height of the SVG and the generated PNG.
+- `v2`: Support for outputting simplified SVG strings, such as converting shapes(rect, circle, etc) to `<path>`.
+- `v2`: Support WebAssembly.
 - No need for node-gyp and postinstall, the `.node` file has been compiled for you.
 - Cross-platform support, including [Apple M1](https://www.apple.com/newsroom/2020/11/apple-unleashes-m1/).
-- Support system fonts and custom fonts in SVG text.
-- Support WebAssembly.
 
 ## Installation
 
+**We now recommend using the [2.0 beta](https://github.com/yisibl/resvg-js/releases/tag/v2.0.0-beta.0), and the API is largely stable. Which brings Wasm and many more new features.**
+
+```shell
+npm i @resvg/resvg-js@next
+```
+
+v1.x
+
 ```shell
 npm i @resvg/resvg-js
-cnpm i @resvg/resvg-js
-pnpm i @resvg/resvg-js
 ```
 
 ## [Example](example/index.js)
@@ -73,14 +84,14 @@ main()
 
 ### WebAssembly
 
-Although we support the use of WASM packages in Node.js, this is not recommended. The native addon performs better.
+Although we support the use of Wasm packages in Node.js, this is not recommended. The native addon performs better.
 
 #### Browser(ES Modules)
 
 ```js
 import { render, initWasm } from '@resvg/resvg-wasm'
 ;(async function () {
-  // The wasm must be initialized first,
+  // The Wasm must be initialized first,
   await initWasm(fetch('/your/path/index_bg.wasm'))
   const opts = {
     fitTo: {
@@ -176,7 +187,7 @@ please feel free to discuss with me or submit a PR.
 
 - [x] Support async API
 - [x] Upgrade to napi-rs v2
-- [x] Support WebAssembly(.wasm)
+- [x] Support WebAssembly
 - [x] Output usvg-simplified SVG string
 - [ ] Support for getting SVG Bounding box
 - [ ] Support for generating more lossless bitmap formats, e.g. avif, webp, JPEG XL

@@ -51,8 +51,8 @@ export type ResvgRenderOptions = {
 	};
 };
 /**
- * Initialize WASM module
- * @param module_or_path WebAssembly Module or WASM url
+ * Initialize Wasm module
+ * @param module_or_path WebAssembly Module or .wasm url
  *
  */
 export declare const initWasm: (module_or_path: Promise<InitInput> | InitInput) => Promise<void>;
