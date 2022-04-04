@@ -5,8 +5,8 @@ import { ResvgRenderOptions } from './index'
 let initialized = false
 
 /**
- * Initialize WASM module
- * @param module_or_path WebAssembly Module or WASM url
+ * Initialize Wasm module
+ * @param module_or_path WebAssembly Module or .wasm url
  *
  */
 export const initWasm = async (module_or_path: Promise<InitInput> | InitInput): Promise<void> => {
@@ -23,7 +23,7 @@ export const Resvg = class extends _Resvg {
    * @param {ResvgRenderOptions | undefined} options
    */
   constructor(svg: Uint8Array | string, options?: ResvgRenderOptions) {
-    if (!initialized) throw new Error('WASM has not been initialized. Call `initWasm()` function.')
+    if (!initialized) throw new Error('Wasm has not been initialized. Call `initWasm()` function.')
     super(svg, JSON.stringify(options))
   }
 }

@@ -293,7 +293,7 @@ var initWasm = async (module_or_path) => {
 var Resvg2 = class extends Resvg {
   constructor(svg, options) {
     if (!initialized)
-      throw new Error("WASM has not been initialized. Call `initWasm()` function.");
+      throw new Error("Wasm has not been initialized. Call `initWasm()` function.");
     super(svg, JSON.stringify(options));
   }
 };

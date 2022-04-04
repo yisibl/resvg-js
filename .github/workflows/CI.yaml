@@ -186,7 +186,7 @@ jobs:
           if-no-files-found: error
 
   build-wasm:
-    name: Build and test wasm - node@${{ matrix.node }}(Linux-x64-gnu)
+    name: Build and test Wasm - node@${{ matrix.node }}(Linux-x64-gnu)
     strategy:
       fail-fast: false
       matrix:
@@ -221,10 +221,10 @@ jobs:
       - name: Install dependencies
         run: yarn install --ignore-scripts --frozen-lockfile --registry https://registry.npmjs.org --network-timeout 300000
 
-      - name: Build wasm
+      - name: Build Wasm
         run: yarn build:wasm
-      
-      - name: Test wasm
+
+      - name: Test Wasm
         run: yarn test:wasm
 
       - name: Upload artifacts
@@ -499,9 +499,9 @@ jobs:
       - name: List artifacts
         run: ls -R ./artifacts
 
-      - name: Move wasm artifacts
+      - name: Move Wasm artifacts
         run: mv -f ./artifacts/wasm32/*.wasm ./wasm
-      - name: List wasm packages
+      - name: List Wasm packages
         run: |
           ls -R ./wasm
           ls -lt ./wasm/index_bg.wasm
@@ -520,7 +520,7 @@ jobs:
             echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
             npm publish --access public
 
-            echo "Publishing WASM packages"
+            echo "Publishing Wasm packages"
             cd wasm
             npm publish --access public
           elif git log -1 --pretty=%B | grep "^[0-9]\+\.[0-9]\+\.[0-9]\+";
@@ -529,7 +529,7 @@ jobs:
             echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
             npm publish --tag next --access public
 
-            echo "Publishing WASM packages"
+            echo "Publishing Wasm packages"
             cd wasm
             npm publish --tag next --access public
           else

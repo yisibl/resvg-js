@@ -7,7 +7,7 @@ import jimp from 'jimp'
 
 import { Resvg, initWasm } from '../wasm'
 
-// init wasm
+// Init Wasm
 test.before(async () => {
   await initWasm(fs.readFile(join(__dirname, '../wasm/index_bg.wasm')))
 })

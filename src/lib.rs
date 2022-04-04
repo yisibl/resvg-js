@@ -199,7 +199,7 @@ impl Resvg {
   }
 
   #[wasm_bindgen]
-  // Renders an SVG in WASM
+  // Renders an SVG in Wasm
   pub fn render(&self) -> Result<RenderedImage, JsValue> {
     Ok(self.render_inner()?)
   }
