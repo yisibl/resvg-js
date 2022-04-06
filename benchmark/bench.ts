@@ -6,7 +6,7 @@ import b from 'benny'
 import sharp from 'sharp'
 import svg2img from 'svg2img'
 
-import { render } from '../index'
+import { Resvg } from '../index'
 
 async function run() {
   const svg1 = await fs.readFile(join(__dirname, '../example/text.svg'))
@@ -16,7 +16,7 @@ async function run() {
   await b.suite(
     'resize width',
     b.add('resvg-js(Rust)', () => {
-      render(svg1, {
+      const opts = {
         background: '#eeebe6',
         fitTo: {
           mode: 'width',
@@ -26,7 +26,10 @@ async function run() {
           loadSystemFonts: false,
         },
         logLevel: 'off',
-      })
+      }
+      const resvg = new Resvg(svg1, opts)
+      const pngData = resvg.render()
+      pngData.asPng()
     }),
 
     b.add('sharp', async () => {
@@ -65,7 +68,7 @@ async function run() {
   await b.suite(
     'resize icon width',
     b.add('resvg-js(Rust)', () => {
-      render(icon, {
+      const opts = {
         fitTo: {
           mode: 'width',
           value: 386,
@@ -74,7 +77,10 @@ async function run() {
           loadSystemFonts: false,
         },
         logLevel: 'off',
-      })
+      }
+      const resvg = new Resvg(icon, opts)
+      const pngData = resvg.render()
+      pngData.asPng()
     }),
 
     b.add('sharp', async () => {
@@ -118,12 +124,15 @@ async function run() {
   await b.suite(
     'default options and no text',
     b.add('resvg-js(Rust)', () => {
-      render(tiger, {
+      const opts = {
         font: {
           loadSystemFonts: false,
         },
         logLevel: 'off',
-      })
+      }
+      const resvg = new Resvg(tiger, opts)
+      const pngData = resvg.render()
+      pngData.asPng()
     }),
 
     b.add('sharp', async () => {
