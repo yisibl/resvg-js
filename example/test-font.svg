@@ -1,0 +1,31 @@
+<svg width="902" height="602" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style>
+      @font-face {
+        font-family: 'Source Han Serif CN Light';
+        src: url('SourceHanSerifCN-Light-subset.ttf');
+      }
+      @font-face {
+        font-family: '思源宋体';
+        src: url('SourceHanSerifCN-Light-subset.ttf');
+      }
+    </style>
+  </defs>
+  <g fill="none" fill-rule="evenodd">
+    <text font-size="50" fill="#235BD8">
+      <tspan x="267" y="70">Test font-family</tspan>
+    </text>
+    <text font-family="思源宋体, Source Han Serif CN Light, serif" font-size="50" font-weight="400" fill="#333">
+      <tspan x="460" y="183">春江水暖鸭先知</tspan>
+    </text>
+    <text font-family="思源宋体, serif" font-size="50" font-weight="400" fill="#333">
+      <tspan x="460" y="273">ABCabc?0123</tspan>
+    </text>
+    <text font-family="思源宋体, Source Han Serif CN Light, serif" font-size="50" font-weight="400" fill="#333">
+      <tspan x="460" y="363">ABCabc?0123</tspan>
+    </text>
+    <text font-family="MarkerFelt-Thin, Marker Felt" font-size="50" font-weight="400" fill="#333">
+      <tspan x="460" y="453">ABCabc?0123</tspan>
+    </text>
+  </g>
+</svg>
