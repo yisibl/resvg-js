@@ -12,6 +12,8 @@ pub enum Error {
   USvg(#[from] usvg::Error),
   #[error(transparent)]
   Encoding(#[from] png::EncodingError),
+  #[error(transparent)]
+  Utf8(#[from] std::string::FromUtf8Error),
   #[error("Target size is zero (please do not set the width/height/zoom options to 0)")]
   ZeroSized,
   #[error("Input must be string or Uint8Array")]

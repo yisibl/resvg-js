@@ -1,3 +1,5 @@
+use std::sync::Arc;
+
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -17,6 +19,7 @@ use pathfinder_geometry::vector::Vector2F;
 use napi_derive::napi;
 use options::JsOptions;
 use tiny_skia::Pixmap;
+use usvg::{ImageHrefResolver, ImageKind, NodeKind, OptionsRef};
 #[cfg(target_arch = "wasm32")]
 use wasm_bindgen::{
   prelude::{wasm_bindgen, JsValue},
@@ -135,7 +138,10 @@ impl Resvg {
       .filter_level(js_options.log_level)
       .try_init();
 
-    let opts = js_options.to_usvg_options();
+    let mut opts = js_options.to_usvg_options();
+    opts.image_href_resolver = ImageHrefResolver::default();
+    opts.image_href_resolver.resolve_string =
+      Box::new(move |data: &str, _: &OptionsRef| Some(ImageKind::SVG(data.as_bytes().to_vec())));
     let opts_ref = opts.to_ref();
     // Parse the SVG string into a tree.
     let tree = match svg {
@@ -229,6 +235,43 @@ impl Resvg {
       svg.view_box.rect = usvg::Rect::new(bbox.x, bbox.y, width, height).unwrap();
       svg.size = usvg::Size::new(width, height).unwrap();
     }
+  }
+
+  #[napi]
+  pub fn images_to_resolve(&self) -> Result<Vec<String>, NapiError> {
+    let mut data = vec![];
+    for mut node in self.tree.root().descendants() {
+      if let NodeKind::Image(i) = &mut *node.borrow_mut() {
+        if let ImageKind::SVG(buffer) = &mut i.kind {
+          let s = String::from_utf8(buffer.clone()).map_err(Error::from)?;
+          data.push(s);
+        }
+      }
+    }
+    Ok(data)
+  }
+
+  #[napi]
+  pub fn resolve_image(&self, href: String, mime: String, buffer: Buffer) -> Result<(), NapiError> {
+    let resolver = usvg::ImageHrefResolver::default_data_resolver();
+    let options = self.js_options.to_usvg_options();
+    for mut node in self.tree.root().descendants() {
+      if let NodeKind::Image(i) = &mut *node.borrow_mut() {
+        let matched = if let ImageKind::SVG(data) = &mut i.kind {
+          let s = String::from_utf8(data.clone()).map_err(Error::from)?;
+          s == href
+        } else {
+          false
+        };
+        if matched {
+          let data = (resolver)(&mime, Arc::new(buffer.to_vec()), &options.to_ref());
+          if let Some(kind) = data {
+            i.kind = kind;
+          }
+        }
+      }
+    }
+    Ok(())
   }
 }
 
@@ -564,7 +607,6 @@ pub struct AsyncRenderer {
 }
 
 #[cfg(not(target_arch = "wasm32"))]
-#[napi]
 impl Task for AsyncRenderer {
   type Output = RenderedImage;
   type JsValue = RenderedImage;
