@@ -140,8 +140,14 @@ impl Resvg {
 
     let mut opts = js_options.to_usvg_options();
     opts.image_href_resolver = ImageHrefResolver::default();
-    opts.image_href_resolver.resolve_string =
-      Box::new(move |data: &str, _: &OptionsRef| Some(ImageKind::SVG(data.as_bytes().to_vec())));
+    opts.image_href_resolver.resolve_string = Box::new(move |data: &str, opts: &OptionsRef| {
+      if data.starts_with("https://") || data.starts_with("http://") {
+        Some(ImageKind::RAW(0, 0, data.as_bytes().to_vec()))
+      } else {
+        let resolver = ImageHrefResolver::default().resolve_string;
+        (resolver)(data, opts)
+      }
+    });
     let opts_ref = opts.to_ref();
     // Parse the SVG string into a tree.
     let tree = match svg {
@@ -242,7 +248,7 @@ impl Resvg {
     let mut data = vec![];
     for mut node in self.tree.root().descendants() {
       if let NodeKind::Image(i) = &mut *node.borrow_mut() {
-        if let ImageKind::SVG(buffer) = &mut i.kind {
+        if let ImageKind::RAW(_, _, buffer) = &mut i.kind {
           let s = String::from_utf8(buffer.clone()).map_err(Error::from)?;
           data.push(s);
         }
@@ -257,7 +263,7 @@ impl Resvg {
     let options = self.js_options.to_usvg_options();
     for mut node in self.tree.root().descendants() {
       if let NodeKind::Image(i) = &mut *node.borrow_mut() {
-        let matched = if let ImageKind::SVG(data) = &mut i.kind {
+        let matched = if let ImageKind::RAW(_, _, data) = &mut i.kind {
           let s = String::from_utf8(data.clone()).map_err(Error::from)?;
           s == href
         } else {
