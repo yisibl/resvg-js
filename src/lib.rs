@@ -126,13 +126,14 @@ impl Resvg {
     Ok(Resvg { tree, js_options })
   }
 
-  // Renders an SVG in Node.js
+  /// Renders an SVG in Node.js
   #[napi]
   pub fn render(&self) -> Result<RenderedImage, NapiError> {
     Ok(self.render_inner()?)
   }
 
   #[napi]
+  /// Output usvg-simplified SVG string
   pub fn to_string(&self) -> String {
     self.tree.to_string(&usvg::XmlOptions::default())
   }
@@ -174,6 +175,7 @@ impl Resvg {
 #[wasm_bindgen]
 impl Resvg {
   #[wasm_bindgen(js_name = toString)]
+  /// Output usvg-simplified SVG string
   pub fn to_string(&self) -> String {
     self.tree.to_string(&usvg::XmlOptions::default())
   }
@@ -199,7 +201,7 @@ impl Resvg {
   }
 
   #[wasm_bindgen]
-  // Renders an SVG in Wasm
+  /// Renders an SVG in Wasm
   pub fn render(&self) -> Result<RenderedImage, JsValue> {
     Ok(self.render_inner()?)
   }
