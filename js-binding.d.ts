@@ -5,6 +5,11 @@
 
 export function renderAsync(svg: string | Buffer, options?: string | undefined | null, signal?: AbortSignal | undefined | null): Promise<RenderedImage>
 export class Resvg {
+  constructor(svg: string | Buffer, options?: string | undefined | null)
+  /** Renders an SVG in Node.js */
+  render(): RenderedImage
+  /** Output usvg-simplified SVG string */
+  toString(): string
   /** Get the SVG width */
   get width(): number
   /** Get the SVG height */
