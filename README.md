@@ -1,13 +1,14 @@
 # resvg-js
 
 <a href="https://github.com/yisibl/resvg-js/actions"><img alt="GitHub CI Status" src="https://github.com/yisibl/resvg-js/workflows/CI/badge.svg?branch=main"></a>
-<a href="https://www.npmjs.com/package/@resvg/resvg-js"><img src="https://img.shields.io/npm/v/@resvg/resvg-js.svg?sanitize=true" alt="npm version"></a>
+<a href="https://www.npmjs.com/package/@resvg/resvg-js"><img src="https://img.shields.io/npm/v/@resvg/resvg-js.svg?sanitize=true" alt="@resvg/resvg-js npm version"></a>
+<a href="https://npmcharts.com/compare/@resvg/resvg-js?minimal=true"><img src="https://img.shields.io/npm/dm/@resvg/resvg-js.svg?sanitize=true" alt="@resvg/resvg-js downloads"></a>
 
 > resvg-js is a high-performance SVG renderer and toolkit, powered by Rust based [resvg](https://github.com/RazrFalcon/resvg/) and [napi-rs](https://github.com/napi-rs/napi-rs).
 
 ## Features
 
-- Fast, safe and zero dependencies!
+- Fast, safe and zero dependencies.
 - Convert SVG to PNG, includes cropping, scaling and setting the background color.
 - Support system fonts and custom fonts in SVG text.
 - `v2`: Gets the width and height of the SVG and the generated PNG.
@@ -18,16 +19,16 @@
 
 ## Installation
 
-**We now recommend using the [2.0 beta](https://github.com/yisibl/resvg-js/releases/tag/v2.0.0-beta.0), and the API is largely stable. Which brings Wasm and many more new features.**
-
-```shell
-npm i @resvg/resvg-js@next
-```
-
-v1.x
+### Node.js
 
 ```shell
 npm i @resvg/resvg-js
+```
+
+### Browser(Wasm)
+
+```html
+<script src="https://unpkg.com/@resvg/resvg-wasm"></script>
 ```
 
 ## [Example](example/index.js)
@@ -54,14 +55,11 @@ Font './example/SourceHanSerifCN-Light-subset.ttf':0 found in 0.006ms.
 ```js
 const { promises } = require('fs')
 const { join } = require('path')
-const { performance } = require('perf_hooks')
-
-const { render } = require('@resvg/resvg-js')
+const { Resvg } = require('@resvg/resvg-js')
 
 async function main() {
   const svg = await promises.readFile(join(__dirname, './text.svg'))
-  const t = performance.now()
-  const pngData = render(svg, {
+  const opts = {
     background: 'rgba(238, 235, 230, .9)',
     fitTo: {
       mode: 'width',
@@ -72,11 +70,15 @@ async function main() {
       loadSystemFonts: false, // It will be faster to disable loading system fonts.
       defaultFontFamily: 'Source Han Serif CN Light',
     },
-    logLevel: 'debug',
-  })
-  console.info('✨ Done in', performance.now() - t, 'ms')
+  }
+  const resvg = new Resvg(svg, opts)
+  const pngData = resvg.render()
+  const pngBuffer = pngData.asPng()
 
-  await promises.writeFile(join(__dirname, './text-out.png'), pngData)
+  console.info('Original SVG Size:', `${resvg.width} x ${resvg.height}`)
+  console.info('Output PNG Size  :', `${pngData.width} x ${pngData.height}`)
+
+  await promises.writeFile(join(__dirname, './text-out.png'), pngBuffer)
 }
 
 main()
@@ -86,28 +88,32 @@ main()
 
 Although we support the use of Wasm packages in Node.js, this is not recommended. The native addon performs better.
 
-#### Browser(ES Modules)
+#### Browser
 
-```js
-import { render, initWasm } from '@resvg/resvg-wasm'
-;(async function () {
-  // The Wasm must be initialized first,
-  await initWasm(fetch('/your/path/index_bg.wasm'))
-  const opts = {
-    fitTo: {
-      mode: 'width', // If you need to change the size
-      value: 800,
-    },
-  }
+```html
+<script src="https://unpkg.com/@resvg/resvg-wasm"></script>
+<script>
+  ;(async function () {
+    // The Wasm must be initialized first
+    await resvg.initWasm(fetch('https://unpkg.com/@resvg/resvg-wasm@2.0.0-beta.0/index_bg.wasm'))
+    const opts = {
+      fitTo: {
+        mode: 'width', // If you need to change the size
+        value: 800,
+      },
+    }
 
-  const svg = '<svg> ... </svg>' // input svg, String or Uint8Array
-  const png = render(svg, opts) // PNG data, Uint8Array
-  const svgUrl = URL.createObjectURL(new Blob([png], { type: 'image/png' }))
-  document.getElementById('output').src = svgUrl
-})()
+    const svg = '<svg> ... </svg>' // Input SVG, String or Uint8Array
+    const resvgJS = new resvg.Resvg(svg, opts)
+    const pngData = resvgJS.render(svg, opts) // Output PNG data, Uint8Array
+    const pngBuffer = pngData.asPng()
+    const svgURL = URL.createObjectURL(new Blob([pngData], { type: 'image/png' }))
+    document.getElementById('output').src = svgURL
+  })()
+</script>
 ```
 
-See [playground](playground/index.html).
+See [playground](playground/index.html), it is also possible to [call Wasm in Node.js](example/wasm-node.js), but there is a performance penalty and this is not recommended.
 
 ## Benchmark
 

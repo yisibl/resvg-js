@@ -4,6 +4,7 @@
   "description": "A high-performance SVG renderer and toolkit, powered by Rust based resvg and napi-rs",
   "main": "index.js",
   "module": "index.mjs",
+  "unpkg": "index.min.js",
   "types": "index.d.ts",
   "exports": {
     ".": {
