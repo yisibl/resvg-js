@@ -5,8 +5,8 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>resvg-js playground</title>
-  <link rel="preload" as="fetch" type="application/wasm" href="./index_bg.wasm" crossorigin>
-  <script src="./index.min.js"></script>
+  <link rel="preload" as="fetch" type="application/wasm" href="https://unpkg.com/@resvg/resvg-wasm@2.0.0-beta.0/index_bg.wasm" crossorigin>
+  <script src="https://unpkg.com/@resvg/resvg-wasm@2.0.0-beta.0/index.min.js"></script>
   <style>
     html {
       box-sizing: border-box;
@@ -149,7 +149,7 @@
 
 <script>
     (async function () {
-      await resvg.initWasm(fetch('./index_bg.wasm'))
+      await resvg.initWasm(fetch('https://unpkg.com/@resvg/resvg-wasm@2.0.0-beta.0/index_bg.wasm'))
       const output = document.getElementById('output')
       const svgElement = document.querySelector('#input-svg')
       const inputSVG = svgElement.value.trim()

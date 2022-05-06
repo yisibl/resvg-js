@@ -95,7 +95,7 @@ Although we support the use of Wasm packages in Node.js, this is not recommended
 <script>
   ;(async function () {
     // The Wasm must be initialized first
-    await resvg.initWasm(fetch('https://unpkg.com/@resvg/resvg-wasm@2.0.0-beta.0/index_bg.wasm'))
+    await resvg.initWasm(fetch('https://unpkg.com/@resvg/resvg-wasm/index_bg.wasm'))
     const opts = {
       fitTo: {
         mode: 'width', // If you need to change the size

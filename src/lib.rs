@@ -43,6 +43,7 @@ extern "C" {
 }
 
 #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
+#[cfg_attr(not(target_arch = "wasm32"), napi)]
 #[derive(Debug)]
 pub struct BBox {
   pub x: f64,
@@ -141,8 +142,8 @@ impl Resvg {
     Ok(Resvg { tree, js_options })
   }
 
-  /// Renders an SVG in Node.js
   #[napi]
+  /// Renders an SVG in Node.js
   pub fn render(&self) -> Result<RenderedImage, NapiError> {
     Ok(self.render_inner()?)
   }
@@ -153,10 +154,10 @@ impl Resvg {
     self.tree.to_string(&usvg::XmlOptions::default())
   }
 
-  /// Calculate a maximum bounding box of all visible elements in this
-  /// SVG.
+  #[napi(js_name = innerBBox)]
+  /// Calculate a maximum bounding box of all visible elements in this SVG.
   ///
-  /// Note: path bounding box are approx. values
+  /// Note: path bounding box are approx values.
   pub fn inner_bbox(&self) -> BBox {
     let rect = self.tree.svg_node().view_box.rect;
     let rect = points_to_rect(
@@ -220,12 +221,6 @@ impl Resvg {
 #[cfg(target_arch = "wasm32")]
 #[wasm_bindgen]
 impl Resvg {
-  #[wasm_bindgen(js_name = toString)]
-  /// Output usvg-simplified SVG string
-  pub fn to_string(&self) -> String {
-    self.tree.to_string(&usvg::XmlOptions::default())
-  }
-
   #[wasm_bindgen(constructor)]
   pub fn new(svg: IStringOrBuffer, options: Option<String>) -> Result<Resvg, JsValue> {
     let js_options: JsOptions = options
@@ -250,6 +245,43 @@ impl Resvg {
   /// Renders an SVG in Wasm
   pub fn render(&self) -> Result<RenderedImage, JsValue> {
     Ok(self.render_inner()?)
+  }
+
+  #[wasm_bindgen(js_name = toString)]
+  /// Output usvg-simplified SVG string
+  pub fn to_string(&self) -> String {
+    self.tree.to_string(&usvg::XmlOptions::default())
+  }
+
+  #[wasm_bindgen(js_name = innerBBox)]
+  /// Calculate a maximum bounding box of all visible elements in this SVG.
+  ///
+  /// Note: path bounding box are approx values.
+  pub fn inner_bbox(&self) -> BBox {
+    let rect = self.tree.svg_node().view_box.rect;
+    let rect = points_to_rect(
+      usvg::Point::new(rect.x(), rect.y()),
+      usvg::Point::new(rect.right(), rect.bottom()),
+    );
+    let mut v = None;
+    for child in self.tree.root().children().skip(1) {
+      let child_viewbox = match self.node_bbox(child).and_then(|v| v.intersection(rect)) {
+        Some(v) => v,
+        None => continue,
+      };
+      if let Some(v) = v.as_mut() {
+        *v = child_viewbox.union_rect(*v);
+      } else {
+        v = Some(child_viewbox)
+      };
+    }
+    let v = v.unwrap();
+    BBox {
+      x: v.min_x().floor() as f64,
+      y: v.min_y().floor() as f64,
+      width: (v.max_x().ceil() - v.min_x().floor()) as f64,
+      height: (v.max_y().ceil() - v.min_y().floor()) as f64,
+    }
   }
 }
 
