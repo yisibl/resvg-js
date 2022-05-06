@@ -40,6 +40,12 @@ export type ResvgRenderOptions = {
   }
   logLevel?: 'off' | 'error' | 'warn' | 'info' | 'debug' | 'trace'
 }
+export class BBox {
+  x: number
+  y: number
+  width: number
+  height: number
+}
 
 export function renderAsync(
   svg: string | Buffer,
@@ -50,6 +56,12 @@ export class Resvg {
   constructor(svg: Buffer | string, options?: ResvgRenderOptions | null)
   toString(): string
   render(): RenderedImage
+  /**
+   * Calculate a maximum bounding box of all visible elements in this SVG.
+   *
+   * Note: path bounding box are approx values.
+   */
+  innerBBox(): BBox
 
   /** Get the SVG width */
   get width(): number

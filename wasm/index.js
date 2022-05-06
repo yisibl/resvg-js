@@ -119,6 +119,50 @@ cachedTextDecoder.decode();
 function getStringFromWasm0(ptr, len) {
   return cachedTextDecoder.decode(getUint8Memory0().subarray(ptr, ptr + len));
 }
+var BBox = class {
+  static __wrap(ptr) {
+    const obj = Object.create(BBox.prototype);
+    obj.ptr = ptr;
+    return obj;
+  }
+  __destroy_into_raw() {
+    const ptr = this.ptr;
+    this.ptr = 0;
+    return ptr;
+  }
+  free() {
+    const ptr = this.__destroy_into_raw();
+    wasm.__wbg_bbox_free(ptr);
+  }
+  get x() {
+    const ret = wasm.__wbg_get_bbox_x(this.ptr);
+    return ret;
+  }
+  set x(arg0) {
+    wasm.__wbg_set_bbox_x(this.ptr, arg0);
+  }
+  get y() {
+    const ret = wasm.__wbg_get_bbox_y(this.ptr);
+    return ret;
+  }
+  set y(arg0) {
+    wasm.__wbg_set_bbox_y(this.ptr, arg0);
+  }
+  get width() {
+    const ret = wasm.__wbg_get_bbox_width(this.ptr);
+    return ret;
+  }
+  set width(arg0) {
+    wasm.__wbg_set_bbox_width(this.ptr, arg0);
+  }
+  get height() {
+    const ret = wasm.__wbg_get_bbox_height(this.ptr);
+    return ret;
+  }
+  set height(arg0) {
+    wasm.__wbg_set_bbox_height(this.ptr, arg0);
+  }
+};
 var RenderedImage = class {
   static __wrap(ptr) {
     const obj = Object.create(RenderedImage.prototype);
@@ -181,18 +225,6 @@ var Resvg = class {
     const ret = wasm.resvg_height(this.ptr);
     return ret;
   }
-  toString() {
-    try {
-      const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-      wasm.resvg_toString(retptr, this.ptr);
-      var r0 = getInt32Memory0()[retptr / 4 + 0];
-      var r1 = getInt32Memory0()[retptr / 4 + 1];
-      return getStringFromWasm0(r0, r1);
-    } finally {
-      wasm.__wbindgen_add_to_stack_pointer(16);
-      wasm.__wbindgen_free(r0, r1);
-    }
-  }
   constructor(svg, options) {
     try {
       const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
@@ -224,6 +256,22 @@ var Resvg = class {
     } finally {
       wasm.__wbindgen_add_to_stack_pointer(16);
     }
+  }
+  toString() {
+    try {
+      const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+      wasm.resvg_toString(retptr, this.ptr);
+      var r0 = getInt32Memory0()[retptr / 4 + 0];
+      var r1 = getInt32Memory0()[retptr / 4 + 1];
+      return getStringFromWasm0(r0, r1);
+    } finally {
+      wasm.__wbindgen_add_to_stack_pointer(16);
+      wasm.__wbindgen_free(r0, r1);
+    }
+  }
+  innerBBox() {
+    const ret = wasm.resvg_innerBBox(this.ptr);
+    return BBox.__wrap(ret);
   }
 };
 async function load(module2, imports) {

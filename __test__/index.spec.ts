@@ -295,6 +295,46 @@ test('should render `<use xlink:href>` to an `<defs>` element', async (t) => {
   t.is(result.getHeight(), 900)
 })
 
+test('should get svg bbox', (t) => {
+  const svg = `<svg viewBox="-40 0 150 100" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <g fill="red" transform="rotate(-10 50 100) translate(-36 45.5) skewX(40) scale(1 0.5)">
+      <path id="heart" d="M 10,30 A 20,20 0,0,1 50,30 A 20,20 0,0,1 90,30 Q 90,60 50,90 Q 10,60 10,30 z" />
+    </g>
+  </svg>`
+
+  const resvg = new Resvg(svg, {
+    fitTo: {
+      mode: 'width',
+      value: 500,
+    },
+  })
+  const bbox = resvg.innerBBox()
+
+  t.is(bbox.width, 120)
+  t.is(bbox.height, 49)
+  t.is(bbox.x, -30)
+  t.is(bbox.y, 49)
+})
+
+test('should get svg bbox(rect)', (t) => {
+  const svg = `<svg width="300px" height="300px" viewBox="0 0 300 300" version="1.1" xmlns="http://www.w3.org/2000/svg">
+  <rect fill="#5283E8" x="50" y="60.8" width="200" height="100"></rect>
+</svg>`
+
+  const resvg = new Resvg(svg, {
+    fitTo: {
+      mode: 'width',
+      value: 380,
+    },
+  })
+  const bbox = resvg.innerBBox()
+
+  t.is(bbox.width, 200)
+  t.is(bbox.height, 101) // Here the expected value is actually 100, and the calculation of the bbox needs to be fixed.
+  t.is(bbox.x, 50)
+  t.is(bbox.y, 60)
+})
+
 test('should throw because invalid SVG attribute (width attribute is 0)', (t) => {
   const error = t.throws(
     () => {

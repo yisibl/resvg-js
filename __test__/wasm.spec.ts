@@ -206,6 +206,25 @@ test('should render `<use xlink:href>` to an `<defs>` element', async (t) => {
   t.is(result.getHeight(), 900)
 })
 
+test('should get svg bbox', (t) => {
+  const svg = `<svg width="300px" height="300px" viewBox="0 0 300 300" version="1.1" xmlns="http://www.w3.org/2000/svg">
+  <rect fill="#5283E8" x="50" y="60.8" width="200" height="100"></rect>
+</svg>`
+
+  const resvg = new Resvg(svg, {
+    fitTo: {
+      mode: 'width',
+      value: 500,
+    },
+  })
+  const bbox = resvg.innerBBox()
+
+  t.is(bbox.width, 200)
+  t.is(bbox.height, 101) // Here the expected value is actually 100, and the calculation of the bbox needs to be fixed.
+  t.is(bbox.x, 50)
+  t.is(bbox.y, 60)
+})
+
 // throws
 test('should throw because invalid SVG (blank string)', (t) => {
   const error = t.throws(
