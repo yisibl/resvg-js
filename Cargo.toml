@@ -31,8 +31,8 @@ pathfinder_simd = { version = "0.5.1", features = ["pf-no-simd"] }
 mimalloc-rust = { version = "0.1" }
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
-wasm-bindgen = "0.2.79"
-js-sys = "0.3.56"
+wasm-bindgen = "0.2.80"
+js-sys = "0.3.57"
 usvg = { version = "0.22.0", default-features = false, features = [
     "export",
     "filter",

@@ -9,6 +9,12 @@ This changelog also contains important changes in dependencies.
 
 ## [Unreleased]
 
+## [2.0.1] - 2022-05-07
+
+### Fixed
+
+- fix: rebuild Wasm to solve the problem of not working in the browser
+
 ## [2.0.0] - 2022-04-30
 
 resvg-js now supports WebAssembly. 🎉
