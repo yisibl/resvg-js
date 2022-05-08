@@ -77,6 +77,7 @@ export declare const Resvg: {
 		render(): RenderedImage;
 		toString(): string;
 		innerBBox(): BBox;
+		cropByBBox(bbox: BBox): void;
 		readonly height: number;
 		readonly width: number;
 	};

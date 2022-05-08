@@ -54,7 +54,7 @@
     "bundle:dts": "dts-bundle-generator --external-types -o wasm/index.d.ts wasm-binding.ts",
     "build": "napi build --platform --release --js js-binding.js --dts js-binding.d.ts",
     "build:debug": "napi build --platform --js js-binding.js --dts js-binding.d.ts",
-    "build:wasm": "run-s build:wasm-web copy-wasm playground bundle",
+    "build:wasm": "run-s build:wasm-web copy-wasm bundle",
     "build:wasm-web": "wasm-pack build --target web --out-name index --out-dir wasm/dist --release",
     "copy-wasm": "copyfiles -f wasm/dist/index_bg.wasm ./wasm",
     "playground": "copyfiles -f playground/index.html ./wasm",
@@ -74,7 +74,7 @@
   },
   "devDependencies": {
     "@napi-rs/canvas": "^0.1.21",
-    "@napi-rs/cli": "^2.7.0",
+    "@napi-rs/cli": "^2.8.0",
     "@swc-node/register": "^1.5.1",
     "@types/node": "^17.0.1",
     "@types/sharp": "^0.30.2",

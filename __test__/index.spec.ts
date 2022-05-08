@@ -316,9 +316,9 @@ test('should get svg bbox', (t) => {
   t.is(bbox.y, 49)
 })
 
-test('should get svg bbox(rect)', (t) => {
+test('should get svg bbox(rect)', async (t) => {
   const svg = `<svg width="300px" height="300px" viewBox="0 0 300 300" version="1.1" xmlns="http://www.w3.org/2000/svg">
-  <rect fill="#5283E8" x="50" y="60.8" width="200" height="100"></rect>
+  <rect fill="#5283E8" x="50.4" y="60.8" width="200" height="100"></rect>
 </svg>`
 
   const resvg = new Resvg(svg, {
@@ -328,9 +328,16 @@ test('should get svg bbox(rect)', (t) => {
     },
   })
   const bbox = resvg.innerBBox()
+  const pngData = resvg.render()
+  const pngBuffer = pngData.asPng()
+  const result = await jimp.read(pngBuffer)
 
-  t.is(bbox.width, 200)
-  t.is(bbox.height, 101) // Here the expected value is actually 100, and the calculation of the bbox needs to be fixed.
+  // TODO: Must not have Alpha
+  t.is(result.hasAlpha(), true)
+
+  // TODO: Here the expected value is actually 200*100, and the calculation of the bbox needs to be fixed.
+  t.is(bbox.width, 201)
+  t.is(bbox.height, 101)
   t.is(bbox.x, 50)
   t.is(bbox.y, 60)
 })

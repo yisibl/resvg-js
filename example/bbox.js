@@ -20,6 +20,7 @@ async function main() {
   const t = performance.now()
   const resvg = new Resvg(svg, opts)
   const bbox = resvg.innerBBox()
+  resvg.cropByBBox(bbox)
   const pngData = resvg.render()
   const pngBuffer = pngData.asPng()
 

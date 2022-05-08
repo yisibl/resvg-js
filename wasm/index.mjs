@@ -89,6 +89,12 @@ cachedTextDecoder.decode();
 function getStringFromWasm0(ptr, len) {
   return cachedTextDecoder.decode(getUint8Memory0().subarray(ptr, ptr + len));
 }
+function _assertClass(instance, klass) {
+  if (!(instance instanceof klass)) {
+    throw new Error(`expected instance of ${klass.name}`);
+  }
+  return instance.ptr;
+}
 var BBox = class {
   static __wrap(ptr) {
     const obj = Object.create(BBox.prototype);
@@ -242,6 +248,10 @@ var Resvg = class {
   innerBBox() {
     const ret = wasm.resvg_innerBBox(this.ptr);
     return BBox.__wrap(ret);
+  }
+  cropByBBox(bbox) {
+    _assertClass(bbox, BBox);
+    wasm.resvg_cropByBBox(this.ptr, bbox.ptr);
   }
 };
 async function load(module, imports) {

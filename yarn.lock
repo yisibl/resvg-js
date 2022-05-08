@@ -473,10 +473,10 @@
     "@napi-rs/canvas-linux-x64-musl" "0.1.21"
     "@napi-rs/canvas-win32-x64-msvc" "0.1.21"
 
-"@napi-rs/cli@^2.7.0":
-  version "2.7.0"
-  resolved "https://registry.npmjs.org/@napi-rs/cli/-/cli-2.7.0.tgz#afcfc6f8476f1c2c259c626270841bd24fc52588"
-  integrity sha512-bQb+r9/xW8LFRbpEN7A/4fX8LnEWbI0JzyOzXGDpO+cI8dXRxX7OPySOpzT2nBgP1brA2Ydkw/t9lyxLN9TlxQ==
+"@napi-rs/cli@^2.8.0":
+  version "2.8.0"
+  resolved "https://registry.npmjs.org/@napi-rs/cli/-/cli-2.8.0.tgz#536677acf045fc223fab4ac746f25e10b7afb907"
+  integrity sha512-yECNMAcIpdy58PcOgsIK6x6FzSButzpdR0QFjdv4d1d0OzeTSmcyt9tVqyc8ZPfEUXnQdNVBXY9wVQLVY1pi/A==
 
 "@nodelib/fs.scandir@2.1.5":
   version "2.1.5"

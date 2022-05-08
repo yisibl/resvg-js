@@ -22,6 +22,11 @@ export class Resvg {
    * Note: path bounding box are approx values.
    */
   innerBBox(): BBox
+  /**
+   * Use a given `BBox` to crop the svg. Currently this method simply changes
+   * the viewbox/size of the svg and do not move the elements for simplicity
+   */
+  cropByBBox(bbox: BBox): void
   /** Get the SVG width */
   get width(): number
   /** Get the SVG height */
