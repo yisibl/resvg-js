@@ -104,8 +104,8 @@
       justify-content: center;
     }
 
-    #output .body  img {
-      outline: 1px solid red;
+    #output .body img {
+      outline: 1px dashed #666;
     }
 
     .opts {
@@ -158,15 +158,15 @@
       const svgElement = document.querySelector('#input-svg')
       const inputSVG = svgElement.value.trim()
       let resvgOpts = {
-        // fitTo: {
-        //   mode: 'width',
-        //   value: 300,
-        // }
+        fitTo: {
+          mode: 'width',
+          value: 300,
+        }
       }
 
       svg2png(inputSVG, resvgOpts)
 
-      function svg2png(svgString, opts, padding) {
+      function svg2png(svgString, opts, hasCrop) {
         const svg = svgString ? svgString : svgElement.value.trim()
 
         if (!svg) {
@@ -175,9 +175,9 @@
         }
         const resvgJS = new resvg.Resvg(svg, opts)
         const bbox = resvgJS.innerBBox()
-        console.log(bbox)
-        if (padding >= 0) {
-          resvgJS.cropByBBox(bbox, padding)
+        console.log('SVG BBox', bbox)
+        if (hasCrop) {
+          resvgJS.cropByBBox(bbox)
         }
         const pngData = resvgJS.render()
         const pngBuffer = pngData.asPng()
@@ -192,8 +192,9 @@
 
       addMultipleEventListener(svgElement, ['change', 'keyup', 'paste'], function(event) {
         const svgString = event.target.value.trim()
+        const hasCrop = cropElement.checked
         if (!svgString) return
-        svg2png(svgString, resvgOpts)
+        svg2png(svgString, resvgOpts, hasCrop)
       })
 
       function addMultipleEventListener(element, events, handler) {
@@ -201,17 +202,21 @@
       }
 
       const colorPickerElement = document.querySelector('#color-picker')
+      const svgSizeElement = document.querySelector('#svg-size')
+      const cropElement = document.querySelector('#crop-by-bbox')
+
       colorPickerElement.addEventListener('change', function(event) {
         const value = event.target.value
+        const hasCrop = cropElement.checked
         if (!value) return
 
         resvgOpts.background = value
-        svg2png(null, resvgOpts)
+        svg2png(null, resvgOpts, hasCrop)
       })
 
-      const svgSizeElement = document.querySelector('#svg-size')
       svgSizeElement.addEventListener('change', function(event) {
         const value = event.target.value
+        const hasCrop = cropElement.checked
         if (!value) {
           Object.assign(resvgOpts, { fitTo: {
             mode: 'original',
@@ -229,19 +234,12 @@
           }})
         }
 
-        svg2png(null, resvgOpts)
+        svg2png(null, resvgOpts, hasCrop)
       })
 
-      const paddingElement = document.querySelector('#padding')
-      paddingElement.addEventListener('change', function(event) {
-        const value = parseInt(event.target.value, 10)
-        if (value < 0) {
-          return
-        } else {
-          // TODO: limit padding
-          svg2png(null, resvgOpts, value)
-        }
-
+      cropElement.addEventListener('change', function(event) {
+        const hasCrop = event.target.checked
+        svg2png(null, resvgOpts, hasCrop)
       })
 
     })();
@@ -271,8 +269,8 @@
         <input type="number" placeholder="" name="svg-size" id="svg-size">
       </div>
       <div class="opts-cell">
-        <label for="svg-size">padding:</label>
-        <input type="number" placeholder="0" name="padding" id="padding">
+        <label for="crop-by-bbox">Crop by BBox:</label>
+        <input type="checkbox" name="crop-by-bbox" id="crop-by-bbox">
       </div>
     </div>
     <div class="box">
@@ -281,8 +279,10 @@
           <div class="info" id="svg-info"></div>
         </div>
         <textarea name="input-svg" id="input-svg" placeholder="Enter the svg string" cols="30" rows="10">
-          <svg width="300px" height="300px" viewBox="0 0 300 300" version="1.1" xmlns="http://www.w3.org/2000/svg">
-            <rect fill="#5283E8" x="50" y="60.8" width="200" height="100"></rect>
+          <svg width="700" height="500" viewBox="0 0 185.20832 132.29167" version="1.1" xmlns="http://www.w3.org/2000/svg">
+            <g style="opacity:0.86042145; fill:#ff0000;">
+              <rect x="117.58522" y="36.993668" width="52.916664" height="13.229166" id="pad_width" />
+            </g>
           </svg>
         </textarea>
       </div>
