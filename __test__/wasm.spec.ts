@@ -211,25 +211,23 @@ test('should get svg bbox(rect)', async (t) => {
   <rect fill="#5283E8" x="50.4" y="60.8" width="200" height="100"></rect>
 </svg>`
 
-  const resvg = new Resvg(svg, {
-    fitTo: {
-      mode: 'width',
-      value: 380,
-    },
-  })
-  const bbox = resvg.innerBBox()
+  const resvg = new Resvg(svg)
+  const bbox = resvg.getBBox()
+  resvg.cropByBBox(bbox)
   const pngData = resvg.render()
   const pngBuffer = pngData.asPng()
   const result = await jimp.read(Buffer.from(pngBuffer))
 
-  // TODO: Must not have Alpha
-  t.is(result.hasAlpha(), true)
+  t.is(bbox.width, 200)
+  t.is(bbox.height, 100.00000000000001)
+  t.is(bbox.x, 50.4)
+  t.is(bbox.y, 60.8)
 
-  // TODO: Here the expected value is actually 200*100, and the calculation of the bbox needs to be fixed.
-  t.is(bbox.width, 201)
-  t.is(bbox.height, 101)
-  t.is(bbox.x, 50)
-  t.is(bbox.y, 60)
+  // Must not have Alpha
+  t.is(result.hasAlpha(), false)
+  // Here the expected value is actually 200*100, and the calculation of the bbox needs to be fixed.
+  t.is(result.getWidth(), 200)
+  t.is(result.getHeight(), 100)
 })
 
 // throws

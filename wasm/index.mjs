@@ -249,6 +249,10 @@ var Resvg = class {
     const ret = wasm.resvg_innerBBox(this.ptr);
     return BBox.__wrap(ret);
   }
+  getBBox() {
+    const ret = wasm.resvg_getBBox(this.ptr);
+    return BBox.__wrap(ret);
+  }
   cropByBBox(bbox) {
     _assertClass(bbox, BBox);
     wasm.resvg_cropByBBox(this.ptr, bbox.ptr);

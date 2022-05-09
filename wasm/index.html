@@ -50,6 +50,11 @@
       padding: 0;
     }
 
+    label {
+      cursor: pointer;
+      user-select: none;
+    }
+
     input:not([type="color"]) {
       height: 30px;
       padding: 0 .5em;
@@ -158,10 +163,10 @@
       const svgElement = document.querySelector('#input-svg')
       const inputSVG = svgElement.value.trim()
       let resvgOpts = {
-        fitTo: {
-          mode: 'width',
-          value: 300,
-        }
+        // fitTo: {
+        //   mode: 'width',
+        //   value: 500,
+        // }
       }
 
       svg2png(inputSVG, resvgOpts)
@@ -175,9 +180,11 @@
         }
         const resvgJS = new resvg.Resvg(svg, opts)
         const bbox = resvgJS.innerBBox()
-        console.log('SVG BBox', bbox)
+        const bbox2 = resvgJS.getBBox()
+        console.log('SVG innerBBox', bbox)
+        console.log('SVG getBBox', bbox2)
         if (hasCrop) {
-          resvgJS.cropByBBox(bbox)
+          resvgJS.cropByBBox(bbox2)
         }
         const pngData = resvgJS.render()
         const pngBuffer = pngData.asPng()
@@ -270,7 +277,7 @@
       </div>
       <div class="opts-cell">
         <label for="crop-by-bbox">Crop by BBox:</label>
-        <input type="checkbox" name="crop-by-bbox" id="crop-by-bbox">
+        <input type="checkbox" checked name="crop-by-bbox" id="crop-by-bbox">
       </div>
     </div>
     <div class="box">

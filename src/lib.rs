@@ -26,6 +26,7 @@ mod fonts;
 mod options;
 
 use error::Error;
+use usvg::NodeExt;
 
 #[cfg(all(
   not(target_arch = "wasm32"),
@@ -155,7 +156,6 @@ impl Resvg {
     self.tree.to_string(&usvg::XmlOptions::default())
   }
 
-  // TODO: add apply_transform
   #[napi(js_name = innerBBox)]
   /// Calculate a maximum bounding box of all visible elements in this SVG.
   ///
@@ -184,6 +184,29 @@ impl Resvg {
       y: v.min_y().floor() as f64,
       width: (v.max_x().ceil() - v.min_x().floor()) as f64,
       height: (v.max_y().ceil() - v.min_y().floor()) as f64,
+    }
+  }
+
+  #[napi(js_name = getBBox)]
+  /// Calculate a maximum bounding box of all visible elements in this SVG.
+  /// This will first apply transform.
+  /// Similar to `SVGGraphicsElement.getBBox()` DOM API.
+  pub fn get_bbox(&self) -> BBox {
+    let node = self.tree.root();
+    if let Some(bbox) = node.calculate_bbox() {
+      return BBox {
+        x: bbox.x(),
+        y: bbox.y(),
+        width: bbox.width(),
+        height: bbox.height(),
+      };
+    } else {
+      return BBox {
+        x: 0.0,
+        y: 0.0,
+        width: 0.0,
+        height: 0.0,
+      };
     }
   }
 
@@ -300,6 +323,29 @@ impl Resvg {
       y: v.min_y().floor() as f64,
       width: (v.max_x().ceil() - v.min_x().floor()) as f64,
       height: (v.max_y().ceil() - v.min_y().floor()) as f64,
+    }
+  }
+
+  #[wasm_bindgen(js_name = getBBox)]
+  /// Calculate a maximum bounding box of all visible elements in this SVG.
+  /// This will first apply transform.
+  /// Similar to `SVGGraphicsElement.getBBox()` DOM API.
+  pub fn get_bbox(&self) -> BBox {
+    let node = self.tree.root();
+    if let Some(bbox) = node.calculate_bbox() {
+      return BBox {
+        x: bbox.x(),
+        y: bbox.y(),
+        width: bbox.width(),
+        height: bbox.height(),
+      };
+    } else {
+      return BBox {
+        x: 0.0,
+        y: 0.0,
+        width: 0.0,
+        height: 0.0,
+      };
     }
   }
 
