@@ -1,6 +1,7 @@
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 #[cfg(not(target_arch = "wasm32"))]
 use napi::bindgen_prelude::{AbortSignal, AsyncTask, Buffer, Either, Error as NapiError, Task};
 use pathfinder_content::{
@@ -25,6 +26,7 @@ mod fonts;
 mod options;
 
 use error::Error;
+use usvg::NodeExt;
 
 #[cfg(all(
   not(target_arch = "wasm32"),
@@ -184,6 +186,46 @@ impl Resvg {
       height: (v.max_y().ceil() - v.min_y().floor()) as f64,
     }
   }
+
+  #[napi(js_name = getBBox)]
+  /// Calculate a maximum bounding box of all visible elements in this SVG.
+  /// This will first apply transform.
+  /// Similar to `SVGGraphicsElement.getBBox()` DOM API.
+  pub fn get_bbox(&self) -> BBox {
+    let node = self.tree.root();
+    if let Some(bbox) = node.calculate_bbox() {
+      return BBox {
+        x: bbox.x(),
+        y: bbox.y(),
+        width: bbox.width(),
+        height: bbox.height(),
+      };
+    } else {
+      return BBox {
+        x: 0.0,
+        y: 0.0,
+        width: 0.0,
+        height: 0.0,
+      };
+    }
+  }
+
+  #[napi(js_name = cropByBBox)]
+  /// Use a given `BBox` to crop the svg. Currently this method simply changes
+  /// the viewbox/size of the svg and do not move the elements for simplicity
+  pub fn crop_by_bbox(&mut self, bbox: &BBox) {
+    if !bbox.width.is_finite() || !bbox.height.is_finite() {
+      return;
+    }
+    let mut node = self.tree.root();
+    let mut node = node.borrow_mut();
+    if let usvg::NodeKind::Svg(svg) = &mut *node {
+      let width = bbox.width;
+      let height = bbox.height;
+      svg.view_box.rect = usvg::Rect::new(bbox.x, bbox.y, width, height).unwrap();
+      svg.size = usvg::Size::new(width, height).unwrap();
+    }
+  }
 }
 
 #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
@@ -281,6 +323,46 @@ impl Resvg {
       y: v.min_y().floor() as f64,
       width: (v.max_x().ceil() - v.min_x().floor()) as f64,
       height: (v.max_y().ceil() - v.min_y().floor()) as f64,
+    }
+  }
+
+  #[wasm_bindgen(js_name = getBBox)]
+  /// Calculate a maximum bounding box of all visible elements in this SVG.
+  /// This will first apply transform.
+  /// Similar to `SVGGraphicsElement.getBBox()` DOM API.
+  pub fn get_bbox(&self) -> BBox {
+    let node = self.tree.root();
+    if let Some(bbox) = node.calculate_bbox() {
+      return BBox {
+        x: bbox.x(),
+        y: bbox.y(),
+        width: bbox.width(),
+        height: bbox.height(),
+      };
+    } else {
+      return BBox {
+        x: 0.0,
+        y: 0.0,
+        width: 0.0,
+        height: 0.0,
+      };
+    }
+  }
+
+  #[wasm_bindgen(js_name = cropByBBox)]
+  /// Use a given `BBox` to crop the svg. Currently this method simply changes
+  /// the viewbox/size of the svg and do not move the elements for simplicity
+  pub fn crop_by_bbox(&mut self, bbox: &BBox) {
+    if !bbox.width.is_finite() || !bbox.height.is_finite() {
+      return;
+    }
+    let mut node = self.tree.root();
+    let mut node = node.borrow_mut();
+    if let usvg::NodeKind::Svg(svg) = &mut *node {
+      let width = bbox.width;
+      let height = bbox.height;
+      svg.view_box.rect = usvg::Rect::new(bbox.x, bbox.y, width, height).unwrap();
+      svg.size = usvg::Size::new(width, height).unwrap();
     }
   }
 }
