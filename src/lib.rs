@@ -291,7 +291,7 @@ impl Resvg {
   /// Calculate a maximum bounding box of all visible elements in this SVG.
   ///
   /// Note: path bounding box are approx values.
-  pub fn inner_bbox(&self) -> BBox {
+  pub fn inner_bbox(&self) -> Option<BBox> {
     let rect = self.tree.svg_node().view_box.rect;
     let rect = points_to_rect(
       usvg::Point::new(rect.x(), rect.y()),
@@ -309,36 +309,28 @@ impl Resvg {
         v = Some(child_viewbox)
       };
     }
-    let v = v.unwrap();
-    BBox {
+    let v = v?;
+    Some(BBox {
       x: v.min_x().floor() as f64,
       y: v.min_y().floor() as f64,
       width: (v.max_x().ceil() - v.min_x().floor()) as f64,
       height: (v.max_y().ceil() - v.min_y().floor()) as f64,
-    }
+    })
   }
 
   #[wasm_bindgen(js_name = getBBox)]
   /// Calculate a maximum bounding box of all visible elements in this SVG.
   /// This will first apply transform.
   /// Similar to `SVGGraphicsElement.getBBox()` DOM API.
-  pub fn get_bbox(&self) -> BBox {
+  pub fn get_bbox(&self) -> Option<BBox> {
     let node = self.tree.root();
-    if let Some(bbox) = node.calculate_bbox() {
-      return BBox {
-        x: bbox.x(),
-        y: bbox.y(),
-        width: bbox.width(),
-        height: bbox.height(),
-      };
-    } else {
-      return BBox {
-        x: 0.0,
-        y: 0.0,
-        width: 0.0,
-        height: 0.0,
-      };
-    }
+    let bbox = node.calculate_bbox()?;
+    Some(BBox {
+      x: bbox.x(),
+      y: bbox.y(),
+      width: bbox.width(),
+      height: bbox.height(),
+    })
   }
 
   #[wasm_bindgen(js_name = cropByBBox)]

@@ -89,8 +89,8 @@ export declare const Resvg: {
 		free(): void;
 		render(): RenderedImage;
 		toString(): string;
-		innerBBox(): BBox;
-		getBBox(): BBox;
+		innerBBox(): BBox | undefined;
+		getBBox(): BBox | undefined;
 		cropByBBox(bbox: BBox): void;
 		readonly height: number;
 		readonly width: number;
