@@ -61,13 +61,13 @@ export class Resvg {
    *
    * Note: path bounding box are approx values.
    */
-  innerBBox(): BBox
+  innerBBox(): BBox | null
   /**
    * Calculate a maximum bounding box of all visible elements in this SVG.
    * This will first apply transform.
    * Similar to `SVGGraphicsElement.getBBox()` DOM API.
    */
-  getBBox(): BBox
+  getBBox(): BBox | null
   /**
    * Use a given `BBox` to crop the svg. Currently this method simply changes
    * the viewbox/size of the svg and do not move the elements for simplicity
