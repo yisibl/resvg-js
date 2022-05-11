@@ -160,6 +160,9 @@ impl Resvg {
   /// Calculate a maximum bounding box of all visible elements in this SVG.
   ///
   /// Note: path bounding box are approx values.
+
+  // The current return in napi-rs is inconsistent with wasm_bindgen,
+  // consider unifying it as undefined(Option<T> map to Either<T, Undefined>).
   pub fn inner_bbox(&self) -> Option<BBox> {
     let rect = self.tree.svg_node().view_box.rect;
     let rect = points_to_rect(

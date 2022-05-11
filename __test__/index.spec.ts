@@ -340,9 +340,12 @@ test('should get svg bbox(rect)', async (t) => {
   t.is(result.getHeight(), 100)
 })
 
-test('should bbox value is null', (t) => {
+test('should return undefined if bbox is invalid', (t) => {
   const svg = `<svg width="300px" height="300px" viewBox="0 0 300 300" version="1.1" xmlns="http://www.w3.org/2000/svg"></svg>`
   const resvg = new Resvg(svg)
+
+  // TODO: The current return in napi-rs is inconsistent with wasm_bindgen,
+  // consider unifying it as undefined.
   t.is(resvg.getBBox(), null)
   t.is(resvg.innerBBox(), null)
 })
