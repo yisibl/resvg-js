@@ -340,6 +340,13 @@ test('should get svg bbox(rect)', async (t) => {
   t.is(result.getHeight(), 100)
 })
 
+test('should bbox value is null', (t) => {
+  const svg = `<svg width="300px" height="300px" viewBox="0 0 300 300" version="1.1" xmlns="http://www.w3.org/2000/svg"></svg>`
+  const resvg = new Resvg(svg)
+  t.is(resvg.getBBox(), null)
+  t.is(resvg.innerBBox(), null)
+})
+
 test('should throw because invalid SVG attribute (width attribute is 0)', (t) => {
   const error = t.throws(
     () => {

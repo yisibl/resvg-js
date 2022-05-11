@@ -181,13 +181,11 @@
         const resvgJS = new resvg.Resvg(svg, opts)
         document.querySelector('#svg-info').textContent = 'Original SVG size: ' + resvgJS.width + ' x ' + resvgJS.height + ' px'
 
-        const bbox = resvgJS.innerBBox()
-        const bbox2 = resvgJS.getBBox()
-        console.log('SVG innerBBox', bbox)
-        console.log('SVG getBBox', bbox2)
-        if (hasCrop) {
-          resvgJS.cropByBBox(bbox2)
-        }
+        const innerBBox = resvgJS.innerBBox()
+        const bbox = resvgJS.getBBox()
+        console.log('SVG innerBBox', innerBBox)
+        console.log('SVG getBBox', bbox)
+        if (hasCrop && bbox) resvgJS.cropByBBox(bbox)
         const pngData = resvgJS.render()
         const pngBuffer = pngData.asPng()
 
