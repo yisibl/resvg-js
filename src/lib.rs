@@ -163,8 +163,8 @@ impl Resvg {
   ///
   /// Note: path bounding box are approx values.
 
-  // The current return in napi-rs is inconsistent with wasm_bindgen,
-  // consider unifying it as undefined(Option<T> map to Either<T, Undefined>).
+  // Either<T, Undefined> depends on napi 2.4.3
+  // https://github.com/napi-rs/napi-rs/releases/tag/napi@2.4.3
   pub fn inner_bbox(&self) -> Either<BBox, Undefined> {
     let rect = self.tree.svg_node().view_box.rect;
     let rect = points_to_rect(
@@ -198,6 +198,9 @@ impl Resvg {
   /// Calculate a maximum bounding box of all visible elements in this SVG.
   /// This will first apply transform.
   /// Similar to `SVGGraphicsElement.getBBox()` DOM API.
+
+  // Either<T, Undefined> depends on napi 2.4.3
+  // https://github.com/napi-rs/napi-rs/releases/tag/napi@2.4.3
   pub fn get_bbox(&self) -> Either<BBox, Undefined> {
     let node = self.tree.root();
     match node.calculate_bbox() {
