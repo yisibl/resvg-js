@@ -309,11 +309,13 @@ test('should get svg bbox', (t) => {
     },
   })
   const bbox = resvg.innerBBox()
-
-  t.is(bbox.width, 120)
-  t.is(bbox.height, 49)
-  t.is(bbox.x, -30)
-  t.is(bbox.y, 49)
+  t.not(bbox, undefined)
+  if (bbox) {
+    t.is(bbox.width, 120)
+    t.is(bbox.height, 49)
+    t.is(bbox.x, -30)
+    t.is(bbox.y, 49)
+  }
 })
 
 test('should get svg bbox(rect)', async (t) => {
@@ -323,21 +325,24 @@ test('should get svg bbox(rect)', async (t) => {
 
   const resvg = new Resvg(svg)
   const bbox = resvg.getBBox()
-  resvg.cropByBBox(bbox)
-  const pngData = resvg.render()
-  const pngBuffer = pngData.asPng()
-  const result = await jimp.read(pngBuffer)
+  t.not(bbox, undefined)
+  if (bbox) {
+    resvg.cropByBBox(bbox)
+    const pngData = resvg.render()
+    const pngBuffer = pngData.asPng()
+    const result = await jimp.read(pngBuffer)
 
-  t.is(bbox.width, 200)
-  t.is(bbox.height, 100.00000000000001)
-  t.is(bbox.x, 50.4)
-  t.is(bbox.y, 60.8)
+    t.is(bbox.width, 200)
+    t.is(bbox.height, 100.00000000000001)
+    t.is(bbox.x, 50.4)
+    t.is(bbox.y, 60.8)
 
-  // Must not have Alpha
-  t.is(result.hasAlpha(), false)
-  // Here the expected value is actually 200*100, and the calculation of the bbox needs to be fixed.
-  t.is(result.getWidth(), 200)
-  t.is(result.getHeight(), 100)
+    // Must not have Alpha
+    t.is(result.hasAlpha(), false)
+    // Here the expected value is actually 200*100, and the calculation of the bbox needs to be fixed.
+    t.is(result.getWidth(), 200)
+    t.is(result.getHeight(), 100)
+  }
 })
 
 test('should return undefined if bbox is invalid', (t) => {
@@ -346,8 +351,8 @@ test('should return undefined if bbox is invalid', (t) => {
 
   // TODO: The current return in napi-rs is inconsistent with wasm_bindgen,
   // consider unifying it as undefined.
-  t.is(resvg.getBBox(), null)
-  t.is(resvg.innerBBox(), null)
+  t.is(resvg.getBBox(), undefined)
+  t.is(resvg.innerBBox(), undefined)
 })
 
 test('should throw because invalid SVG attribute (width attribute is 0)', (t) => {
