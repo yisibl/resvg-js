@@ -213,21 +213,23 @@ test('should get svg bbox(rect)', async (t) => {
 
   const resvg = new Resvg(svg)
   const bbox = resvg.getBBox()
-  resvg.cropByBBox(bbox)
-  const pngData = resvg.render()
-  const pngBuffer = pngData.asPng()
-  const result = await jimp.read(Buffer.from(pngBuffer))
+  t.not(bbox, undefined)
+  if (bbox) {
+    resvg.cropByBBox(bbox)
+    const pngData = resvg.render()
+    const pngBuffer = pngData.asPng()
+    const result = await jimp.read(Buffer.from(pngBuffer))
 
-  t.is(bbox.width, 200)
-  t.is(bbox.height, 100.00000000000001)
-  t.is(bbox.x, 50.4)
-  t.is(bbox.y, 60.8)
-
-  // Must not have Alpha
-  t.is(result.hasAlpha(), false)
-  // Here the expected value is actually 200*100, and the calculation of the bbox needs to be fixed.
-  t.is(result.getWidth(), 200)
-  t.is(result.getHeight(), 100)
+    t.is(bbox.width, 200)
+    t.is(bbox.height, 100.00000000000001)
+    t.is(bbox.x, 50.4)
+    t.is(bbox.y, 60.8)
+    // Must not have Alpha
+    t.is(result.hasAlpha(), false)
+    // Here the expected value is actually 200*100, and the calculation of the bbox needs to be fixed.
+    t.is(result.getWidth(), 200)
+    t.is(result.getHeight(), 100)
+  }
 })
 
 test('should return undefined if bbox is invalid', (t) => {

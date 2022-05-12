@@ -3,7 +3,9 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 #[cfg(not(target_arch = "wasm32"))]
-use napi::bindgen_prelude::{AbortSignal, AsyncTask, Buffer, Either, Error as NapiError, Task};
+use napi::bindgen_prelude::{
+  AbortSignal, AsyncTask, Buffer, Either, Error as NapiError, Task, Undefined,
+};
 use pathfinder_content::{
   outline::{Contour, Outline},
   stroke::{LineCap, LineJoin, OutlineStrokeToFill, StrokeStyle},
@@ -163,7 +165,7 @@ impl Resvg {
 
   // The current return in napi-rs is inconsistent with wasm_bindgen,
   // consider unifying it as undefined(Option<T> map to Either<T, Undefined>).
-  pub fn inner_bbox(&self) -> Option<BBox> {
+  pub fn inner_bbox(&self) -> Either<BBox, Undefined> {
     let rect = self.tree.svg_node().view_box.rect;
     let rect = points_to_rect(
       usvg::Point::new(rect.x(), rect.y()),
@@ -181,28 +183,32 @@ impl Resvg {
         v = Some(child_viewbox)
       };
     }
-    let v = v?;
-    Some(BBox {
-      x: v.min_x().floor() as f64,
-      y: v.min_y().floor() as f64,
-      width: (v.max_x().ceil() - v.min_x().floor()) as f64,
-      height: (v.max_y().ceil() - v.min_y().floor()) as f64,
-    })
+    match v {
+      Some(v) => Either::A(BBox {
+        x: v.min_x().floor() as f64,
+        y: v.min_y().floor() as f64,
+        width: (v.max_x().ceil() - v.min_x().floor()) as f64,
+        height: (v.max_y().ceil() - v.min_y().floor()) as f64,
+      }),
+      None => Either::B(()),
+    }
   }
 
   #[napi(js_name = getBBox)]
   /// Calculate a maximum bounding box of all visible elements in this SVG.
   /// This will first apply transform.
   /// Similar to `SVGGraphicsElement.getBBox()` DOM API.
-  pub fn get_bbox(&self) -> Option<BBox> {
+  pub fn get_bbox(&self) -> Either<BBox, Undefined> {
     let node = self.tree.root();
-    let bbox = node.calculate_bbox()?;
-    Some(BBox {
-      x: bbox.x(),
-      y: bbox.y(),
-      width: bbox.width(),
-      height: bbox.height(),
-    })
+    match node.calculate_bbox() {
+      Some(bbox) => Either::A(BBox {
+        x: bbox.x(),
+        y: bbox.y(),
+        width: bbox.width(),
+        height: bbox.height(),
+      }),
+      None => Either::B(()),
+    }
   }
 
   #[napi(js_name = cropByBBox)]
