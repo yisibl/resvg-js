@@ -10,6 +10,7 @@ use napi::{bindgen_prelude::Buffer, Either};
 use resvg::ScreenSize;
 use serde::{Deserialize, Deserializer};
 use tiny_skia::Pixmap;
+use usvg::{ImageHrefResolver, ImageKind, OptionsRef};
 
 /// Image fit options.
 /// This provides the deserializer for `usvg::FitTo`.
@@ -340,4 +341,16 @@ where
       n
     ))),
   }
+}
+
+pub(crate) fn tweak_usvg_options(opts: &mut usvg::Options) {
+  opts.image_href_resolver = ImageHrefResolver::default();
+  opts.image_href_resolver.resolve_string = Box::new(move |data: &str, opts: &OptionsRef| {
+    if data.starts_with("https://") || data.starts_with("http://") {
+      Some(ImageKind::RAW(0, 0, data.as_bytes().to_vec()))
+    } else {
+      let resolver = ImageHrefResolver::default().resolve_string;
+      (resolver)(data, opts)
+    }
+  });
 }
