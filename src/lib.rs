@@ -1,8 +1,8 @@
-use std::sync::Arc;
-
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+use std::sync::Arc;
 
 #[cfg(not(target_arch = "wasm32"))]
 use napi::bindgen_prelude::{
@@ -19,7 +19,7 @@ use pathfinder_geometry::vector::Vector2F;
 use napi_derive::napi;
 use options::JsOptions;
 use tiny_skia::Pixmap;
-use usvg::{ImageHrefResolver, ImageKind, NodeKind, OptionsRef};
+use usvg::{ImageKind, NodeKind};
 #[cfg(target_arch = "wasm32")]
 use wasm_bindgen::{
   prelude::{wasm_bindgen, JsValue},
@@ -102,7 +102,7 @@ impl RenderedImage {
   #[cfg(target_arch = "wasm32")]
   #[wasm_bindgen(js_name = asPng)]
   /// Write the image data to Uint8Array
-  pub fn as_png(&self) -> Result<js_sys::Uint8Array, JsValue> {
+  pub fn as_png(&self) -> Result<js_sys::Uint8Array, js_sys::Error> {
     let buffer = self.pix.encode_png().map_err(Error::from)?;
     Ok(buffer.as_slice().into())
   }
@@ -139,15 +139,7 @@ impl Resvg {
       .try_init();
 
     let mut opts = js_options.to_usvg_options();
-    opts.image_href_resolver = ImageHrefResolver::default();
-    opts.image_href_resolver.resolve_string = Box::new(move |data: &str, opts: &OptionsRef| {
-      if data.starts_with("https://") || data.starts_with("http://") {
-        Some(ImageKind::RAW(0, 0, data.as_bytes().to_vec()))
-      } else {
-        let resolver = ImageHrefResolver::default().resolve_string;
-        (resolver)(data, opts)
-      }
-    });
+    options::tweak_usvg_options(&mut opts);
     let opts_ref = opts.to_ref();
     // Parse the SVG string into a tree.
     let tree = match svg {
@@ -245,69 +237,23 @@ impl Resvg {
 
   #[napi]
   pub fn images_to_resolve(&self) -> Result<Vec<String>, NapiError> {
-    let mut data = vec![];
-    for mut node in self.tree.root().descendants() {
-      if let NodeKind::Image(i) = &mut *node.borrow_mut() {
-        if let ImageKind::RAW(_, _, buffer) = &mut i.kind {
-          let s = String::from_utf8(buffer.clone()).map_err(Error::from)?;
-          data.push(s);
-        }
-      }
-    }
-    Ok(data)
+    Ok(self.images_to_resolve_inner()?)
   }
 
   #[napi]
-  pub fn resolve_image(&self, href: String, mime: String, buffer: Buffer) -> Result<(), NapiError> {
-    let resolver = usvg::ImageHrefResolver::default_data_resolver();
-    let options = self.js_options.to_usvg_options();
-    for mut node in self.tree.root().descendants() {
-      if let NodeKind::Image(i) = &mut *node.borrow_mut() {
-        let matched = if let ImageKind::RAW(_, _, data) = &mut i.kind {
-          let s = String::from_utf8(data.clone()).map_err(Error::from)?;
-          s == href
-        } else {
-          false
-        };
-        if matched {
-          let data = (resolver)(&mime, Arc::new(buffer.to_vec()), &options.to_ref());
-          if let Some(kind) = data {
-            i.kind = kind;
-          }
-        }
-      }
-    }
-    Ok(())
+  pub fn resolve_image(&self, href: String, buffer: Buffer) -> Result<(), NapiError> {
+    let buffer = buffer.to_vec();
+    Ok(self.resolve_image_inner(href, buffer)?)
   }
-}
 
-#[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
-#[cfg_attr(not(target_arch = "wasm32"), napi)]
-impl Resvg {
-  #[cfg(target_arch = "wasm32")]
-  #[wasm_bindgen(getter)]
   /// Get the SVG width
+  #[napi(getter)]
   pub fn width(&self) -> f64 {
     self.tree.svg_node().size.width().round()
   }
 
-  #[cfg(target_arch = "wasm32")]
-  #[wasm_bindgen(getter)]
   /// Get the SVG height
-  pub fn height(&self) -> f64 {
-    self.tree.svg_node().size.height().round()
-  }
-
-  #[cfg(not(target_arch = "wasm32"))]
   #[napi(getter)]
-  /// Get the SVG width
-  pub fn width(&self) -> f64 {
-    self.tree.svg_node().size.width().round()
-  }
-
-  #[cfg(not(target_arch = "wasm32"))]
-  #[napi(getter)]
-  /// Get the SVG height
   pub fn height(&self) -> f64 {
     self.tree.svg_node().size.height().round()
   }
@@ -317,12 +263,13 @@ impl Resvg {
 #[wasm_bindgen]
 impl Resvg {
   #[wasm_bindgen(constructor)]
-  pub fn new(svg: IStringOrBuffer, options: Option<String>) -> Result<Resvg, JsValue> {
+  pub fn new(svg: IStringOrBuffer, options: Option<String>) -> Result<Resvg, js_sys::Error> {
     let js_options: JsOptions = options
       .and_then(|o| serde_json::from_str(o.as_str()).ok())
       .unwrap_or_default();
 
-    let opts = js_options.to_usvg_options();
+    let mut opts = js_options.to_usvg_options();
+    options::tweak_usvg_options(&mut opts);
     let opts_ref = opts.to_ref();
     let tree = if js_sys::Uint8Array::instanceof(&svg) {
       let uintarray = js_sys::Uint8Array::unchecked_from_js_ref(&svg);
@@ -336,22 +283,33 @@ impl Resvg {
     Ok(Resvg { tree, js_options })
   }
 
-  #[wasm_bindgen]
+  /// Get the SVG width
+  #[wasm_bindgen(getter)]
+  pub fn width(&self) -> f64 {
+    self.tree.svg_node().size.width().round()
+  }
+
+  /// Get the SVG height
+  #[wasm_bindgen(getter)]
+  pub fn height(&self) -> f64 {
+    self.tree.svg_node().size.height().round()
+  }
+
   /// Renders an SVG in Wasm
-  pub fn render(&self) -> Result<RenderedImage, JsValue> {
+  pub fn render(&self) -> Result<RenderedImage, js_sys::Error> {
     Ok(self.render_inner()?)
   }
 
-  #[wasm_bindgen(js_name = toString)]
   /// Output usvg-simplified SVG string
+  #[wasm_bindgen(js_name = toString)]
   pub fn to_string(&self) -> String {
     self.tree.to_string(&usvg::XmlOptions::default())
   }
 
-  #[wasm_bindgen(js_name = innerBBox)]
   /// Calculate a maximum bounding box of all visible elements in this SVG.
   ///
   /// Note: path bounding box are approx values.
+  #[wasm_bindgen(js_name = innerBBox)]
   pub fn inner_bbox(&self) -> Option<BBox> {
     let rect = self.tree.svg_node().view_box.rect;
     let rect = points_to_rect(
@@ -409,6 +367,21 @@ impl Resvg {
       svg.view_box.rect = usvg::Rect::new(bbox.x, bbox.y, width, height).unwrap();
       svg.size = usvg::Size::new(width, height).unwrap();
     }
+  }
+
+  pub fn images_to_resolve(&self) -> Result<js_sys::Array, js_sys::Error> {
+    let images = self.images_to_resolve_inner()?;
+    let result = js_sys::Array::from_iter(images.into_iter().map(|s| JsValue::from(s)));
+    Ok(result)
+  }
+
+  pub fn resolve_image(
+    &self,
+    href: String,
+    buffer: js_sys::Uint8Array,
+  ) -> Result<(), js_sys::Error> {
+    let buffer = buffer.to_vec();
+    Ok(self.resolve_image_inner(href, buffer)?)
   }
 }
 
@@ -603,6 +576,44 @@ impl Resvg {
     }
 
     Ok(RenderedImage { pix: pixmap })
+  }
+
+  fn images_to_resolve_inner(&self) -> Result<Vec<String>, Error> {
+    let mut data = vec![];
+    for mut node in self.tree.root().descendants() {
+      if let NodeKind::Image(i) = &mut *node.borrow_mut() {
+        if let ImageKind::RAW(_, _, buffer) = &mut i.kind {
+          let s = String::from_utf8(buffer.clone())?;
+          data.push(s);
+        }
+      }
+    }
+    Ok(data)
+  }
+
+  fn resolve_image_inner(&self, href: String, buffer: Vec<u8>) -> Result<(), Error> {
+    let resolver = usvg::ImageHrefResolver::default_data_resolver();
+    let options = self.js_options.to_usvg_options();
+    let mime = infer::get(&buffer)
+      .ok_or_else(|| Error::UnrecognizedBuffer)?
+      .to_string();
+    for mut node in self.tree.root().descendants() {
+      if let NodeKind::Image(i) = &mut *node.borrow_mut() {
+        let matched = if let ImageKind::RAW(_, _, data) = &mut i.kind {
+          let s = String::from_utf8(data.clone()).map_err(Error::from)?;
+          s == href
+        } else {
+          false
+        };
+        if matched {
+          let data = (resolver)(&mime, Arc::new(buffer.clone()), &options.to_ref());
+          if let Some(kind) = data {
+            i.kind = kind;
+          }
+        }
+      }
+    }
+    Ok(())
   }
 }
 

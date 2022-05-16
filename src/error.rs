@@ -18,6 +18,8 @@ pub enum Error {
   ZeroSized,
   #[error("Input must be string or Uint8Array")]
   InvalidInput,
+  #[error("Unrecognized image buffer")]
+  UnrecognizedBuffer,
 }
 
 #[cfg(not(target_arch = "wasm32"))]
@@ -28,8 +30,8 @@ impl From<Error> for napi::Error {
 }
 
 #[cfg(target_arch = "wasm32")]
-impl From<Error> for wasm_bindgen::JsValue {
+impl From<Error> for js_sys::Error {
   fn from(e: Error) -> Self {
-    js_sys::TypeError::new(&format!("{}", e)).into()
+    js_sys::Error::new(&format!("{}", e))
   }
 }

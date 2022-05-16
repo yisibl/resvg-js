@@ -245,7 +245,7 @@ test('should throw because invalid SVG (blank string)', (t) => {
     () => {
       new Resvg('')
     },
-    { instanceOf: TypeError },
+    { instanceOf: Error },
   )
 
   t.is(error.message, 'SVG data parsing failed cause the document does not have a root node')
@@ -256,7 +256,7 @@ test('should throw (no input parameters)', (t) => {
     () => {
       new Resvg()
     },
-    { instanceOf: TypeError },
+    { instanceOf: Error },
   )
 
   t.is(error.message, 'Input must be string or Uint8Array')

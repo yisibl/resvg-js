@@ -193,14 +193,6 @@ var Resvg = class {
     const ptr = this.__destroy_into_raw();
     wasm.__wbg_resvg_free(ptr);
   }
-  get width() {
-    const ret = wasm.resvg_width(this.ptr);
-    return ret;
-  }
-  get height() {
-    const ret = wasm.resvg_height(this.ptr);
-    return ret;
-  }
   constructor(svg, options) {
     try {
       const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
@@ -217,6 +209,14 @@ var Resvg = class {
     } finally {
       wasm.__wbindgen_add_to_stack_pointer(16);
     }
+  }
+  get width() {
+    const ret = wasm.resvg_width(this.ptr);
+    return ret;
+  }
+  get height() {
+    const ret = wasm.resvg_height(this.ptr);
+    return ret;
   }
   render() {
     try {
@@ -257,6 +257,36 @@ var Resvg = class {
     _assertClass(bbox, BBox);
     wasm.resvg_cropByBBox(this.ptr, bbox.ptr);
   }
+  images_to_resolve() {
+    try {
+      const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+      wasm.resvg_images_to_resolve(retptr, this.ptr);
+      var r0 = getInt32Memory0()[retptr / 4 + 0];
+      var r1 = getInt32Memory0()[retptr / 4 + 1];
+      var r2 = getInt32Memory0()[retptr / 4 + 2];
+      if (r2) {
+        throw takeObject(r1);
+      }
+      return takeObject(r0);
+    } finally {
+      wasm.__wbindgen_add_to_stack_pointer(16);
+    }
+  }
+  resolve_image(href, buffer) {
+    try {
+      const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+      const ptr0 = passStringToWasm0(href, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+      const len0 = WASM_VECTOR_LEN;
+      wasm.resvg_resolve_image(retptr, this.ptr, ptr0, len0, addHeapObject(buffer));
+      var r0 = getInt32Memory0()[retptr / 4 + 0];
+      var r1 = getInt32Memory0()[retptr / 4 + 1];
+      if (r1) {
+        throw takeObject(r0);
+      }
+    } finally {
+      wasm.__wbindgen_add_to_stack_pointer(16);
+    }
+  }
 };
 async function load(module, imports) {
   if (typeof Response === "function" && module instanceof Response) {
@@ -288,8 +318,8 @@ async function init(input) {
   }
   const imports = {};
   imports.wbg = {};
-  imports.wbg.__wbg_new_b2cad14901aed007 = function(arg0, arg1) {
-    const ret = new TypeError(getStringFromWasm0(arg0, arg1));
+  imports.wbg.__wbg_new_3047bf4b4f02b802 = function(arg0, arg1) {
+    const ret = new Error(getStringFromWasm0(arg0, arg1));
     return addHeapObject(ret);
   };
   imports.wbg.__wbindgen_memory = function() {
@@ -322,6 +352,18 @@ async function init(input) {
     var len0 = WASM_VECTOR_LEN;
     getInt32Memory0()[arg0 / 4 + 1] = len0;
     getInt32Memory0()[arg0 / 4 + 0] = ptr0;
+  };
+  imports.wbg.__wbg_new_94fb1279cf6afea5 = function() {
+    const ret = new Array();
+    return addHeapObject(ret);
+  };
+  imports.wbg.__wbindgen_string_new = function(arg0, arg1) {
+    const ret = getStringFromWasm0(arg0, arg1);
+    return addHeapObject(ret);
+  };
+  imports.wbg.__wbg_push_40c6a90f1805aa90 = function(arg0, arg1) {
+    const ret = getObject(arg0).push(getObject(arg1));
+    return ret;
   };
   imports.wbg.__wbg_length_0acb1cf9bbaf8519 = function(arg0) {
     const ret = getObject(arg0).length;
