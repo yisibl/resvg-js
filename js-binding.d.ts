@@ -33,6 +33,8 @@ export class Resvg {
    * the viewbox/size of the svg and do not move the elements for simplicity
    */
   cropByBBox(bbox: BBox): void
+  imagesToResolve(): Array<string>
+  resolveImage(href: string, buffer: Buffer): void
   /** Get the SVG width */
   get width(): number
   /** Get the SVG height */
