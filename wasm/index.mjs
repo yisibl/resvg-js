@@ -257,10 +257,10 @@ var Resvg = class {
     _assertClass(bbox, BBox);
     wasm.resvg_cropByBBox(this.ptr, bbox.ptr);
   }
-  images_to_resolve() {
+  imagesToResolve() {
     try {
       const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-      wasm.resvg_images_to_resolve(retptr, this.ptr);
+      wasm.resvg_imagesToResolve(retptr, this.ptr);
       var r0 = getInt32Memory0()[retptr / 4 + 0];
       var r1 = getInt32Memory0()[retptr / 4 + 1];
       var r2 = getInt32Memory0()[retptr / 4 + 2];
@@ -272,12 +272,12 @@ var Resvg = class {
       wasm.__wbindgen_add_to_stack_pointer(16);
     }
   }
-  resolve_image(href, buffer) {
+  resolveImage(href, buffer) {
     try {
       const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
       const ptr0 = passStringToWasm0(href, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
       const len0 = WASM_VECTOR_LEN;
-      wasm.resvg_resolve_image(retptr, this.ptr, ptr0, len0, addHeapObject(buffer));
+      wasm.resvg_resolveImage(retptr, this.ptr, ptr0, len0, addHeapObject(buffer));
       var r0 = getInt32Memory0()[retptr / 4 + 0];
       var r1 = getInt32Memory0()[retptr / 4 + 1];
       if (r1) {

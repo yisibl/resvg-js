@@ -369,12 +369,14 @@ impl Resvg {
     }
   }
 
+  #[wasm_bindgen(js_name = imagesToResolve)]
   pub fn images_to_resolve(&self) -> Result<js_sys::Array, js_sys::Error> {
     let images = self.images_to_resolve_inner()?;
     let result = js_sys::Array::from_iter(images.into_iter().map(|s| JsValue::from(s)));
     Ok(result)
   }
 
+  #[wasm_bindgen(js_name = resolveImage)]
   pub fn resolve_image(
     &self,
     href: String,
@@ -624,6 +626,7 @@ pub struct AsyncRenderer {
 }
 
 #[cfg(not(target_arch = "wasm32"))]
+#[napi]
 impl Task for AsyncRenderer {
   type Output = RenderedImage;
   type JsValue = RenderedImage;

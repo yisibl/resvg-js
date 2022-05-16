@@ -162,16 +162,10 @@
       const output = document.getElementById('output')
       const svgElement = document.querySelector('#input-svg')
       const inputSVG = svgElement.value.trim()
-      let resvgOpts = {
-        // fitTo: {
-        //   mode: 'width',
-        //   value: 500,
-        // }
-      }
+      let resvgOpts = {}
+      await svg2png(inputSVG, resvgOpts)
 
-      svg2png(inputSVG, resvgOpts)
-
-      function svg2png(svgString, opts, hasCrop) {
+      async function svg2png(svgString, opts, hasCrop) {
         const svg = svgString ? svgString : svgElement.value.trim()
 
         if (!svg) {
@@ -180,6 +174,25 @@
         }
         const resvgJS = new resvg.Resvg(svg, opts)
         document.querySelector('#svg-info').textContent = 'Original SVG size: ' + resvgJS.width + ' x ' + resvgJS.height + ' px'
+
+        const resolved = await Promise.all(
+          resvgJS.imagesToResolve().map(async (url) => {
+            console.log('image url', url)
+            const img = await fetch(url)
+            const buffer = await img.arrayBuffer()
+            // const MIME = img.headers.get('Content-Type')
+            return {
+              url,
+              buffer: new Uint8Array(buffer),
+            }
+          }),
+        )
+        if (resolved.length > 0) {
+          for (const result of resolved) {
+            const { url, buffer } = result
+            resvgJS.resolveImage(url, buffer)
+          }
+        }
 
         const innerBBox = resvgJS.innerBBox()
         const bbox = resvgJS.getBBox()

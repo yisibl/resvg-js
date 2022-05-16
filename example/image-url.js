@@ -1,6 +1,5 @@
 const { promises } = require('fs')
 const { join } = require('path')
-// const { performance } = require('perf_hooks')
 
 const fetch = require('node-fetch')
 
@@ -14,8 +13,8 @@ async function main() {
     },
     logLevel: 'off',
   }
-
   const resvg = new Resvg(svg, opts)
+
   const resolved = await Promise.all(
     resvg.imagesToResolve().map(async (url) => {
       console.info('image url', url)
@@ -23,15 +22,15 @@ async function main() {
       const buffer = await img.arrayBuffer()
       return {
         url,
-        mime: 'image/png',
         buffer: Buffer.from(buffer),
       }
     }),
   )
-
-  for (const result of resolved) {
-    const { url, mime, buffer } = result
-    resvg.resolveImage(url, mime, buffer)
+  if (resolved.length > 0) {
+    for (const result of resolved) {
+      const { url, buffer } = result
+      resvg.resolveImage(url, buffer)
+    }
   }
 
   const pngData = resvg.render()

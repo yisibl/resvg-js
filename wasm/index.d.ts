@@ -35,18 +35,6 @@ declare class RenderedImage {
 }
 export type InitInput = RequestInfo | URL | Response | BufferSource | WebAssembly.Module;
 export type ResvgRenderOptions = {
-	font?: {
-		loadSystemFonts?: boolean;
-		fontFiles?: string[];
-		fontDirs?: string[];
-		defaultFontFamily?: string;
-		defaultFontSize?: number;
-		serifFamily?: string;
-		sansSerifFamily?: string;
-		cursiveFamily?: string;
-		fantasyFamily?: string;
-		monospaceFamily?: string;
-	};
 	dpi?: number;
 	languages?: string[];
 	shapeRendering?: 0 // optimizeSpeed
@@ -76,7 +64,6 @@ export type ResvgRenderOptions = {
 		right?: number;
 		bottom?: number;
 	};
-	logLevel?: "off" | "error" | "warn" | "info" | "debug" | "trace";
 };
 /**
  * Initialize Wasm module
@@ -92,11 +79,9 @@ export declare const Resvg: {
 		innerBBox(): BBox | undefined;
 		getBBox(): BBox | undefined;
 		cropByBBox(bbox: BBox): void;
-		images_to_resolve(): string[];
-		resolve_image(href: string, buffer: Uint8Array): void;
+		imagesToResolve(): Array<string>;
+		resolveImage(href: string, buffer: Uint8Array): void;
 		readonly height: number;
 		readonly width: number;
 	};
 };
-
-export {};

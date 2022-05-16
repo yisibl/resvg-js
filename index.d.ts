@@ -74,6 +74,9 @@ export class Resvg {
    */
   cropByBBox(bbox: BBox): void
 
+  imagesToResolve(): Array<string>
+  resolveImage(href: string, buffer: Buffer): void
+
   /** Get the SVG width */
   get width(): number
 
