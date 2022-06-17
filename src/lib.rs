@@ -15,6 +15,7 @@ use pathfinder_content::{
 use pathfinder_geometry::rect::RectF;
 use pathfinder_geometry::vector::Vector2F;
 
+use builder::ResvgBuilder;
 #[cfg(not(target_arch = "wasm32"))]
 use napi_derive::napi;
 use options::JsOptions;
@@ -26,6 +27,7 @@ use wasm_bindgen::{
     JsCast,
 };
 
+mod builder;
 mod error;
 mod fonts;
 mod options;
@@ -125,34 +127,6 @@ impl RenderedImage {
 #[cfg(not(target_arch = "wasm32"))]
 #[napi]
 impl Resvg {
-    #[napi(constructor)]
-    pub fn new(svg: Either<String, Buffer>, options: Option<String>) -> Result<Resvg, NapiError> {
-        Resvg::new_inner(&svg, options)
-    }
-
-    fn new_inner(
-        svg: &Either<String, Buffer>,
-        options: Option<String>,
-    ) -> Result<Resvg, NapiError> {
-        let js_options: JsOptions = options
-            .and_then(|o| serde_json::from_str(o.as_str()).ok())
-            .unwrap_or_default();
-        let _ = env_logger::builder()
-            .filter_level(js_options.log_level)
-            .try_init();
-
-        let mut opts = js_options.to_usvg_options();
-        options::tweak_usvg_options(&mut opts);
-        let opts_ref = opts.to_ref();
-        // Parse the SVG string into a tree.
-        let tree = match svg {
-            Either::A(a) => usvg::Tree::from_str(a.as_str(), &opts_ref),
-            Either::B(b) => usvg::Tree::from_data(b.as_ref(), &opts_ref),
-        }
-        .map_err(|e| napi::Error::from_reason(format!("{}", e)))?;
-        Ok(Resvg { tree, js_options })
-    }
-
     #[napi]
     /// Renders an SVG in Node.js
     pub fn render(&self) -> Result<RenderedImage, NapiError> {
@@ -265,27 +239,6 @@ impl Resvg {
 #[cfg(target_arch = "wasm32")]
 #[wasm_bindgen]
 impl Resvg {
-    #[wasm_bindgen(constructor)]
-    pub fn new(svg: IStringOrBuffer, options: Option<String>) -> Result<Resvg, js_sys::Error> {
-        let js_options: JsOptions = options
-            .and_then(|o| serde_json::from_str(o.as_str()).ok())
-            .unwrap_or_default();
-
-        let mut opts = js_options.to_usvg_options();
-        options::tweak_usvg_options(&mut opts);
-        let opts_ref = opts.to_ref();
-        let tree = if js_sys::Uint8Array::instanceof(&svg) {
-            let uintarray = js_sys::Uint8Array::unchecked_from_js_ref(&svg);
-            let svg_buffer = uintarray.to_vec();
-            usvg::Tree::from_data(&svg_buffer, &opts_ref).map_err(Error::from)
-        } else if let Some(s) = svg.as_string() {
-            usvg::Tree::from_str(s.as_str(), &opts_ref).map_err(Error::from)
-        } else {
-            Err(Error::InvalidInput)
-        }?;
-        Ok(Resvg { tree, js_options })
-    }
-
     /// Get the SVG width
     #[wasm_bindgen(getter)]
     pub fn width(&self) -> f64 {
@@ -633,7 +586,7 @@ impl Task for AsyncRenderer {
     type JsValue = RenderedImage;
 
     fn compute(&mut self) -> Result<Self::Output, NapiError> {
-        let resvg = Resvg::new_inner(&self.svg, self.options.clone())?;
+        let resvg = ResvgBuilder::new_napi_inner(&self.svg, self.options.clone())?.build()?;
         Ok(resvg.render()?)
     }
 
