@@ -30,7 +30,7 @@ futures = "0.3.21"
 infer = "0.8.0"
 
 [target.'cfg(all(not(all(target_os = "linux", target_arch = "aarch64", target_env = "musl")), not(all(target_os = "windows", target_arch = "aarch64")), not(target_arch = "wasm32")))'.dependencies]
-mimalloc-rust = { version = "0.1" }
+mimalloc-rust = { version = "0.2" }
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 wasm-bindgen = "0.2.80"
