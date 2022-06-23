@@ -41,7 +41,7 @@ usvg = { version = "0.22.0", default-features = false, features = [
 ] }
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
-napi = { version = "2.4.1", features = ["serde-json", "async"] }
+napi = { version = "2.5.0", features = ["serde-json", "async"] }
 napi-derive = "2.4.0"
 usvg = { version = "0.22.0", default-features = false, features = [
     "export",
