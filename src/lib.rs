@@ -107,6 +107,19 @@ impl RenderedImage {
         Ok(buffer.as_slice().into())
     }
 
+    /// Get the RGBA pixels of the image
+    #[cfg(target_arch = "wasm32")]
+    pub fn pixel(&self) -> js_sys::Uint8Array {
+        self.pix.data().into()
+    }
+
+    /// Get the RGBA pixels of the image
+    #[cfg(not(target_arch = "wasm32"))]
+    #[napi(getter)]
+    pub fn pixel(&self) -> Buffer {
+        self.pix.data().into()
+    }
+
     #[cfg(not(target_arch = "wasm32"))]
     #[napi(getter)]
     /// Get the PNG width
