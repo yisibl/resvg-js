@@ -150,7 +150,7 @@ jobs:
             .cargo-cache/registry/cache/
             .cargo-cache/git/db/
             target/
-          key: ${{ matrix.settings.target }}-cargo-registry
+          key: ${{ matrix.settings.target }}-cargo-${{ matrix.settings.host }}
       - name: Cache NPM dependencies
         uses: actions/cache@v3
         with:
@@ -160,8 +160,20 @@ jobs:
         run: ${{ matrix.settings.setup }}
         if: ${{ matrix.settings.setup }}
         shell: bash
+      - name: Setup node x86
+        if: matrix.settings.target == 'i686-pc-windows-msvc'
+        run: yarn config set supportedArchitectures.cpu "ia32"
+        shell: bash
       - name: Install dependencies
-        run: yarn install --ignore-scripts --frozen-lockfile --registry https://registry.npmjs.org --network-timeout 300000
+        run: yarn install
+      - name: Setup node x86
+        uses: actions/setup-node@v3
+        if: matrix.settings.target == 'i686-pc-windows-msvc'
+        with:
+          node-version: 16
+          check-latest: true
+          cache: yarn
+          architecture: x86
 
       - name: Build in docker
         uses: addnab/docker-run-action@v3
