@@ -3,7 +3,7 @@ import { promises as fs } from 'fs'
 import { join } from 'path'
 
 import test from 'ava'
-import jimp from 'jimp'
+import jimp from 'jimp-compact'
 
 import { Resvg, initWasm } from '../wasm'
 
