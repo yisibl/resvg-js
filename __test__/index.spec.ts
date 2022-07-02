@@ -83,7 +83,7 @@ test('render().width/height must be equal to PNG size', async (t) => {
   t.is(height, result.getHeight())
 })
 
-test('Set the background with alpha by rgba().', async (t) => {
+test('Set the background with alpha by rgba()', async (t) => {
   const filePath = './tiger.svg'
   const svg = await fs.readFile(join(__dirname, filePath))
   const svgString = svg.toString('utf-8')
@@ -97,7 +97,7 @@ test('Set the background with alpha by rgba().', async (t) => {
   t.is(result.hasAlpha(), true)
 })
 
-test('Set the background with alpha by rgb().', async (t) => {
+test('Set the background with alpha by rgb()', async (t) => {
   const filePath = './tiger.svg'
   const svg = await fs.readFile(join(__dirname, filePath))
   const svgString = svg.toString('utf-8')
@@ -239,6 +239,22 @@ test('should generate a 128x128 png', async (t) => {
   t.is(result.hasAlpha(), false)
   t.is(result.getWidth(), 128)
   t.is(result.getHeight(), 128)
+})
+
+test('should render HEXA color format', async (t) => {
+  const HEXA_SVG = `<svg viewBox="0 0 200 200" version="1.1" xmlns="http://www.w3.org/2000/svg"><rect fill="#00800080" x="0" y="0" width="100%" height="100%"></rect></svg>`
+  const RGBA_SVG = `<svg viewBox="0 0 200 200" version="1.1" xmlns="http://www.w3.org/2000/svg"><rect fill="rgba(0, 128, 0, 0.5)" x="0" y="0" width="100%" height="100%"></rect></svg>`
+
+  const hexaPngData = new Resvg(HEXA_SVG).render().asPng()
+  const rgbaPngData = new Resvg(RGBA_SVG).render().asPng()
+  const HEXABuffer = await jimp.read(hexaPngData)
+  const RGBABuffer = await jimp.read(rgbaPngData)
+
+  const r1 = new jimp({ data: HEXABuffer.bitmap.data, width: 200, height: 200 })
+  const r2 = new jimp({ data: RGBABuffer.bitmap.data, width: 200, height: 200 })
+  const diff = await jimp.diff(r1, r2, 0.01)
+
+  t.is(diff.percent, 0) // 0 means similar, 1 means not similar
 })
 
 // The four green <rect> must be tiled, with no alpha channel.
