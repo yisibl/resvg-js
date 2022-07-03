@@ -9,11 +9,76 @@ This changelog also contains important changes in dependencies.
 
 ## [Unreleased]
 
+### Added
+
+- Add `imagesToResolve()` and `resolveImage()` APIs to load image URL. By @zimond in [#102](https://github.com/yisibl/resvg-js/pull/102)
+
+  - Supports PNG, JPEG and GIF formats.
+  - This only works for `xlink:href` starting with `http://` or `https://`.
+  - See [example](example/image-url.js) for more details.
+
+  In order to support loading image URL, we forked the rust side of resvg and made some improvements.
+
+  Now please witness the magic moment:
+
+  ![load image URL Demo](https://user-images.githubusercontent.com/2784308/168537647-6787dfc3-49b6-42bb-be5e-35ddba8072d9.png)
+
+- Add `innerBBox()` API. By @yisibl in [#105](https://github.com/yisibl/resvg-js/pull/105)
+
+  Calculate a maximum bounding box of all visible elements in this SVG. (Note: path bounding box are approx values).
+
+- Add `getBBox()` API. By @yisibl in [#108](https://github.com/yisibl/resvg-js/pull/108)
+
+  We designed it to correspond to the [`SVGGraphicsElement.getBBox()`](https://developer.mozilla.org/en-US/docs/Web/API/SVGGraphicsElement/getBBox) method in the browser.
+
+  This is different from the `innerBBox()` API, by default it does apply transform calculations and gets the BBox with curves exactly. This works well in most use cases, the only drawback is that it does not calculate BBoxes with stroke correctly.
+
+- Add `cropByBBox()` API. By @yisibl in [#108](https://github.com/yisibl/resvg-js/pull/108)
+
+  With this API, we can crop the generated bitmap based on the BBox(bounding box).
+
+  <img width="550" alt="cropByBBox Demo" src="https://user-images.githubusercontent.com/2784308/177039185-5c1a8014-9e44-4c18-aae2-8f509163da56.gif">
+
+  ```js
+  const fs = require('fs')
+  const { Resvg } = require('@resvg/resvg-js')
+  const svg = '' // some SVG string or file.
+  const resvg = new Resvg(svg)
+  const innerBBox = resvg.innerBBox()
+  const bbox = resvg.getBBox()
+
+  // Crop the bitmap according to bbox,
+  // The argument to the `.cropByBBox()` method accepts `bbox` or `innerBBox`.
+  if (bbox) resvg.cropByBBox(bbox)
+  const pngData = resvg.render()
+  const pngBuffer = pngData.asPng()
+
+  console.info('SVG BBox: ', `${bbox.width} x ${bbox.height}`)
+  fs.writeFileSync('out.png', pngBuffer)
+  ```
+
+- feat: upgrade svgtypes to 0.8.1 to support [4 digits and 8 digits](https://www.w3.org/TR/css-color-4/#hex-notation) hex colors. By @yisibl in [#127](https://github.com/yisibl/resvg-js/pull/127)
+
+### Changed
+
+- feat: return undefined if bbox is invalid. By @zimond in [#110](https://github.com/yisibl/resvg-js/pull/110)
+- chore: use jimp-compact instead of jimp.
+- fix(deps): update rust crate napi to 2.5.0.
+- fix(deps): update rust crate mimalloc-rust to 0.2.
+- chore: export AR in android pipeline.
+- style: rust indent changed from 2 to 4 spaces.
+
 ## [2.0.1] - 2022-05-07
+
+### Added
+
+- feat: add bbox related API. @zimond in [#90](https://github.com/yisibl/resvg-js/pull/90)
+
+  This version does not yet implement Node.js or Wasm bindings, so it is not available for now.
 
 ### Fixed
 
-- fix: rebuild Wasm to solve the problem of not working in the browser
+- fix: rebuild Wasm to solve the problem of not working in the browser.
 
 ## [2.0.0] - 2022-04-30
 
