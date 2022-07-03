@@ -15,7 +15,7 @@
 - `v2`: Support for outputting simplified SVG strings, such as converting shapes(rect, circle, etc) to `<path>`.
 - `v2`: Support WebAssembly.
 - No need for node-gyp and postinstall, the `.node` file has been compiled for you.
-- Cross-platform support, including [Apple M1](https://www.apple.com/newsroom/2020/11/apple-unleashes-m1/).
+- Cross-platform support, including [Apple M Chips](https://www.apple.com/newsroom/2020/11/apple-unleashes-m1/).
 
 ## Installation
 
@@ -169,6 +169,19 @@ Running "resize width" suite...
   ```bash
   curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
   ```
+  Normally `wasm-pack` will install `wasm-bindgen` automatically, but if the installation [fails due to network reasons](https://github.com/rustwasm/wasm-pack-template/issues/44#issuecomment-521657516), please try to install it manually.
+    ```bash
+    cargo install wasm-bindgen-cli
+  ```
+
+  On computers with Apple M chips, the following error message may appear:
+  > Error: failed to download from https://github.com/WebAssembly/binaryen/releases/download/version_90/binaryen-version_90-x86_64-apple-darwin.tar.gz
+
+  Please install binaryen manually:
+  ```bash
+  brew install binaryen
+  ```
+
 
 ### Build Node.js bindings
 
@@ -195,7 +208,7 @@ please feel free to discuss with me or submit a PR.
 - [x] Upgrade to napi-rs v2
 - [x] Support WebAssembly
 - [x] Output usvg-simplified SVG string
-- [ ] Support for getting SVG Bounding box
+- [x] Support for getting SVG Bounding box
 - [ ] Support for generating more lossless bitmap formats, e.g. avif, webp, JPEG XL
 
 ## Release package
