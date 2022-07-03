@@ -6,7 +6,12 @@ const fetch = require('node-fetch')
 const { Resvg } = require('../index')
 
 async function main() {
-  const svg = await promises.readFile(join(__dirname, './url.svg'))
+  const svg = `
+  <!-- From https://octodex.github.com/nyantocat/ -->
+  <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <image href="https://octodex.github.com/images/nyantocat.gif" width="500" height="500"/>
+  </svg>
+  `
   const opts = {
     font: {
       loadSystemFonts: false, // It will be faster to disable loading system fonts.

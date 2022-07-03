@@ -166,22 +166,26 @@ Running "resize width" suite...
 - Install latest `Rust`
 - Install `Node.js@10+` which fully supported `Node-API`
 - Install `wasm-pack`
+
   ```bash
   curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
   ```
+
   Normally `wasm-pack` will install `wasm-bindgen` automatically, but if the installation [fails due to network reasons](https://github.com/rustwasm/wasm-pack-template/issues/44#issuecomment-521657516), please try to install it manually.
-    ```bash
-    cargo install wasm-bindgen-cli
+
+  ```bash
+  cargo install wasm-bindgen-cli
   ```
 
   On computers with Apple M chips, the following error message may appear:
+
   > Error: failed to download from https://github.com/WebAssembly/binaryen/releases/download/version_90/binaryen-version_90-x86_64-apple-darwin.tar.gz
 
   Please install binaryen manually:
+
   ```bash
   brew install binaryen
   ```
-
 
 ### Build Node.js bindings
 
