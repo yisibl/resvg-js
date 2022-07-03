@@ -1,6 +1,6 @@
 {
   "name": "@resvg/resvg-wasm",
-  "version": "2.0.1",
+  "version": "2.1.0",
   "description": "A high-performance SVG renderer and toolkit, powered by Rust based resvg and napi-rs",
   "main": "index.js",
   "module": "index.mjs",

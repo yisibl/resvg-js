@@ -9,6 +9,8 @@ This changelog also contains important changes in dependencies.
 
 ## [Unreleased]
 
+## [2.1.0] - 2022-07-03
+
 ### Added
 
 - Add `imagesToResolve()` and `resolveImage()` APIs to load image URL. By @zimond in [#102](https://github.com/yisibl/resvg-js/pull/102)
@@ -371,7 +373,8 @@ The first official version, use [resvg 0.18.0](https://github.com/RazrFalcon/res
 - Support custom fonts and system fonts.
 - Supports setting the background color of PNG.
 
-[unreleased]: https://github.com/yisibl/resvg-js/compare/v2.0.1...HEAD
+[unreleased]: https://github.com/yisibl/resvg-js/compare/v2.1.0...HEAD
+[2.1.0]: https://github.com/yisibl/resvg-js/compare/v2.0.1...v2.1.0
 [2.0.1]: https://github.com/yisibl/resvg-js/compare/v2.0.0...v2.0.1
 [2.0.0]: https://github.com/yisibl/resvg-js/compare/v2.0.0-beta.0...v2.0.0
 [2.0.0-beta.0]: https://github.com/yisibl/resvg-js/compare/v2.0.0-alpha.6...v2.0.0-beta.0
