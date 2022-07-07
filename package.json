@@ -49,7 +49,7 @@
   "scripts": {
     "artifacts": "napi artifacts",
     "bench": "node -r @swc-node/register benchmark/bench.ts",
-    "bundle": "run-p bundle:*",
+    "bundle": "run-p 'bundle:*'",
     "bundle:js": "node bundle.js",
     "bundle:dts": "dts-bundle-generator --external-types -o wasm/index.d.ts wasm-binding.ts",
     "build": "napi build --platform --release --js js-binding.js --dts js-binding.d.ts",
