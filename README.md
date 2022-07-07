@@ -93,7 +93,7 @@ Although we support the use of Wasm packages in Node.js, this is not recommended
 ```html
 <script src="https://unpkg.com/@resvg/resvg-wasm"></script>
 <script>
-  ;(async function () {
+  (async function () {
     // The Wasm must be initialized first
     await resvg.initWasm(fetch('https://unpkg.com/@resvg/resvg-wasm/index_bg.wasm'))
     const opts = {
