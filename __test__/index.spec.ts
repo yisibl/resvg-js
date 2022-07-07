@@ -449,7 +449,7 @@ test('should throw (no input parameters)', (t) => {
   )
 
   t.is(error.code, 'InvalidArg')
-  t.is(error.message, 'Expect type String or Object, but got Undefined')
+  t.is(error.message, 'Value is not either String or Vec<u8>')
 })
 
 test('should throw (SVG string is empty)', (t) => {
