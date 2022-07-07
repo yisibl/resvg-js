@@ -2,3 +2,4 @@ target
 wasm
 js-binding.js
 js-binding.d.ts
+.yarn
