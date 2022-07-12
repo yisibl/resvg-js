@@ -8,10 +8,9 @@ const sharp = require('sharp')
 const { Resvg } = require('../index')
 
 async function main() {
-  const svg = await fs.readFile(join(__dirname, './anime_girl.svg'))
+  const svg = await fs.readFile(join(__dirname, './text.svg'))
   const zoom = 1
   const w = 1052 * zoom // resize width
-  const h = 744 * zoom // resize height
 
   const t0 = performance.now()
   const opts = {
@@ -29,6 +28,8 @@ async function main() {
   const pngData = resvg.render()
   const pngBuffer = pngData.asPng()
   const t1 = performance.now()
+
+  const h = pngData.height * zoom // resize height
 
   console.info('✨ resvg-js done in', t1 - t0, 'ms')
   await fs.writeFile(join(__dirname, './out-resvg-js.png'), pngBuffer)
