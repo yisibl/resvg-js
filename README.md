@@ -14,6 +14,8 @@
 - `v2`: Gets the width and height of the SVG and the generated PNG.
 - `v2`: Support for outputting simplified SVG strings, such as converting shapes(rect, circle, etc) to `<path>`.
 - `v2`: Support WebAssembly.
+- `v2`: Support to get SVG bounding box and crop according to bounding box.
+- `v2`: Support for loading images of external links in `<image>`.
 - No need for node-gyp and postinstall, the `.node` file has been compiled for you.
 - Cross-platform support, including [Apple M Chips](https://www.apple.com/newsroom/2020/11/apple-unleashes-m1/).
 
