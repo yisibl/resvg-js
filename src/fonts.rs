@@ -13,9 +13,7 @@ use usvg::fontdb::Database;
 
 /// Loads fonts.
 #[cfg(not(target_arch = "wasm32"))]
-pub fn load_fonts(font_options: &JsFontOptions) -> Database {
-    // Create a new font database
-    let mut fontdb = Database::new();
+pub fn load_fonts(font_options: &JsFontOptions, fontdb: &mut Database) {
     let now = std::time::Instant::now();
 
     // 加载系统字体
@@ -78,6 +76,4 @@ pub fn load_fonts(font_options: &JsFontOptions) -> Database {
             warn!("Warning: The default font '{}' not found.", font_family);
         }
     }
-
-    fontdb
 }
