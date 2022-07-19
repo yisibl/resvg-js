@@ -6,6 +6,48 @@ import jimp from 'jimp-compact'
 
 import { Resvg, renderAsync } from '../index'
 
+/**
+ * Convert image to RGBA pixels Array
+ * Traverse the pixels in the order from left to right and top to bottom.
+ *
+ * @param {Buffer} imgBuffer
+ * @param {Number} width image width
+ * @param {Number} height image height
+ * @returns {Array}, e.g. [255, 0, 0, 255, 255, 0, 0, 255]
+ */
+async function imgToRgbaPixel(imgBuffer, width, height) {
+  const result = await jimp.read(imgBuffer)
+
+  const pixels = []
+  for (let y = 0; y < height; y++) {
+    for (let x = 0; x < width; x++) {
+      const pixel = jimp.intToRGBA(result.getPixelColor(x, y))
+      // const rgba = `${pixel.r}, ${pixel.g}, ${pixel.b}, ${pixel.a}`
+      pixels.push(pixel.r)
+      pixels.push(pixel.g)
+      pixels.push(pixel.b)
+      pixels.push(pixel.a)
+    }
+  }
+  return pixels
+}
+
+test.only('svg to RGBA pixels Array', async (t) => {
+  const svg = `<svg width="10px" height="5px" viewBox="0 0 10 5" version="1.1" xmlns="http://www.w3.org/2000/svg">
+    <rect fill="red" x="0" y="0" width="5" height="5"></rect>
+    <rect fill="green" x="5" y="0" width="5" height="5"></rect>
+  </svg>`
+  const resvg = new Resvg(svg)
+  const pngData = resvg.render()
+  const pngBuffer = pngData.asPng()
+
+  const originPixels = pngData.pixel.toJSON().data
+  const pixelArray = await imgToRgbaPixel(pngBuffer, pngData.width, pngData.height)
+
+  t.is(originPixels.length, pixelArray.length)
+  t.is(originPixels.toString(), pixelArray.toString())
+})
+
 test('fit to width', async (t) => {
   const filePath = '../example/text.svg'
   const svg = await fs.readFile(join(__dirname, filePath))
