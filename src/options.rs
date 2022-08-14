@@ -81,6 +81,11 @@ pub struct JsOptions {
     ///
     /// Impact units conversion.
     ///
+    /// Note: This is not the DPI in the PNG file. Resvg does not change the DPI
+    ///  of the PNG file.
+    /// https://github.com/RazrFalcon/resvg/issues/451#issuecomment-914462093
+    /// https://github.com/RazrFalcon/resvg/issues/526#issuecomment-1190433890
+    ///
     /// Default: 96.0
     pub dpi: f64,
 
