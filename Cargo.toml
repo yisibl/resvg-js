@@ -12,7 +12,7 @@ crate-type = ["cdylib"]
 env_logger = "0.9.0"
 fontdb = "0.9.1"
 log = "0.4"
-resvg = { version = "0.22.0", default-features = false, features = [
+resvg = { version = "0.23.0", default-features = false, features = [
     "filter",
     "dump-svg",
 ] }
