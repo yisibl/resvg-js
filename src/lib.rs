@@ -18,7 +18,7 @@ use pathfinder_geometry::vector::Vector2F;
 #[cfg(not(target_arch = "wasm32"))]
 use napi_derive::napi;
 use options::JsOptions;
-use tiny_skia::Pixmap;
+use resvg::tiny_skia::Pixmap;
 use usvg::{ImageKind, NodeKind};
 #[cfg(target_arch = "wasm32")]
 use wasm_bindgen::{
@@ -407,12 +407,12 @@ impl Resvg {
                 let no_fill = p.fill.is_none()
                     || p.fill
                         .as_ref()
-                        .map(|f| f.opacity.value() == 0.0)
+                        .map(|f| f.opacity.get() == 0.0)
                         .unwrap_or_default();
                 let no_stroke = p.stroke.is_none()
                     || p.stroke
                         .as_ref()
-                        .map(|f| f.opacity.value() == 0.0)
+                        .map(|f| f.opacity.get() == 0.0)
                         .unwrap_or_default();
                 if no_fill && no_stroke {
                     return None;
@@ -465,7 +465,7 @@ impl Resvg {
                 if let Some(stroke) = p.stroke.as_ref() {
                     if !no_stroke {
                         let mut style = StrokeStyle::default();
-                        style.line_width = stroke.width.value() as f32;
+                        style.line_width = stroke.width.get() as f32;
                         style.line_join = LineJoin::Miter(style.line_width);
                         style.line_cap = match stroke.linecap {
                             usvg::LineCap::Butt => LineCap::Butt,
@@ -556,12 +556,12 @@ impl Resvg {
         let _image = resvg::render(
             &self.tree,
             self.js_options.fit_to,
-            tiny_skia::Transform::default(),
+            resvg::tiny_skia::Transform::default(),
             pixmap.as_mut(),
         );
 
         // Crop the SVG
-        let crop_rect = tiny_skia::IntRect::from_ltrb(
+        let crop_rect = resvg::tiny_skia::IntRect::from_ltrb(
             self.js_options.crop.left,
             self.js_options.crop.top,
             self.js_options
