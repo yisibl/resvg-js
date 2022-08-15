@@ -7,9 +7,9 @@ use crate::error::Error;
 use fontdb::Database;
 #[cfg(not(target_arch = "wasm32"))]
 use napi::{bindgen_prelude::Buffer, Either};
-use resvg::ScreenSize;
+use resvg::tiny_skia::Pixmap;
+use resvg::usvg::ScreenSize;
 use serde::{Deserialize, Deserializer};
-use tiny_skia::Pixmap;
 use usvg::{ImageHrefResolver, ImageKind, OptionsRef};
 
 /// Image fit options.
@@ -197,7 +197,7 @@ impl JsOptions {
         let mut pixmap = Pixmap::new(size.width(), size.height()).unwrap();
 
         if let Some(bg) = background {
-            let color = tiny_skia::Color::from_rgba8(bg.red, bg.green, bg.blue, bg.alpha);
+            let color = resvg::tiny_skia::Color::from_rgba8(bg.red, bg.green, bg.blue, bg.alpha);
             pixmap.fill(color);
         }
         Ok(pixmap)
