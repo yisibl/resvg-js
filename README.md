@@ -4,11 +4,11 @@
 <a href="https://www.npmjs.com/package/@resvg/resvg-js"><img src="https://img.shields.io/npm/v/@resvg/resvg-js.svg?sanitize=true" alt="@resvg/resvg-js npm version"></a>
 <a href="https://npmcharts.com/compare/@resvg/resvg-js?minimal=true"><img src="https://img.shields.io/npm/dm/@resvg/resvg-js.svg?sanitize=true" alt="@resvg/resvg-js downloads"></a>
 
-> resvg-js is a high-performance SVG renderer and toolkit, powered by Rust based [resvg](https://github.com/RazrFalcon/resvg/) and [napi-rs](https://github.com/napi-rs/napi-rs).
+> resvg-js is a high-performance SVG renderer and toolkit, powered by Rust based [resvg](https://github.com/RazrFalcon/resvg/), with Node.js backend using [napi-rs](https://github.com/napi-rs/napi-rs), also a pure WebAssmebly backend.
 
 ## Features
 
-- Fast, safe and zero dependencies.
+- Fast, safe and zero dependencies, with correct output.
 - Convert SVG to PNG, includes cropping, scaling and setting the background color.
 - Support system fonts and custom fonts in SVG text.
 - `v2`: Gets the width and height of the SVG and the generated PNG.
@@ -88,7 +88,7 @@ main()
 
 ### WebAssembly
 
-Although we support the use of Wasm packages in Node.js, this is not recommended. The native addon performs better.
+This package also ships a pure WebAssembly artifact built with `wasm-bindgen` to run in browsers.
 
 #### Browser
 
@@ -115,23 +115,24 @@ Although we support the use of Wasm packages in Node.js, this is not recommended
 </script>
 ```
 
-See [playground](playground/index.html), it is also possible to [call Wasm in Node.js](example/wasm-node.js), but there is a performance penalty and this is not recommended.
+See [playground](playground/index.html), it is also possible to [call Wasm in Node.js](example/wasm-node.js), but it is slower.
 
-## Benchmark
+
+## Sample Benchmark
 
 ```shell
 Running "resize width" suite...
   resvg-js(Rust):
-    12 ops/s, ±22.66%   | fastest 🚀
+    12 ops/s
 
   sharp:
-    9 ops/s, ±64.52%    | 25% slower
+    9 ops/s
 
   skr-canvas(Rust):
-    7 ops/s, ±3.72%    | 41.67% slower
+    7 ops/s
 
   svg2img(canvg and node-canvas):
-    6 ops/s, ±16.94%    | slowest, 50% slower
+    6 ops/s
 ```
 
 ## Support matrix
