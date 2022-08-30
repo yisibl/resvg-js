@@ -80,7 +80,7 @@
     "@types/sharp": "^0.30.4",
     "@typescript-eslint/eslint-plugin": "^5.30.3",
     "@typescript-eslint/parser": "^5.30.3",
-    "ava": "^3.15.0",
+    "ava": "^4.0.0",
     "benny": "^3.7.1",
     "copyfiles": "^2.4.1",
     "dts-bundle-generator": "^6.12.0",
