@@ -138,6 +138,9 @@ pub struct JsOptions {
 
     #[serde(with = "LogLevelDef")]
     pub log_level: log::LevelFilter,
+
+    #[serde(skip)]
+    pub font_db: Database,
 }
 
 impl Default for JsOptions {
@@ -153,6 +156,7 @@ impl Default for JsOptions {
             background: None,
             crop: JsCropOptions::default(),
             log_level: log::LevelFilter::Error,
+            font_db: Database::new(),
         }
     }
 }
@@ -160,12 +164,9 @@ impl Default for JsOptions {
 impl JsOptions {
     pub(crate) fn to_usvg_options(&self) -> usvg::Options {
         // Load fonts
+        let mut fontdb = self.font_db.clone();
         #[cfg(not(target_arch = "wasm32"))]
-        let fontdb = if cfg!(target_arch = "wasm32") {
-            Database::new()
-        } else {
-            crate::fonts::load_fonts(&self.font)
-        };
+        crate::fonts::load_fonts(&self.font, &mut fontdb);
 
         // Build the SVG options
         usvg::Options {
@@ -179,7 +180,6 @@ impl JsOptions {
             image_rendering: self.image_rendering,
             keep_named_groups: false,
             default_size: usvg::Size::new(100.0_f64, 100.0_f64).unwrap(),
-            #[cfg(not(target_arch = "wasm32"))]
             fontdb,
             image_href_resolver: usvg::ImageHrefResolver::default(),
         }
