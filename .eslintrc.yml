@@ -6,6 +6,9 @@ parserOptions:
   ecmaVersion: latest
   sourceType: module
 
+globals:
+  Deno: readonly
+
 env:
   browser: true
   es6: true
