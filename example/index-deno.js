@@ -1,4 +1,3 @@
-import { performance } from 'https://deno.land/std@0.159.0/node/perf_hooks.ts'
 import * as path from 'https://deno.land/std@0.159.0/path/mod.ts'
 import { Resvg } from 'npm:@resvg/resvg-js'
 
