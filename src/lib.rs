@@ -19,7 +19,7 @@ use pathfinder_geometry::vector::Vector2F;
 use napi_derive::napi;
 use options::JsOptions;
 use resvg::tiny_skia::Pixmap;
-use usvg::{ImageKind, NodeKind};
+use resvg::usvg::{self, ImageKind, NodeKind};
 #[cfg(target_arch = "wasm32")]
 use wasm_bindgen::{
     prelude::{wasm_bindgen, JsValue},
@@ -173,13 +173,13 @@ impl Resvg {
     // Either<T, Undefined> depends on napi 2.4.3
     // https://github.com/napi-rs/napi-rs/releases/tag/napi@2.4.3
     pub fn inner_bbox(&self) -> Either<BBox, Undefined> {
-        let rect = self.tree.svg_node().view_box.rect;
+        let rect = self.tree.view_box.rect;
         let rect = points_to_rect(
             usvg::Point::new(rect.x(), rect.y()),
             usvg::Point::new(rect.right(), rect.bottom()),
         );
         let mut v = None;
-        for child in self.tree.root().children().skip(1) {
+        for child in self.tree.root.children() {
             let child_viewbox = match self.node_bbox(child).and_then(|v| v.intersection(rect)) {
                 Some(v) => v,
                 None => continue,
@@ -209,8 +209,7 @@ impl Resvg {
     // Either<T, Undefined> depends on napi 2.4.3
     // https://github.com/napi-rs/napi-rs/releases/tag/napi@2.4.3
     pub fn get_bbox(&self) -> Either<BBox, Undefined> {
-        let node = self.tree.root();
-        match node.calculate_bbox() {
+        match self.tree.root.calculate_bbox() {
             Some(bbox) => Either::A(BBox {
                 x: bbox.x(),
                 y: bbox.y(),
@@ -228,14 +227,10 @@ impl Resvg {
         if !bbox.width.is_finite() || !bbox.height.is_finite() {
             return;
         }
-        let mut node = self.tree.root();
-        let mut node = node.borrow_mut();
-        if let usvg::NodeKind::Svg(svg) = &mut *node {
-            let width = bbox.width;
-            let height = bbox.height;
-            svg.view_box.rect = usvg::Rect::new(bbox.x, bbox.y, width, height).unwrap();
-            svg.size = usvg::Size::new(width, height).unwrap();
-        }
+        let width = bbox.width;
+        let height = bbox.height;
+        self.tree.view_box.rect = usvg::Rect::new(bbox.x, bbox.y, width, height).unwrap();
+        self.tree.size = usvg::Size::new(width, height).unwrap();
     }
 
     #[napi]
@@ -252,13 +247,13 @@ impl Resvg {
     /// Get the SVG width
     #[napi(getter)]
     pub fn width(&self) -> f64 {
-        self.tree.svg_node().size.width().round()
+        self.tree.size.width().round()
     }
 
     /// Get the SVG height
     #[napi(getter)]
     pub fn height(&self) -> f64 {
-        self.tree.svg_node().size.height().round()
+        self.tree.size.height().round()
     }
 }
 
@@ -289,13 +284,13 @@ impl Resvg {
     /// Get the SVG width
     #[wasm_bindgen(getter)]
     pub fn width(&self) -> f64 {
-        self.tree.svg_node().size.width().round()
+        self.tree.size.width().round()
     }
 
     /// Get the SVG height
     #[wasm_bindgen(getter)]
     pub fn height(&self) -> f64 {
-        self.tree.svg_node().size.height().round()
+        self.tree.size.height().round()
     }
 
     /// Renders an SVG in Wasm
@@ -314,13 +309,13 @@ impl Resvg {
     /// Note: path bounding box are approx values.
     #[wasm_bindgen(js_name = innerBBox)]
     pub fn inner_bbox(&self) -> Option<BBox> {
-        let rect = self.tree.svg_node().view_box.rect;
+        let rect = self.tree.view_box.rect;
         let rect = points_to_rect(
             usvg::Point::new(rect.x(), rect.y()),
             usvg::Point::new(rect.right(), rect.bottom()),
         );
         let mut v = None;
-        for child in self.tree.root().children().skip(1) {
+        for child in self.tree.root.children() {
             let child_viewbox = match self.node_bbox(child).and_then(|v| v.intersection(rect)) {
                 Some(v) => v,
                 None => continue,
@@ -345,8 +340,7 @@ impl Resvg {
     /// This will first apply transform.
     /// Similar to `SVGGraphicsElement.getBBox()` DOM API.
     pub fn get_bbox(&self) -> Option<BBox> {
-        let node = self.tree.root();
-        let bbox = node.calculate_bbox()?;
+        let bbox = self.tree.root.calculate_bbox()?;
         Some(BBox {
             x: bbox.x(),
             y: bbox.y(),
@@ -362,14 +356,10 @@ impl Resvg {
         if !bbox.width.is_finite() || !bbox.height.is_finite() {
             return;
         }
-        let mut node = self.tree.root();
-        let mut node = node.borrow_mut();
-        if let usvg::NodeKind::Svg(svg) = &mut *node {
-            let width = bbox.width;
-            let height = bbox.height;
-            svg.view_box.rect = usvg::Rect::new(bbox.x, bbox.y, width, height).unwrap();
-            svg.size = usvg::Size::new(width, height).unwrap();
-        }
+        let width = bbox.width;
+        let height = bbox.height;
+        self.tree.view_box.rect = usvg::Rect::new(bbox.x, bbox.y, width, height).unwrap();
+        self.tree.size = usvg::Size::new(width, height).unwrap();
     }
 
     #[wasm_bindgen(js_name = imagesToResolve)]
@@ -391,15 +381,6 @@ impl Resvg {
 }
 
 impl Resvg {
-    fn node_by_id(&self, id: &str) -> Option<usvg::Node> {
-        for node in self.tree.root().descendants() {
-            if id == node.borrow().id() {
-                return Some(node);
-            }
-        }
-        None
-    }
-
     fn node_bbox(&self, node: usvg::Node) -> Option<RectF> {
         let transform = node.borrow().transform();
         let bbox = match &*node.borrow() {
@@ -419,7 +400,7 @@ impl Resvg {
                 }
                 let mut outline = Outline::new();
                 let mut contour = Contour::new();
-                let mut iter = p.data.0.iter().peekable();
+                let mut iter = p.data.segments().peekable();
                 while let Some(seg) = iter.next() {
                     match seg {
                         usvg::PathSegment::MoveTo { x, y } => {
@@ -427,10 +408,10 @@ impl Resvg {
                                 outline
                                     .push_contour(std::mem::replace(&mut contour, Contour::new()));
                             }
-                            contour.push_endpoint(Vector2F::new(*x as f32, *y as f32));
+                            contour.push_endpoint(Vector2F::new(x as f32, y as f32));
                         }
                         usvg::PathSegment::LineTo { x, y } => {
-                            let v = Vector2F::new(*x as f32, *y as f32);
+                            let v = Vector2F::new(x as f32, y as f32);
                             if let Some(usvg::PathSegment::ClosePath) = iter.peek() {
                                 let first = contour.position_of(0);
                                 if (first - v).square_length() < 1.0 {
@@ -448,9 +429,9 @@ impl Resvg {
                             y,
                         } => {
                             contour.push_cubic(
-                                Vector2F::new(*x1 as f32, *y1 as f32),
-                                Vector2F::new(*x2 as f32, *y2 as f32),
-                                Vector2F::new(*x as f32, *y as f32),
+                                Vector2F::new(x1 as f32, y1 as f32),
+                                Vector2F::new(x2 as f32, y2 as f32),
+                                Vector2F::new(x as f32, y as f32),
                             );
                         }
                         usvg::PathSegment::ClosePath => {
@@ -480,14 +461,11 @@ impl Resvg {
                 Some(outline.bounds())
             }
             usvg::NodeKind::Group(g) => {
-                let clippath = if let Some(clippath) = g
-                    .clip_path
-                    .as_ref()
-                    .and_then(|cp| self.node_by_id(cp))
-                    .and_then(|n| n.first_child())
+                let clippath = if let Some(clippath) =
+                    g.clip_path.as_ref().and_then(|n| n.root.first_child())
                 {
                     self.node_bbox(clippath)
-                } else if let Some(mask) = g.mask.as_ref().and_then(|cp| self.node_by_id(cp)) {
+                } else if let Some(mask) = g.mask.as_ref().and_then(|n| n.root.first_child()) {
                     self.node_bbox(mask)
                 } else {
                     Some(self.viewbox())
@@ -514,14 +492,6 @@ impl Resvg {
                     usvg::Point::new(rect.right(), rect.bottom()),
                 ))
             }
-            usvg::NodeKind::ClipPath(_) | usvg::NodeKind::Mask(_) => {
-                if let Some(child) = node.first_child() {
-                    self.node_bbox(child)
-                } else {
-                    None
-                }
-            }
-            _ => None,
         }?;
         let (x1, y1) = transform.apply(bbox.min_x() as f64, bbox.min_y() as f64);
         let (x2, y2) = transform.apply(bbox.max_x() as f64, bbox.max_y() as f64);
@@ -549,7 +519,7 @@ impl Resvg {
         let pixmap_size = self
             .js_options
             .fit_to
-            .fit_to(self.tree.svg_node().size.to_screen_size())
+            .fit_to(self.tree.size.to_screen_size())
             .ok_or_else(|| Error::ZeroSized)?;
         let mut pixmap = self.js_options.create_pixmap(pixmap_size)?;
         // Render the tree
@@ -583,7 +553,7 @@ impl Resvg {
 
     fn images_to_resolve_inner(&self) -> Result<Vec<String>, Error> {
         let mut data = vec![];
-        for mut node in self.tree.root().descendants() {
+        for node in self.tree.root.descendants() {
             if let NodeKind::Image(i) = &mut *node.borrow_mut() {
                 if let ImageKind::RAW(_, _, buffer) = &mut i.kind {
                     let s = String::from_utf8(buffer.clone())?;
@@ -600,7 +570,7 @@ impl Resvg {
         let mime = infer::get(&buffer)
             .ok_or_else(|| Error::UnrecognizedBuffer)?
             .to_string();
-        for mut node in self.tree.root().descendants() {
+        for node in self.tree.root.descendants() {
             if let NodeKind::Image(i) = &mut *node.borrow_mut() {
                 let matched = if let ImageKind::RAW(_, _, data) = &mut i.kind {
                     let s = String::from_utf8(data.clone()).map_err(Error::from)?;

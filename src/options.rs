@@ -9,8 +9,8 @@ use fontdb::Database;
 use napi::{bindgen_prelude::Buffer, Either};
 use resvg::tiny_skia::Pixmap;
 use resvg::usvg::ScreenSize;
+use resvg::usvg::{self, ImageHrefResolver, ImageKind, OptionsRef};
 use serde::{Deserialize, Deserializer};
-use usvg::{ImageHrefResolver, ImageKind, OptionsRef};
 
 /// Image fit options.
 /// This provides the deserializer for `usvg::FitTo`.
