@@ -9,7 +9,7 @@ use crate::options::*;
 use log::{debug, warn};
 
 #[cfg(not(target_arch = "wasm32"))]
-use usvg::fontdb::Database;
+use resvg::usvg::fontdb::Database;
 
 /// Loads fonts.
 #[cfg(not(target_arch = "wasm32"))]

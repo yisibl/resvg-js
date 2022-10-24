@@ -12,10 +12,6 @@ crate-type = ["cdylib"]
 env_logger = "0.9.0"
 fontdb = "0.9.1"
 log = "0.4"
-resvg = { version = "0.23.0", default-features = false, features = [
-    "filter",
-    "dump-svg",
-] }
 
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
@@ -34,17 +30,17 @@ mimalloc-rust = { version = "0.2" }
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 wasm-bindgen = "0.2.81"
 js-sys = "0.3.58"
-usvg = { version = "0.23.0", default-features = false, features = [
-    "export",
+resvg = { version = "0.25.0", default-features = false, features = [
     "filter",
+    "dump-svg",
 ] }
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
 napi = { version = "2.7.0", features = ["serde-json", "async"] }
 napi-derive = "2.6.0"
-usvg = { version = "0.23.0", default-features = false, features = [
-    "export",
+resvg = { version = "0.25.0", default-features = false, features = [
     "filter",
+    "dump-svg",
     "text",
 ] }
 
@@ -59,5 +55,5 @@ opt-level = 3
 codegen-units = 1
 
 [patch.crates-io]
-resvg = { git = "https://github.com/zimond/resvg", rev = "dc405c4" }
-usvg = { git = "https://github.com/zimond/resvg", rev = "dc405c4" }
+resvg = { git = "https://github.com/zimond/resvg", rev = "7c98ad6" }
+usvg = { git = "https://github.com/zimond/resvg", rev = "7c98ad6" }

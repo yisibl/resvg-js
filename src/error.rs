@@ -9,7 +9,7 @@ pub enum Error {
     #[error(transparent)]
     SVG(#[from] svgtypes::Error),
     #[error(transparent)]
-    USvg(#[from] usvg::Error),
+    USvg(#[from] resvg::usvg::Error),
     #[error(transparent)]
     Encoding(#[from] png::EncodingError),
     #[error(transparent)]
