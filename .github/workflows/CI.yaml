@@ -200,7 +200,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node: ['12', '14', '16']
+        node: ['14', '16', '18']
     runs-on: ubuntu-latest
 
     steps:
@@ -260,9 +260,9 @@ jobs:
           - host: windows-latest
             target: x86_64-pc-windows-msvc
         node:
-          - '12'
           - '14'
           - '16'
+          - '18'
     runs-on: ${{ matrix.settings.host }}
     steps:
       - uses: actions/checkout@v3
@@ -297,9 +297,9 @@ jobs:
       fail-fast: false
       matrix:
         node:
-          - '12'
           - '14'
           - '16'
+          - '18'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -334,9 +334,9 @@ jobs:
       fail-fast: false
       matrix:
         node:
-          - '12'
           - '14'
           - '16'
+          - '18'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -373,9 +373,9 @@ jobs:
       fail-fast: false
       matrix:
         node:
-          - '12'
           - '14'
           - '16'
+          - '18'
     runs-on: ubuntu-latest
     steps:
       - run: docker run --rm --privileged multiarch/qemu-user-static:register --reset
@@ -450,9 +450,9 @@ jobs:
       fail-fast: false
       matrix:
         node:
-          - '12'
           - '14'
           - '16'
+          - '18'
     runs-on: ubuntu-latest
     steps:
       - run: docker run --rm --privileged multiarch/qemu-user-static:register --reset
