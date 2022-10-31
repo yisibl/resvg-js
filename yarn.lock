@@ -297,7 +297,7 @@ __metadata:
     "@napi-rs/cli": ^2.10.0
     "@swc-node/register": ^1.5.1
     "@types/node": ^18.0.0
-    "@types/sharp": ^0.30.4
+    "@types/sharp": ^0.31.0
     "@typescript-eslint/eslint-plugin": ^5.30.3
     "@typescript-eslint/parser": ^5.30.3
     ava: ^3.15.0
@@ -316,7 +316,7 @@ __metadata:
     node-fetch: 2.x
     npm-run-all: ^4.1.5
     prettier: ^2.7.1
-    sharp: ^0.30.7
+    sharp: ^0.31.0
     typescript: ^4.7.4
   languageName: unknown
   linkType: soft
@@ -565,12 +565,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/sharp@npm:^0.30.4":
-  version: 0.30.4
-  resolution: "@types/sharp@npm:0.30.4"
+"@types/sharp@npm:^0.31.0":
+  version: 0.31.0
+  resolution: "@types/sharp@npm:0.31.0"
   dependencies:
     "@types/node": "*"
-  checksum: 3ebeaf55aa5ed2826a5bb4f13982a64b35691b6f38c4fd9d536ee7aed4d7e6b39529ae290f19343c5d8334419d69e147a28c214ca61adaed35ebf3ceea7cdf17
+  checksum: c7698de18183a0574bf2f703226a5a7dc32b8a7340b52790eff0f6775b8ad708b6782f48fcaaf4d1be15fd76215c81c3ea55595d55484bf7ce870923c8174294
   languageName: node
   linkType: hard
 
@@ -4950,9 +4950,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"sharp@npm:^0.30.7":
-  version: 0.30.7
-  resolution: "sharp@npm:0.30.7"
+"sharp@npm:^0.31.0":
+  version: 0.31.1
+  resolution: "sharp@npm:0.31.1"
   dependencies:
     color: ^4.2.3
     detect-libc: ^2.0.1
@@ -4963,7 +4963,7 @@ __metadata:
     simple-get: ^4.0.1
     tar-fs: ^2.1.1
     tunnel-agent: ^0.6.0
-  checksum: bbc63ca3c7ea8a5bff32cd77022cfea30e25a03f5bd031e935924bf6cf0e11e3388e8b0e22b3137bf8816aa73407f1e4fbeb190f3a35605c27ffca9f32b91601
+  checksum: 42d00c9c6c61e5cf752c29583253782b3d821ee15fc2648c1f59892b94e9bc170a47ee9d138aa0a61c1c2ee9b7573ee54444c857fff887908701c4208710480d
   languageName: node
   linkType: hard
 
