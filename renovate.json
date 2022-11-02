@@ -1,4 +1,6 @@
 {
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+
   "extends": ["config:base", ":preserveSemverRanges"],
   "timezone": "Asia/Shanghai",
   "schedule": "after 10pm on tuesday",
@@ -13,5 +15,6 @@
     "extends": [
       "schedule:monthly"
     ]
-  }
+  },
+  "ignoreDeps": ["png"]
 }
