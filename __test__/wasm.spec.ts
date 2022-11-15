@@ -183,7 +183,7 @@ test('should render HEXA color format', async (t) => {
 
   const r1 = new jimp({ data: HEXABuffer.bitmap.data, width: 200, height: 200 })
   const r2 = new jimp({ data: RGBABuffer.bitmap.data, width: 200, height: 200 })
-  const diff = await jimp.diff(r1, r2, 0.01)
+  const diff = jimp.diff(r1, r2, 0.01)
 
   t.is(diff.percent, 0) // 0 means similar, 1 means not similar
 })
