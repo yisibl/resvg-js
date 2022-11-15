@@ -3,10 +3,45 @@ import { join } from 'path'
 
 import test from 'ava'
 import jimp from 'jimp-compact'
+import fetch from 'node-fetch'
 
 import { Resvg, renderAsync } from '../index'
 
 import { jimpToRgbaPixels } from './helper'
+
+test('Use href to load a JPG image without alpha', async (t) => {
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <image href="http://tva2.sinaimg.cn/crop.0.0.250.250.80/534b48acjw8ehw72edguyj206y06yq32.jpg" width="80" height="80"/>
+</svg>`
+  const opts = {
+    font: {
+      loadSystemFonts: false,
+    },
+  }
+  const resvg = new Resvg(svg, opts)
+  const resolved = await Promise.all(
+    resvg.imagesToResolve().map(async (url) => {
+      console.info('image url', url)
+      const img = await fetch(url)
+      const buffer = await img.arrayBuffer()
+      return {
+        url,
+        buffer: Buffer.from(buffer),
+      }
+    }),
+  )
+  if (resolved.length > 0) {
+    for (const result of resolved) {
+      const { url, buffer } = result
+      resvg.resolveImage(url, buffer)
+    }
+  }
+  const pngData = resvg.render()
+  const pngBuffer = pngData.asPng()
+
+  const result = await jimp.read(pngBuffer)
+  t.is(result.hasAlpha(), false)
+})
 
 test('svg to RGBA pixels Array', async (t) => {
   const svg = `<svg width="10px" height="5px" viewBox="0 0 10 5" version="1.1" xmlns="http://www.w3.org/2000/svg">
@@ -270,7 +305,7 @@ test('should render HEXA color format', async (t) => {
 
   const r1 = new jimp({ data: HEXABuffer.bitmap.data, width: 200, height: 200 })
   const r2 = new jimp({ data: RGBABuffer.bitmap.data, width: 200, height: 200 })
-  const diff = await jimp.diff(r1, r2, 0.01)
+  const diff = jimp.diff(r1, r2, 0.01)
 
   t.is(diff.percent, 0) // 0 means similar, 1 means not similar
 })
