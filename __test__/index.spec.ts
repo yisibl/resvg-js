@@ -6,30 +6,7 @@ import jimp from 'jimp-compact'
 
 import { Resvg, renderAsync } from '../index'
 
-/**
- * Convert image to RGBA pixels Array
- * Traverse the pixels in the order from left to right and top to bottom.
- *
- * @param {Buffer} imgBuffer
- * @param {Number} width image width
- * @param {Number} height image height
- * @returns {Array}, e.g. [255, 0, 0, 255, 255, 0, 0, 255]
- */
-async function imgToRgbaPixels(imgBuffer: Buffer, width: number, height: number) {
-  const result = await jimp.read(imgBuffer)
-
-  const pixels = []
-  for (let y = 0; y < height; y++) {
-    for (let x = 0; x < width; x++) {
-      const pixel = jimp.intToRGBA(result.getPixelColor(x, y))
-      pixels.push(pixel.r)
-      pixels.push(pixel.g)
-      pixels.push(pixel.b)
-      pixels.push(pixel.a)
-    }
-  }
-  return pixels
-}
+import { jimpToRgbaPixels } from './helper'
 
 test('svg to RGBA pixels Array', async (t) => {
   const svg = `<svg width="10px" height="5px" viewBox="0 0 10 5" version="1.1" xmlns="http://www.w3.org/2000/svg">
@@ -41,7 +18,7 @@ test('svg to RGBA pixels Array', async (t) => {
   const pngBuffer = pngData.asPng()
 
   const originPixels = pngData.pixels.toJSON().data
-  const pixelArray = await imgToRgbaPixels(pngBuffer, pngData.width, pngData.height)
+  const pixelArray = await jimpToRgbaPixels(pngBuffer, pngData.width, pngData.height)
 
   t.is(originPixels.length, pixelArray.length)
   t.is(originPixels.toString(), pixelArray.toString())

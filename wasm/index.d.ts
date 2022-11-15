@@ -27,6 +27,10 @@ declare class RenderedImage {
 	*/
 	readonly height: number;
 	/**
+	* Get the RGBA pixels of the image
+	*/
+	readonly pixels: Uint8Array;
+	/**
 	* Get the PNG width
 	*/
 	readonly width: number;

@@ -204,6 +204,10 @@ var RenderedImage = class {
       wasm.__wbindgen_add_to_stack_pointer(16);
     }
   }
+  get pixels() {
+    const ret = wasm.renderedimage_pixels(this.ptr);
+    return takeObject(ret);
+  }
 };
 var Resvg = class {
   static __wrap(ptr) {
