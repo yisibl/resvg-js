@@ -109,6 +109,7 @@ impl RenderedImage {
 
     /// Get the RGBA pixels of the image
     #[cfg(target_arch = "wasm32")]
+    #[wasm_bindgen(getter)]
     pub fn pixels(&self) -> js_sys::Uint8Array {
         self.pix.data().into()
     }

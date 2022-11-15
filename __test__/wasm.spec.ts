@@ -7,9 +7,27 @@ import jimp from 'jimp-compact'
 
 import { Resvg, initWasm } from '../wasm'
 
+import { jimpToRgbaPixels } from './helper'
+
 // Init Wasm
 test.before(async () => {
   await initWasm(fs.readFile(join(__dirname, '../wasm/index_bg.wasm')))
+})
+
+test('svg to RGBA pixels Array', async (t) => {
+  const svg = `<svg width="10px" height="5px" viewBox="0 0 10 5" version="1.1" xmlns="http://www.w3.org/2000/svg">
+    <rect fill="red" x="0" y="0" width="5" height="5"></rect>
+    <rect fill="green" x="5" y="0" width="5" height="5"></rect>
+  </svg>`
+  const resvg = new Resvg(svg)
+  const pngData = resvg.render()
+  const pngBuffer = pngData.asPng()
+
+  const originPixels = Array.from(pngData.pixels)
+  const pixelArray = await jimpToRgbaPixels(Buffer.from(pngBuffer), pngData.width, pngData.height)
+
+  t.is(originPixels.length, pixelArray.length)
+  t.is(originPixels.toString(), pixelArray.toString())
 })
 
 test('buffer input', async (t) => {
