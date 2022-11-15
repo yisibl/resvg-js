@@ -15,14 +15,13 @@ import { Resvg, renderAsync } from '../index'
  * @param {Number} height image height
  * @returns {Array}, e.g. [255, 0, 0, 255, 255, 0, 0, 255]
  */
-async function imgToRgbaPixel(imgBuffer, width, height) {
+async function imgToRgbaPixels(imgBuffer: Buffer, width: number, height: number) {
   const result = await jimp.read(imgBuffer)
 
   const pixels = []
   for (let y = 0; y < height; y++) {
     for (let x = 0; x < width; x++) {
       const pixel = jimp.intToRGBA(result.getPixelColor(x, y))
-      // const rgba = `${pixel.r}, ${pixel.g}, ${pixel.b}, ${pixel.a}`
       pixels.push(pixel.r)
       pixels.push(pixel.g)
       pixels.push(pixel.b)
@@ -32,7 +31,7 @@ async function imgToRgbaPixel(imgBuffer, width, height) {
   return pixels
 }
 
-test.only('svg to RGBA pixels Array', async (t) => {
+test('svg to RGBA pixels Array', async (t) => {
   const svg = `<svg width="10px" height="5px" viewBox="0 0 10 5" version="1.1" xmlns="http://www.w3.org/2000/svg">
     <rect fill="red" x="0" y="0" width="5" height="5"></rect>
     <rect fill="green" x="5" y="0" width="5" height="5"></rect>
@@ -41,8 +40,8 @@ test.only('svg to RGBA pixels Array', async (t) => {
   const pngData = resvg.render()
   const pngBuffer = pngData.asPng()
 
-  const originPixels = pngData.pixel.toJSON().data
-  const pixelArray = await imgToRgbaPixel(pngBuffer, pngData.width, pngData.height)
+  const originPixels = pngData.pixels.toJSON().data
+  const pixelArray = await imgToRgbaPixels(pngBuffer, pngData.width, pngData.height)
 
   t.is(originPixels.length, pixelArray.length)
   t.is(originPixels.toString(), pixelArray.toString())

@@ -109,14 +109,14 @@ impl RenderedImage {
 
     /// Get the RGBA pixels of the image
     #[cfg(target_arch = "wasm32")]
-    pub fn pixel(&self) -> js_sys::Uint8Array {
+    pub fn pixels(&self) -> js_sys::Uint8Array {
         self.pix.data().into()
     }
 
     /// Get the RGBA pixels of the image
     #[cfg(not(target_arch = "wasm32"))]
     #[napi(getter)]
-    pub fn pixel(&self) -> Buffer {
+    pub fn pixels(&self) -> Buffer {
         self.pix.data().into()
     }
 
