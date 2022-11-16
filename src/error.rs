@@ -18,8 +18,8 @@ pub enum Error {
     ZeroSized,
     #[error("Input must be string or Uint8Array")]
     InvalidInput,
-    #[error("Unrecognized image buffer")]
-    UnrecognizedBuffer,
+    #[error("Unsupported image types (currently resvg only supports PNG, JPEG and GIF)")]
+    UnsupportedImage,
 }
 
 #[cfg(not(target_arch = "wasm32"))]
