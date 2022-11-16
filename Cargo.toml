@@ -33,6 +33,7 @@ js-sys = "0.3.60"
 resvg = { version = "0.25.0", default-features = false, features = [
     "filter",
     "dump-svg",
+    "raster-images",
 ] }
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
@@ -41,6 +42,7 @@ napi-derive = "2.9.1"
 resvg = { version = "0.25.0", default-features = false, features = [
     "filter",
     "dump-svg",
+    "raster-images",
     "text",
 ] }
 
