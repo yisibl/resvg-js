@@ -3,7 +3,6 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 use std::sync::Arc;
-// use strum_macros::Display;
 
 #[cfg(not(target_arch = "wasm32"))]
 use napi::bindgen_prelude::{
@@ -395,49 +394,6 @@ impl Resvg {
     }
 }
 
-// #[derive(Display, Debug)]
-// pub enum MimeType {
-//     #[strum(serialize = "image/png")]
-//     Png,
-
-//     #[strum(serialize = "image/jpeg")]
-//     Jpeg,
-
-//     #[strum(serialize = "image/gif")]
-//     Gif,
-
-//     #[strum(serialize = "Not Support")]
-//     NotSupported,
-// }
-
-pub enum MimeType {
-    Png,
-    Jpeg,
-    Gif,
-}
-
-impl MimeType {
-    pub fn parse(buffer: &[u8]) -> Result<Self, Error> {
-        if buffer.len() < 4 {
-            return Err(Error::UnrecognizedBuffer);
-        }
-        Ok(match &buffer[0..4] {
-            [0x89, 0x50, 0x4E, 0x47] => MimeType::Png,
-            [0xFF, 0xD8, 0xFF, _] => MimeType::Jpeg,
-            [0x47, 0x49, 0x46, _] => MimeType::Gif,
-            _ => return Err(Error::UnrecognizedBuffer),
-        })
-    }
-
-    pub fn mime_type(&self) -> &'static str {
-        match self {
-            MimeType::Png => "image/png",
-            MimeType::Gif => "image/gif",
-            _ => "image/jpeg",
-        }
-    }
-}
-
 impl Resvg {
     fn node_bbox(&self, node: usvg::Node) -> Option<RectF> {
         let transform = node.borrow().transform();
@@ -626,7 +582,6 @@ impl Resvg {
         let resolver = usvg::ImageHrefResolver::default_data_resolver();
         let options = self.js_options.to_usvg_options();
         let mime = MimeType::parse(&buffer)?.mime_type().to_string();
-        // debug!("🤓  Image mime is: '{}' .", mime);
 
         for node in self.tree.root.descendants() {
             if let NodeKind::Image(i) = &mut *node.borrow_mut() {
@@ -691,4 +646,34 @@ fn points_to_rect(min: usvg::Point<f64>, max: usvg::Point<f64>) -> RectF {
     let min = Vector2F::new(min.x as f32, min.y as f32);
     let max = Vector2F::new(max.x as f32, max.y as f32);
     RectF::new(min, max - min)
+}
+
+// Detects the file type by magic number.
+// Currently resvg only supports the following types of files.
+pub enum MimeType {
+    Png,
+    Jpeg,
+    Gif,
+}
+
+impl MimeType {
+    pub fn parse(buffer: &[u8]) -> Result<Self, Error> {
+        if buffer.len() < 4 {
+            return Err(Error::UnsupportedImage);
+        }
+        Ok(match &buffer[0..4] {
+            [0x89, 0x50, 0x4E, 0x47] => MimeType::Png,
+            [0xFF, 0xD8, 0xFF, _] => MimeType::Jpeg,
+            [0x47, 0x49, 0x46, _] => MimeType::Gif,
+            _ => return Err(Error::UnsupportedImage),
+        })
+    }
+
+    pub fn mime_type(&self) -> &'static str {
+        match self {
+            MimeType::Png => "image/png",
+            MimeType::Gif => "image/gif",
+            _ => "image/jpeg",
+        }
+    }
 }

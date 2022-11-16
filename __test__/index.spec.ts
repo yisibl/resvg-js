@@ -18,7 +18,6 @@ test('Use href to load a JPG image without alpha', async (t) => {
     font: {
       loadSystemFonts: false,
     },
-    logLevel: 'debug',
   })
   const resolved = await Promise.all(
     resvg.imagesToResolve().map(async (url) => {
