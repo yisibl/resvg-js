@@ -414,21 +414,19 @@ pub enum MimeType {
     Png,
     Jpeg,
     Gif,
-    NotSupported,
 }
 
 impl MimeType {
-    pub fn parse(buffer: &[u8]) -> Self {
+    pub fn parse(buffer: &[u8]) -> Result<Self, Error> {
         if buffer.len() < 4 {
-            MimeType::NotSupported
-        } else {
-            match &buffer[0..4] {
-                [0x89, 0x50, 0x4E, 0x47] => MimeType::Png,
-                [0xFF, 0xD8, 0xFF, _] => MimeType::Jpeg,
-                [0x47, 0x49, 0x46, _] => MimeType::Gif,
-                _ => MimeType::NotSupported,
-            }
+            return Err(Error::UnrecognizedBuffer);
         }
+        Ok(match &buffer[0..4] {
+            [0x89, 0x50, 0x4E, 0x47] => MimeType::Png,
+            [0xFF, 0xD8, 0xFF, _] => MimeType::Jpeg,
+            [0x47, 0x49, 0x46, _] => MimeType::Gif,
+            _ => return Err(Error::UnrecognizedBuffer),
+        })
     }
 
     pub fn mime_type(&self) -> &'static str {
@@ -627,8 +625,7 @@ impl Resvg {
     fn resolve_image_inner(&self, href: String, buffer: Vec<u8>) -> Result<(), Error> {
         let resolver = usvg::ImageHrefResolver::default_data_resolver();
         let options = self.js_options.to_usvg_options();
-        let mime_type = MimeType::parse(&buffer);
-        let mime = MimeType::mime_type(&mime_type).to_string();
+        let mime = MimeType::parse(&buffer)?.mime_type().to_string();
         // debug!("🤓  Image mime is: '{}' .", mime);
 
         for node in self.tree.root.descendants() {
