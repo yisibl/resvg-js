@@ -3,6 +3,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 use std::sync::Arc;
+// use strum_macros::Display;
 
 #[cfg(not(target_arch = "wasm32"))]
 use napi::bindgen_prelude::{
@@ -394,6 +395,51 @@ impl Resvg {
     }
 }
 
+// #[derive(Display, Debug)]
+// pub enum MimeType {
+//     #[strum(serialize = "image/png")]
+//     Png,
+
+//     #[strum(serialize = "image/jpeg")]
+//     Jpeg,
+
+//     #[strum(serialize = "image/gif")]
+//     Gif,
+
+//     #[strum(serialize = "Not Support")]
+//     NotSupported,
+// }
+
+pub enum MimeType {
+    Png,
+    Jpeg,
+    Gif,
+    NotSupported,
+}
+
+impl MimeType {
+    pub fn parse(buffer: &[u8]) -> Self {
+        if buffer.len() < 4 {
+            MimeType::NotSupported
+        } else {
+            match &buffer[0..4] {
+                [0x89, 0x50, 0x4E, 0x47] => MimeType::Png,
+                [0xFF, 0xD8, 0xFF, _] => MimeType::Jpeg,
+                [0x47, 0x49, 0x46, _] => MimeType::Gif,
+                _ => MimeType::NotSupported,
+            }
+        }
+    }
+
+    pub fn mime_type(&self) -> &'static str {
+        match self {
+            MimeType::Png => "image/png",
+            MimeType::Gif => "image/gif",
+            _ => "image/jpeg",
+        }
+    }
+}
+
 impl Resvg {
     fn node_bbox(&self, node: usvg::Node) -> Option<RectF> {
         let transform = node.borrow().transform();
@@ -581,9 +627,10 @@ impl Resvg {
     fn resolve_image_inner(&self, href: String, buffer: Vec<u8>) -> Result<(), Error> {
         let resolver = usvg::ImageHrefResolver::default_data_resolver();
         let options = self.js_options.to_usvg_options();
-        let mime = infer::get(&buffer)
-            .ok_or_else(|| Error::UnrecognizedBuffer)?
-            .to_string();
+        let mime_type = MimeType::parse(&buffer);
+        let mime = MimeType::mime_type(&mime_type).to_string();
+        // debug!("🤓  Image mime is: '{}' .", mime);
+
         for node in self.tree.root.descendants() {
             if let NodeKind::Image(i) = &mut *node.borrow_mut() {
                 let matched = if let ImageKind::RAW(_, _, data) = &mut i.kind {
