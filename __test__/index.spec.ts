@@ -10,15 +10,15 @@ import { Resvg, renderAsync } from '../index'
 import { jimpToRgbaPixels } from './helper'
 
 test('Use href to load a JPG image without alpha', async (t) => {
+  const imgUrl = 'http://tva2.sinaimg.cn/crop.0.0.250.250.80/534b48acjw8ehw72edguyj206y06yq32.jpg'
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-  <image href="http://tva2.sinaimg.cn/crop.0.0.250.250.80/534b48acjw8ehw72edguyj206y06yq32.jpg" width="80" height="80"/>
+  <image href="${imgUrl}" width="80" height="80"/>
 </svg>`
-  const opts = {
+  const resvg = new Resvg(svg, {
     font: {
       loadSystemFonts: false,
     },
-  }
-  const resvg = new Resvg(svg, opts)
+  })
   const resolved = await Promise.all(
     resvg.imagesToResolve().map(async (url) => {
       console.info('image url', url)
@@ -37,10 +37,18 @@ test('Use href to load a JPG image without alpha', async (t) => {
     }
   }
   const pngData = resvg.render()
-  const pngBuffer = pngData.asPng()
+  const resvgPngBuffer = pngData.asPng()
+  const result1 = await jimp.read(resvgPngBuffer)
 
-  const result = await jimp.read(pngBuffer)
-  t.is(result.hasAlpha(), false)
+  const jimpImg = await fetch(imgUrl)
+  const jimpBuffer = await jimpImg.arrayBuffer()
+  const result2 = await jimp.read(jimpBuffer)
+
+  const r1 = new jimp({ data: result1.bitmap.data, width: pngData.width, height: pngData.height })
+  const r2 = new jimp({ data: result2.bitmap.data, width: result2.bitmap.width, height: result2.bitmap.height })
+
+  t.is(result1.hasAlpha(), false)
+  t.is(jimp.diff(r1, r2, 0.01).percent, 0) // 0 means similar, 1 means not similar
 })
 
 test('svg to RGBA pixels Array', async (t) => {
