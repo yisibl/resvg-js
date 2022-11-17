@@ -133,6 +133,7 @@ console.info('✨ Done in', performance.now() - t, 'ms')
 
 await Deno.writeFile(path.join(__dirname, './text-out-deno.png'), pngBuffer)
 ```
+
 ### WebAssembly
 
 This package also ships a pure WebAssembly artifact built with `wasm-bindgen` to run in browsers.
@@ -163,7 +164,6 @@ This package also ships a pure WebAssembly artifact built with `wasm-bindgen` to
 ```
 
 See [playground](playground/index.html), it is also possible to [call Wasm in Node.js](example/wasm-node.js), but it is slower.
-
 
 ## Sample Benchmark
 

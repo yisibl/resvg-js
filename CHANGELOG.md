@@ -9,6 +9,54 @@ This changelog also contains important changes in dependencies.
 
 ## [Unreleased]
 
+## [2.2.0] - 2022-11-17
+
+Now resvg-js can be run natively (not Wasm) directly in Deno, this allows to get close to the performance of Node.js native addons in Deno.
+
+```shell
+deno run --unstable --allow-read --allow-write --allow-ffi example/index-deno.js
+```
+
+See [Deno Example](example/index-deno.js)
+
+```js
+import * as path from 'https://deno.land/std@0.159.0/path/mod.ts'
+import { Resvg } from 'npm:@resvg/resvg-js'
+const __dirname = path.dirname(path.fromFileUrl(import.meta.url))
+
+const svg = await Deno.readFile(path.join(__dirname, './text.svg'))
+const resvg = new Resvg(svg, opts)
+const pngData = resvg.render()
+const pngBuffer = pngData.asPng()
+
+await Deno.writeFile(path.join(__dirname, './text-out-deno.png'), pngBuffer)
+```
+
+In addition, resvg-js can return the raw pixels data of the PNG, which can be very convenient for scenes where only pixels need to be processed.
+
+### Added
+
+- feat: add `.pixels()` API for returning PNG pixels data (#123).
+- chore: upgrade to resvg v0.25.0 (#156).
+  - Partial `paint-order` attribute support. Markers can only be under or above the shape.
+  - CSS3 `writing-mode` variants `vertical-rl` and `vertical-lr`. Thanks to @yisibl.
+  - (tiny-skia) AArch64 Neon SIMD support. Up to 3x faster on Apple M1.
+  - Path bbox calculation scales stroke width too. Thanks to @growler.
+  - (tiny-skia) Round caps roundness. Fixes #155.
+
+### Changed
+
+- doc: the `dpi` option is not the DPI in the PNG file. (#146)
+- chore: add deno example and docs. (#154)
+- feat: upgrade napi-rs to 2.10.0 and Node.js v18. (#157)
+- test: add image resolver API test case. (#164)
+- feat: remove the `infer` crate, this can reduce the size of Wasm files. (#165)
+- feat: error code UnrecognizedBuffer changed to UnsupportedImage. (#165)
+
+### Fixed
+
+- fix: ignore `png` crate in `renovate.json`. (#161)
+
 ## [2.1.0] - 2022-07-03
 
 ### Added
@@ -373,7 +421,8 @@ The first official version, use [resvg 0.18.0](https://github.com/RazrFalcon/res
 - Support custom fonts and system fonts.
 - Supports setting the background color of PNG.
 
-[unreleased]: https://github.com/yisibl/resvg-js/compare/v2.1.0...HEAD
+[unreleased]: https://github.com/yisibl/resvg-js/compare/v2.2.0...HEAD
+[2.2.0]: https://github.com/yisibl/resvg-js/compare/v2.1.0...v2.2.0
 [2.1.0]: https://github.com/yisibl/resvg-js/compare/v2.0.1...v2.1.0
 [2.0.1]: https://github.com/yisibl/resvg-js/compare/v2.0.0...v2.0.1
 [2.0.0]: https://github.com/yisibl/resvg-js/compare/v2.0.0-beta.0...v2.0.0
