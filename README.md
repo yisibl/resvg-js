@@ -18,6 +18,7 @@
 - `v2`: Support for loading images of external links in `<image>`.
 - No need for node-gyp and postinstall, the `.node` file has been compiled for you.
 - Cross-platform support, including [Apple M Chips](https://www.apple.com/newsroom/2020/11/apple-unleashes-m1/).
+- Support for running as native addons in Deno.
 
 ## Installation
 
@@ -33,7 +34,9 @@ npm i @resvg/resvg-js
 <script src="https://unpkg.com/@resvg/resvg-wasm"></script>
 ```
 
-## [Example](example/index.js)
+## Example
+
+### [Node.js Example](example/index.js)
 
 This example will load Source Han Serif, and then render the SVG to PNG.
 
@@ -43,6 +46,18 @@ node example/index.js
 Loaded 1 font faces in 0ms.
 Font './example/SourceHanSerifCN-Light-subset.ttf':0 found in 0.006ms.
 ✨ Done in 55.65491008758545 ms
+```
+
+### [Deno Example](example/index-deno.js)
+
+```shell
+deno run --unstable --allow-read --allow-write --allow-ffi example/index-deno.js
+
+[2022-11-16T15:03:29Z DEBUG resvg_js::fonts] Loaded 1 font faces in 0.067ms.
+[2022-11-16T15:03:29Z DEBUG resvg_js::fonts] Font './example/SourceHanSerifCN-Light-subset.ttf':0 found in 0.001ms.
+Original SVG Size: 1324 x 687
+Output PNG Size  : 1200 x 623
+✨ Done in 66 ms
 ```
 
 | SVG                                                                                                                                                                                        | PNG                                                                                                                                                                                            |
@@ -86,6 +101,38 @@ async function main() {
 main()
 ```
 
+### Deno
+
+Starting with [Deno 1.26.1](https://github.com/denoland/deno/releases/tag/v1.26.1), there is support for running Native Addons directly from Node.js.
+This allows for performance that is close to that found in Node.js.
+
+```shell
+deno run --unstable --allow-read --allow-write --allow-ffi example/index-deno.js
+```
+
+```js
+import * as path from 'https://deno.land/std@0.159.0/path/mod.ts'
+import { Resvg } from 'npm:@resvg/resvg-js'
+const __dirname = path.dirname(path.fromFileUrl(import.meta.url))
+
+const svg = await Deno.readFile(path.join(__dirname, './text.svg'))
+const opts = {
+  fitTo: {
+    mode: 'width',
+    value: 1200,
+  },
+}
+
+const t = performance.now()
+const resvg = new Resvg(svg, opts)
+const pngData = resvg.render()
+const pngBuffer = pngData.asPng()
+console.info('Original SVG Size:', `${resvg.width} x ${resvg.height}`)
+console.info('Output PNG Size  :', `${pngData.width} x ${pngData.height}`)
+console.info('✨ Done in', performance.now() - t, 'ms')
+
+await Deno.writeFile(path.join(__dirname, './text-out-deno.png'), pngBuffer)
+```
 ### WebAssembly
 
 This package also ships a pure WebAssembly artifact built with `wasm-bindgen` to run in browsers.
