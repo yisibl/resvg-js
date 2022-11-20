@@ -9,7 +9,7 @@ This changelog also contains important changes in dependencies.
 
 ## [Unreleased]
 
-## [2.2.0] - 2022-11-17
+## [2.2.0] - 2022-11-18
 
 Now resvg-js can be run natively (not Wasm) directly in Deno, this allows to get close to the performance of Node.js native addons in Deno.
 
@@ -36,26 +36,29 @@ In addition, resvg-js can return the raw pixels data of the PNG, which can be ve
 
 ### Added
 
-- feat: add `.pixels()` API for returning PNG pixels data (#123).
-- chore: upgrade to resvg v0.25.0 (#156).
+- feat: add `.pixels()` API for returning PNG pixels data ([#123](https://github.com/yisibl/resvg-js/pull/123)).
+- chore: upgrade to resvg v0.25.0 (by @zimond in [#156](https://github.com/yisibl/resvg-js/pull/156)).
   - Partial `paint-order` attribute support. Markers can only be under or above the shape.
   - CSS3 `writing-mode` variants `vertical-rl` and `vertical-lr`. Thanks to @yisibl.
   - (tiny-skia) AArch64 Neon SIMD support. Up to 3x faster on Apple M1.
   - Path bbox calculation scales stroke width too. Thanks to @growler.
-  - (tiny-skia) Round caps roundness. Fixes #155.
+  - (tiny-skia) Round caps roundness. Fixes [#155](https://github.com/yisibl/resvg-js/issues/155).
 
 ### Changed
 
-- doc: the `dpi` option is not the DPI in the PNG file. (#146)
-- chore: add deno example and docs. (#154)
-- feat: upgrade napi-rs to 2.10.0 and Node.js v18. (#157)
-- test: add image resolver API test case. (#164)
-- feat: remove the `infer` crate, this can reduce the size of Wasm files. (#165)
-- feat: error code UnrecognizedBuffer changed to UnsupportedImage. (#165)
+- build: x86_64-linux-gnu and aarch64-linux-gnu are no longer compiled using Zig. ([#165](https://github.com/yisibl/resvg-js/pull/125))
+- doc: the `dpi` option is not the DPI in the PNG file. ([#146](https://github.com/yisibl/resvg-js/pull/146))
+- chore: add deno example and docs. ([#154](https://github.com/yisibl/resvg-js/pull/154))
+- feat: upgrade napi-rs to 2.10.0 and Node.js v18. ([#157](https://github.com/yisibl/resvg-js/pull/157))
+- test: add image resolver API test case. ([#164](https://github.com/yisibl/resvg-js/pull/164))
+- feat: remove the `infer` crate, this reduced the size of the Wasm file by about **4.3%**. ([#165](https://github.com/yisibl/resvg-js/pull/165))
+  - Before: 1360609 bytes
+  - After: **1302173 bytes**
+- feat: error code UnrecognizedBuffer changed to UnsupportedImage. ([#165](https://github.com/yisibl/resvg-js/pull/165))
 
 ### Fixed
 
-- fix: ignore `png` crate in `renovate.json`. (#161)
+- fix: ignore `png` crate in `renovate.json`. (by @CGQAQ in [#161](https://github.com/yisibl/resvg-js/pull/161))
 
 ## [2.1.0] - 2022-07-03
 
@@ -183,8 +186,8 @@ The resvg-js API is now largely stable.
 ### Added
 
 - feat: strip text features and reduce the size of the generated wasm file.
-  - before: 1949570 bytes
-  - after: 1266413 bytes
+  - Before: 1949570 bytes
+  - After: **1266413 bytes**
 - feat: upgrade to napi-rs 2.2.0.
 
 ## [2.0.0-alpha.3] - 2022-03-01
