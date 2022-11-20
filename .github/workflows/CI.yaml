@@ -13,7 +13,7 @@ env:
       - '**'
     # 忽略以下文件
     paths-ignore:
-      - '**/*.md'
+      - '**.md'
       - 'LICENSE'
       - '**/*.gitignore'
       - '.editorconfig'
