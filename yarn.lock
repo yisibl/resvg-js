@@ -233,12 +233,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@napi-rs/cli@npm:^2.10.0":
-  version: 2.10.1
-  resolution: "@napi-rs/cli@npm:2.10.1"
+"@napi-rs/cli@npm:^2.13.2":
+  version: 2.13.2
+  resolution: "@napi-rs/cli@npm:2.13.2"
   bin:
     napi: scripts/index.js
-  checksum: 2c3ee83577c45d1ba01934d5f8a7068a451877e230f6bbf5559a0c767aa4e0f626fe6511705dc9a1add43d75a8fa08e890dc620277aede27ddbbc0ba0d502b30
+  checksum: cf9b4d48031ff2981ceaac92afe3b17bc9e2af4e97ae414d469638280cb377f43bf60bd45ce974a756fc7ae7b33ba82c9fc26d0057cce5a028b3537a06824a58
   languageName: node
   linkType: hard
 
@@ -294,7 +294,7 @@ __metadata:
   resolution: "@resvg/resvg-js@workspace:."
   dependencies:
     "@napi-rs/canvas": ^0.1.25
-    "@napi-rs/cli": ^2.10.0
+    "@napi-rs/cli": ^2.13.2
     "@swc-node/register": ^1.5.1
     "@types/node": ^18.0.0
     "@types/sharp": ^0.31.0

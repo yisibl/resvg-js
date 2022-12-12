@@ -74,7 +74,7 @@
   },
   "devDependencies": {
     "@napi-rs/canvas": "^0.1.25",
-    "@napi-rs/cli": "^2.10.0",
+    "@napi-rs/cli": "^2.13.2",
     "@swc-node/register": "^1.5.1",
     "@types/node": "^18.0.0",
     "@types/sharp": "^0.31.0",
