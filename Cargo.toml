@@ -9,7 +9,7 @@ version = "1.0.0"
 crate-type = ["cdylib"]
 
 [dependencies]
-env_logger = "0.9.1"
+env_logger = "0.10.0"
 fontdb = "=0.9.3"
 log = "0.4"
 
