@@ -223,7 +223,7 @@ jobs:
           key: ${{ matrix.settings.target }}-node@14-cargo-cache
 
       - name: Install wasm-pack
-        uses: jetli/wasm-pack-action@v0.3.0
+        uses: jetli/wasm-pack-action@v0.4.0
         with:
           version: 'latest'
 
