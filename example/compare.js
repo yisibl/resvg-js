@@ -8,6 +8,7 @@ const sharp = require('sharp')
 const { Resvg } = require('../index')
 
 async function main() {
+  // anime_girl.svg [CC BY 3.0](https://creativecommons.org/licenses/by/3.0): [Niabot](https://commons.wikimedia.org/wiki/User:Niabot)
   const svg = await fs.readFile(join(__dirname, './anime_girl.svg'))
   const zoom = 1
   const w = 1052 * zoom // resize width
