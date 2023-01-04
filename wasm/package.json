@@ -10,7 +10,8 @@
     ".": {
       "import": "./index.mjs",
       "default": "./index.js"
-    }
+    },
+    "./index_bg.wasm": "./index_bg.wasm"
   },
   "files": [
     "index_bg.wasm",
