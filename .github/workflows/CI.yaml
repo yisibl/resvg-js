@@ -218,7 +218,7 @@ jobs:
           override: true
 
       - name: Cache cargo
-        uses: Swatinem/rust-cache@v1
+        uses: Swatinem/rust-cache@v2
         with:
           key: ${{ matrix.settings.target }}-node@14-cargo-cache
 
