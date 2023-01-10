@@ -10,7 +10,7 @@ crate-type = ["cdylib"]
 
 [dependencies]
 env_logger = "0.10.0"
-fontdb = "=0.9.3"
+fontdb = "=0.11.2"
 log = "0.4"
 
 serde = { version = "1", features = ["derive"] }
