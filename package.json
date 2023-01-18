@@ -87,7 +87,7 @@
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-prettier": "^4.2.1",
     "eslint-plugin-sonarjs": "^0.18.0",
-    "husky": "^7.0.4",
+    "husky": "^8.0.0",
     "jimp-compact": "^0.16.1-2",
     "lint-staged": "^12.5.0",
     "node-fetch": "2.x",
