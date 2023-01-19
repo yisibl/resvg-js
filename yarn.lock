@@ -414,7 +414,7 @@ __metadata:
     ava: ^5.0.0
     benny: ^3.7.1
     copyfiles: ^2.4.1
-    dts-bundle-generator: ^6.12.0
+    dts-bundle-generator: ^7.0.0
     esbuild: ^0.17.0
     eslint: ^8.19.0
     eslint-config-prettier: ^8.5.0
@@ -1734,15 +1734,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dts-bundle-generator@npm:^6.12.0":
-  version: 6.12.0
-  resolution: "dts-bundle-generator@npm:6.12.0"
+"dts-bundle-generator@npm:^7.0.0":
+  version: 7.1.0
+  resolution: "dts-bundle-generator@npm:7.1.0"
   dependencies:
-    typescript: ">=3.0.1"
-    yargs: ^17.2.1
+    typescript: ">=4.5.2"
+    yargs: ^17.6.0
   bin:
     dts-bundle-generator: dist/bin/dts-bundle-generator.js
-  checksum: 65dfac5dfa7eebf1cea505a978279f2b7f59d695186d3e9bec7c2eb37e8c386237c9381e86ccd3b7fa114b3fe36bfc9c202109cc984fb70eb0fb141726175131
+  checksum: 120c6b0724da0d91076714f45a27ff62776e1b64319e0dfd7a88fb28e6bf0b47bced738ecb25380dfb0afdf5232ce48ac6a2aaeef90da867810c00012321d9ba
   languageName: node
   linkType: hard
 
@@ -5009,7 +5009,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@npm:>=3.0.1, typescript@npm:^4.7.4":
+"typescript@npm:>=4.5.2":
+  version: 4.9.4
+  resolution: "typescript@npm:4.9.4"
+  bin:
+    tsc: bin/tsc
+    tsserver: bin/tsserver
+  checksum: e782fb9e0031cb258a80000f6c13530288c6d63f1177ed43f770533fdc15740d271554cdae86701c1dd2c83b082cea808b07e97fd68b38a172a83dbf9e0d0ef9
+  languageName: node
+  linkType: hard
+
+"typescript@npm:^4.7.4":
   version: 4.7.4
   resolution: "typescript@npm:4.7.4"
   bin:
@@ -5019,7 +5029,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@patch:typescript@>=3.0.1#~builtin<compat/typescript>, typescript@patch:typescript@^4.7.4#~builtin<compat/typescript>":
+"typescript@patch:typescript@>=4.5.2#~builtin<compat/typescript>":
+  version: 4.9.4
+  resolution: "typescript@patch:typescript@npm%3A4.9.4#~builtin<compat/typescript>::version=4.9.4&hash=ad5954"
+  bin:
+    tsc: bin/tsc
+    tsserver: bin/tsserver
+  checksum: 1caaea6cb7f813e64345190fddc4e6c924d0b698ab81189b503763c4a18f7f5501c69362979d36e19c042d89d936443e768a78b0675690b35eb663d19e0eae71
+  languageName: node
+  linkType: hard
+
+"typescript@patch:typescript@^4.7.4#~builtin<compat/typescript>":
   version: 4.7.4
   resolution: "typescript@patch:typescript@npm%3A4.7.4#~builtin<compat/typescript>::version=4.7.4&hash=65a307"
   bin:
@@ -5255,13 +5275,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"yargs-parser@npm:^21.0.0":
-  version: 21.0.1
-  resolution: "yargs-parser@npm:21.0.1"
-  checksum: c3ea2ed12cad0377ce3096b3f138df8267edf7b1aa7d710cd502fe16af417bafe4443dd71b28158c22fcd1be5dfd0e86319597e47badf42ff83815485887323a
-  languageName: node
-  linkType: hard
-
 "yargs-parser@npm:^21.1.1":
   version: 21.1.1
   resolution: "yargs-parser@npm:21.1.1"
@@ -5284,22 +5297,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"yargs@npm:^17.2.1":
-  version: 17.5.1
-  resolution: "yargs@npm:17.5.1"
-  dependencies:
-    cliui: ^7.0.2
-    escalade: ^3.1.1
-    get-caller-file: ^2.0.5
-    require-directory: ^2.1.1
-    string-width: ^4.2.3
-    y18n: ^5.0.5
-    yargs-parser: ^21.0.0
-  checksum: 00d58a2c052937fa044834313f07910fd0a115dec5ee35919e857eeee3736b21a4eafa8264535800ba8bac312991ce785ecb8a51f4d2cc8c4676d865af1cfbde
-  languageName: node
-  linkType: hard
-
-"yargs@npm:^17.6.2":
+"yargs@npm:^17.6.0, yargs@npm:^17.6.2":
   version: 17.6.2
   resolution: "yargs@npm:17.6.2"
   dependencies:
