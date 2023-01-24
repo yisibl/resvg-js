@@ -37,7 +37,7 @@ resvg = { version = "0.25.0", default-features = false, features = [
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
 napi = { version = "2.10.0", features = ["serde-json", "async"] }
-napi-derive = "2.9.1"
+napi-derive = "2.10.0"
 resvg = { version = "0.25.0", default-features = false, features = [
     "filter",
     "dump-svg",
