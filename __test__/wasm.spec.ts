@@ -16,9 +16,9 @@ test.before(async () => {
 })
 
 test('Use href to load a JPG image without alpha', async (t) => {
-  const imgUrl = 'http://tva2.sinaimg.cn/crop.0.0.250.250.80/534b48acjw8ehw72edguyj206y06yq32.jpg'
+  const imgUrl = 'https://himg.bdimg.com/sys/portrait/hotitem/wildkid/46'
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-  <image href="${imgUrl}" width="80" height="80"/>
+  <image href="${imgUrl}" width="300" height="300"/>
 </svg>`
   const resvg = new Resvg(svg)
   const resolved = await Promise.all(
