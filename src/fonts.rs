@@ -9,7 +9,7 @@ use crate::options::*;
 use log::{debug, warn};
 
 #[cfg(not(target_arch = "wasm32"))]
-use resvg::usvg::fontdb::Database;
+use resvg::usvg_text_layout::fontdb::{Database, Family, Query, Source};
 
 /// Loads fonts.
 #[cfg(not(target_arch = "wasm32"))]
@@ -55,9 +55,9 @@ pub fn load_fonts(font_options: &JsFontOptions) -> Database {
 
     // 查找指定字体的路径
     let font_family: &str = &font_options.default_font_family;
-    let query = fontdb::Query {
-        families: &[fontdb::Family::Name(font_family)],
-        ..fontdb::Query::default()
+    let query = Query {
+        families: &[Family::Name(font_family)],
+        ..Query::default()
     };
 
     let now = std::time::Instant::now();
@@ -65,7 +65,7 @@ pub fn load_fonts(font_options: &JsFontOptions) -> Database {
     match fontdb.query(&query) {
         Some(id) => {
             let (src, index) = fontdb.face_source(id).unwrap();
-            if let fontdb::Source::File(ref path) = &src {
+            if let Source::File(ref path) = &src {
                 debug!(
                     "Font '{}':{} found in {}ms.",
                     path.display(),
