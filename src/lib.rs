@@ -8,18 +8,19 @@ use std::sync::Arc;
 use napi::bindgen_prelude::{
     AbortSignal, AsyncTask, Buffer, Either, Error as NapiError, Task, Undefined,
 };
+#[cfg(not(target_arch = "wasm32"))]
+use napi_derive::napi;
+use options::JsOptions;
 use pathfinder_content::{
     outline::{Contour, Outline},
     stroke::{LineCap, LineJoin, OutlineStrokeToFill, StrokeStyle},
 };
 use pathfinder_geometry::rect::RectF;
 use pathfinder_geometry::vector::Vector2F;
-
-#[cfg(not(target_arch = "wasm32"))]
-use napi_derive::napi;
-use options::JsOptions;
 use resvg::tiny_skia::Pixmap;
 use resvg::usvg::{self, ImageKind, NodeKind};
+#[cfg(not(target_arch = "wasm32"))]
+use resvg::usvg_text_layout::TreeTextToPath;
 #[cfg(target_arch = "wasm32")]
 use wasm_bindgen::{
     prelude::{wasm_bindgen, JsValue},
@@ -155,15 +156,15 @@ impl Resvg {
             .filter_level(js_options.log_level)
             .try_init();
 
-        let mut opts = js_options.to_usvg_options();
+        let (mut opts, fontdb) = js_options.to_usvg_options();
         options::tweak_usvg_options(&mut opts);
-        let opts_ref = opts.to_ref();
         // Parse the SVG string into a tree.
-        let tree = match svg {
-            Either::A(a) => usvg::Tree::from_str(a.as_str(), &opts_ref),
-            Either::B(b) => usvg::Tree::from_data(b.as_ref(), &opts_ref),
+        let mut tree = match svg {
+            Either::A(a) => usvg::Tree::from_str(a.as_str(), &opts),
+            Either::B(b) => usvg::Tree::from_data(b.as_ref(), &opts),
         }
         .map_err(|e| napi::Error::from_reason(format!("{}", e)))?;
+        tree.convert_text(&fontdb, false);
         Ok(Resvg { tree, js_options })
     }
 
@@ -176,7 +177,7 @@ impl Resvg {
     #[napi]
     /// Output usvg-simplified SVG string
     pub fn to_string(&self) -> String {
-        self.tree.to_string(&usvg::XmlOptions::default())
+        usvg_writer::export_tree_to_string(&self.tree, &usvg_writer::XmlOptions::default())
     }
 
     #[napi(js_name = innerBBox)]
@@ -280,15 +281,14 @@ impl Resvg {
             .and_then(|o| serde_json::from_str(o.as_str()).ok())
             .unwrap_or_default();
 
-        let mut opts = js_options.to_usvg_options();
+        let (mut opts, _) = js_options.to_usvg_options();
         options::tweak_usvg_options(&mut opts);
-        let opts_ref = opts.to_ref();
         let tree = if js_sys::Uint8Array::instanceof(&svg) {
             let uintarray = js_sys::Uint8Array::unchecked_from_js_ref(&svg);
             let svg_buffer = uintarray.to_vec();
-            usvg::Tree::from_data(&svg_buffer, &opts_ref).map_err(Error::from)
+            usvg::Tree::from_data(&svg_buffer, &opts).map_err(Error::from)
         } else if let Some(s) = svg.as_string() {
-            usvg::Tree::from_str(s.as_str(), &opts_ref).map_err(Error::from)
+            usvg::Tree::from_str(s.as_str(), &opts).map_err(Error::from)
         } else {
             Err(Error::InvalidInput)
         }?;
@@ -315,7 +315,7 @@ impl Resvg {
     /// Output usvg-simplified SVG string
     #[wasm_bindgen(js_name = toString)]
     pub fn to_string(&self) -> String {
-        self.tree.to_string(&usvg::XmlOptions::default())
+        usvg_writer::export_tree_to_string(&self.tree, &usvg_writer::XmlOptions::default())
     }
 
     /// Calculate a maximum bounding box of all visible elements in this SVG.
@@ -506,6 +506,7 @@ impl Resvg {
                     usvg::Point::new(rect.right(), rect.bottom()),
                 ))
             }
+            usvg::NodeKind::Text(_) => None,
         }?;
         let (x1, y1) = transform.apply(bbox.min_x() as f64, bbox.min_y() as f64);
         let (x2, y2) = transform.apply(bbox.max_x() as f64, bbox.max_y() as f64);
@@ -580,7 +581,7 @@ impl Resvg {
 
     fn resolve_image_inner(&self, href: String, buffer: Vec<u8>) -> Result<(), Error> {
         let resolver = usvg::ImageHrefResolver::default_data_resolver();
-        let options = self.js_options.to_usvg_options();
+        let (options, _) = self.js_options.to_usvg_options();
         let mime = MimeType::parse(&buffer)?.mime_type().to_string();
 
         for node in self.tree.root.descendants() {
@@ -592,7 +593,7 @@ impl Resvg {
                     false
                 };
                 if matched {
-                    let data = (resolver)(&mime, Arc::new(buffer.clone()), &options.to_ref());
+                    let data = (resolver)(&mime, Arc::new(buffer.clone()), &options);
                     if let Some(kind) = data {
                         i.kind = kind;
                     }

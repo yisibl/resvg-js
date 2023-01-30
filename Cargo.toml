@@ -10,18 +10,18 @@ crate-type = ["cdylib"]
 
 [dependencies]
 env_logger = "0.10.0"
-fontdb = "=0.9.3"
 log = "0.4"
 
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 svgtypes = "0.9.0"
 thiserror = "1.0.37"
-png = "=0.17.5"
+png = "0.17.5"
 pathfinder_geometry = "0.5.1"
 pathfinder_content = { version = "0.5.0", default-features = false }
 pathfinder_simd = { version = "0.5.1", features = ["pf-no-simd"] }
 futures = "0.3.21"
+usvg-writer = { git = "https://github.com/zimond/resvg", rev = "2c14be8" }
 
 [target.'cfg(all(not(all(target_os = "linux", target_arch = "aarch64", target_env = "musl")), not(all(target_os = "windows", target_arch = "aarch64")), not(target_arch = "wasm32")))'.dependencies]
 mimalloc-rust = { version = "0.2" }
@@ -29,20 +29,20 @@ mimalloc-rust = { version = "0.2" }
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 wasm-bindgen = "0.2.84"
 js-sys = "0.3.61"
-resvg = { version = "0.25.0", default-features = false, features = [
+resvg = { version = "0.28.0", default-features = false, features = [
     "filter",
-    "dump-svg",
     "raster-images",
+    "text",
 ] }
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
 napi = { version = "2.10.13", features = ["serde-json", "async"] }
 napi-derive = "2.10.0"
-resvg = { version = "0.25.0", default-features = false, features = [
+resvg = { version = "0.28.0", default-features = false, features = [
     "filter",
-    "dump-svg",
     "raster-images",
     "text",
+    "system-fonts",
 ] }
 
 [build-dependencies]
@@ -56,5 +56,4 @@ opt-level = 3
 codegen-units = 1
 
 [patch.crates-io]
-resvg = { git = "https://github.com/zimond/resvg", rev = "7c98ad6" }
-usvg = { git = "https://github.com/zimond/resvg", rev = "7c98ad6" }
+resvg = { git = "https://github.com/zimond/resvg", rev = "2c14be8" }

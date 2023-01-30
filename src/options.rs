@@ -2,14 +2,15 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+use std::sync::Arc;
+
 use crate::error::Error;
-#[cfg(not(target_arch = "wasm32"))]
-use fontdb::Database;
 #[cfg(not(target_arch = "wasm32"))]
 use napi::{bindgen_prelude::Buffer, Either};
 use resvg::tiny_skia::Pixmap;
-use resvg::usvg::ScreenSize;
-use resvg::usvg::{self, ImageHrefResolver, ImageKind, OptionsRef};
+use resvg::usvg::{self, ImageHrefResolver, ImageKind};
+use resvg::usvg::{Options, ScreenSize};
+use resvg::usvg_text_layout::fontdb::Database;
 use serde::{Deserialize, Deserializer};
 
 /// Image fit options.
@@ -50,13 +51,13 @@ pub(crate) trait ResvgReadable {
 
 impl<'a> ResvgReadable for &'a str {
     fn load(&self, options: &usvg::Options) -> Result<usvg::Tree, usvg::Error> {
-        usvg::Tree::from_str(&self, &options.to_ref())
+        usvg::Tree::from_str(&self, &options)
     }
 }
 
 impl<'a> ResvgReadable for &'a [u8] {
     fn load(&self, options: &usvg::Options) -> Result<usvg::Tree, usvg::Error> {
-        usvg::Tree::from_data(self, &options.to_ref())
+        usvg::Tree::from_data(self, &options)
     }
 }
 
@@ -158,17 +159,15 @@ impl Default for JsOptions {
 }
 
 impl JsOptions {
-    pub(crate) fn to_usvg_options(&self) -> usvg::Options {
+    pub(crate) fn to_usvg_options(&self) -> (usvg::Options, Database) {
         // Load fonts
         #[cfg(not(target_arch = "wasm32"))]
-        let fontdb = if cfg!(target_arch = "wasm32") {
-            Database::new()
-        } else {
-            crate::fonts::load_fonts(&self.font)
-        };
+        let fontdb = crate::fonts::load_fonts(&self.font);
+        #[cfg(target_arch = "wasm32")]
+        let fontdb = Database::new();
 
         // Build the SVG options
-        usvg::Options {
+        let opts = usvg::Options {
             resources_dir: None,
             dpi: self.dpi,
             font_family: self.font.default_font_family.clone(),
@@ -179,10 +178,9 @@ impl JsOptions {
             image_rendering: self.image_rendering,
             keep_named_groups: false,
             default_size: usvg::Size::new(100.0_f64, 100.0_f64).unwrap(),
-            #[cfg(not(target_arch = "wasm32"))]
-            fontdb,
             image_href_resolver: usvg::ImageHrefResolver::default(),
-        }
+        };
+        (opts, fontdb)
     }
 
     pub(crate) fn create_pixmap(&self, size: ScreenSize) -> Result<Pixmap, Error> {
@@ -350,9 +348,9 @@ where
 
 pub(crate) fn tweak_usvg_options(opts: &mut usvg::Options) {
     opts.image_href_resolver = ImageHrefResolver::default();
-    opts.image_href_resolver.resolve_string = Box::new(move |data: &str, opts: &OptionsRef| {
+    opts.image_href_resolver.resolve_string = Arc::new(move |data: &str, opts: &Options| {
         if data.starts_with("https://") || data.starts_with("http://") {
-            Some(ImageKind::RAW(0, 0, data.as_bytes().to_vec()))
+            Some(ImageKind::RAW(1, 1, data.as_bytes().to_vec()))
         } else {
             let resolver = ImageHrefResolver::default().resolve_string;
             (resolver)(data, opts)
