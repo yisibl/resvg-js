@@ -9,6 +9,9 @@ This changelog also contains important changes in dependencies.
 
 ## [Unreleased]
 
+## [2.3.1] - 2023-02-02
+
+- feat: upgrade wasm-bindgen to 0.2.84
 ## [2.3.0] - 2023-02-02
 
 - fix: update napi-rs(2.10.13) to resolve Electron 21+ create Buffer issues. [#195](https://github.com/yisibl/resvg-js/issues/195)
@@ -474,7 +477,8 @@ The first official version, use [resvg 0.18.0](https://github.com/RazrFalcon/res
 - Support custom fonts and system fonts.
 - Supports setting the background color of PNG.
 
-[unreleased]: https://github.com/yisibl/resvg-js/compare/v2.3.0...HEAD
+[unreleased]: https://github.com/yisibl/resvg-js/compare/v2.3.1...HEAD
+[2.3.1]: https://github.com/yisibl/resvg-js/compare/v2.3.0...v2.3.1
 [2.3.0]: https://github.com/yisibl/resvg-js/compare/v2.2.0...v2.3.0
 [2.2.0]: https://github.com/yisibl/resvg-js/compare/v2.1.0...v2.2.0
 [2.1.0]: https://github.com/yisibl/resvg-js/compare/v2.0.1...v2.1.0
