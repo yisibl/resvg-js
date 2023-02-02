@@ -27,8 +27,8 @@ futures = "0.3.21"
 mimalloc-rust = { version = "0.2" }
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
-wasm-bindgen = "0.2.83"
-js-sys = "0.3.60"
+wasm-bindgen = "0.2.84"
+js-sys = "0.3.61"
 resvg = { version = "0.25.0", default-features = false, features = [
     "filter",
     "dump-svg",

@@ -1,6 +1,6 @@
 // wasm/dist/index.js
 var wasm;
-var heap = new Array(32).fill(void 0);
+var heap = new Array(128).fill(void 0);
 heap.push(void 0, null, true, false);
 var heap_next = heap.length;
 function addHeapObject(obj) {
@@ -15,7 +15,7 @@ function getObject(idx) {
   return heap[idx];
 }
 function dropObject(idx) {
-  if (idx < 36)
+  if (idx < 132)
     return;
   heap[idx] = heap_next;
   heap_next = idx;
@@ -26,9 +26,9 @@ function takeObject(idx) {
   return ret;
 }
 var WASM_VECTOR_LEN = 0;
-var cachedUint8Memory0 = new Uint8Array();
+var cachedUint8Memory0 = null;
 function getUint8Memory0() {
-  if (cachedUint8Memory0.byteLength === 0) {
+  if (cachedUint8Memory0 === null || cachedUint8Memory0.byteLength === 0) {
     cachedUint8Memory0 = new Uint8Array(wasm.memory.buffer);
   }
   return cachedUint8Memory0;
@@ -77,9 +77,9 @@ function passStringToWasm0(arg, malloc, realloc) {
 function isLikeNone(x) {
   return x === void 0 || x === null;
 }
-var cachedInt32Memory0 = new Int32Array();
+var cachedInt32Memory0 = null;
 function getInt32Memory0() {
-  if (cachedInt32Memory0.byteLength === 0) {
+  if (cachedInt32Memory0 === null || cachedInt32Memory0.byteLength === 0) {
     cachedInt32Memory0 = new Int32Array(wasm.memory.buffer);
   }
   return cachedInt32Memory0;
@@ -110,31 +110,55 @@ var BBox = class {
     const ptr = this.__destroy_into_raw();
     wasm.__wbg_bbox_free(ptr);
   }
+  /**
+  * @returns {number}
+  */
   get x() {
     const ret = wasm.__wbg_get_bbox_x(this.ptr);
     return ret;
   }
+  /**
+  * @param {number} arg0
+  */
   set x(arg0) {
     wasm.__wbg_set_bbox_x(this.ptr, arg0);
   }
+  /**
+  * @returns {number}
+  */
   get y() {
     const ret = wasm.__wbg_get_bbox_y(this.ptr);
     return ret;
   }
+  /**
+  * @param {number} arg0
+  */
   set y(arg0) {
     wasm.__wbg_set_bbox_y(this.ptr, arg0);
   }
+  /**
+  * @returns {number}
+  */
   get width() {
     const ret = wasm.__wbg_get_bbox_width(this.ptr);
     return ret;
   }
+  /**
+  * @param {number} arg0
+  */
   set width(arg0) {
     wasm.__wbg_set_bbox_width(this.ptr, arg0);
   }
+  /**
+  * @returns {number}
+  */
   get height() {
     const ret = wasm.__wbg_get_bbox_height(this.ptr);
     return ret;
   }
+  /**
+  * @param {number} arg0
+  */
   set height(arg0) {
     wasm.__wbg_set_bbox_height(this.ptr, arg0);
   }
@@ -154,14 +178,26 @@ var RenderedImage = class {
     const ptr = this.__destroy_into_raw();
     wasm.__wbg_renderedimage_free(ptr);
   }
+  /**
+  * Get the PNG width
+  * @returns {number}
+  */
   get width() {
     const ret = wasm.renderedimage_width(this.ptr);
     return ret >>> 0;
   }
+  /**
+  * Get the PNG height
+  * @returns {number}
+  */
   get height() {
     const ret = wasm.renderedimage_height(this.ptr);
     return ret >>> 0;
   }
+  /**
+  * Write the image data to Uint8Array
+  * @returns {Uint8Array}
+  */
   asPng() {
     try {
       const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
@@ -177,6 +213,10 @@ var RenderedImage = class {
       wasm.__wbindgen_add_to_stack_pointer(16);
     }
   }
+  /**
+  * Get the RGBA pixels of the image
+  * @returns {Uint8Array}
+  */
   get pixels() {
     const ret = wasm.renderedimage_pixels(this.ptr);
     return takeObject(ret);
@@ -197,6 +237,10 @@ var Resvg = class {
     const ptr = this.__destroy_into_raw();
     wasm.__wbg_resvg_free(ptr);
   }
+  /**
+  * @param {Uint8Array | string} svg
+  * @param {string | undefined} options
+  */
   constructor(svg, options) {
     try {
       const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
@@ -214,14 +258,26 @@ var Resvg = class {
       wasm.__wbindgen_add_to_stack_pointer(16);
     }
   }
+  /**
+  * Get the SVG width
+  * @returns {number}
+  */
   get width() {
     const ret = wasm.resvg_width(this.ptr);
     return ret;
   }
+  /**
+  * Get the SVG height
+  * @returns {number}
+  */
   get height() {
     const ret = wasm.resvg_height(this.ptr);
     return ret;
   }
+  /**
+  * Renders an SVG in Wasm
+  * @returns {RenderedImage}
+  */
   render() {
     try {
       const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
@@ -237,6 +293,10 @@ var Resvg = class {
       wasm.__wbindgen_add_to_stack_pointer(16);
     }
   }
+  /**
+  * Output usvg-simplified SVG string
+  * @returns {string}
+  */
   toString() {
     try {
       const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
@@ -249,18 +309,38 @@ var Resvg = class {
       wasm.__wbindgen_free(r0, r1);
     }
   }
+  /**
+  * Calculate a maximum bounding box of all visible elements in this SVG.
+  *
+  * Note: path bounding box are approx values.
+  * @returns {BBox | undefined}
+  */
   innerBBox() {
     const ret = wasm.resvg_innerBBox(this.ptr);
     return ret === 0 ? void 0 : BBox.__wrap(ret);
   }
+  /**
+  * Calculate a maximum bounding box of all visible elements in this SVG.
+  * This will first apply transform.
+  * Similar to `SVGGraphicsElement.getBBox()` DOM API.
+  * @returns {BBox | undefined}
+  */
   getBBox() {
     const ret = wasm.resvg_getBBox(this.ptr);
     return ret === 0 ? void 0 : BBox.__wrap(ret);
   }
+  /**
+  * Use a given `BBox` to crop the svg. Currently this method simply changes
+  * the viewbox/size of the svg and do not move the elements for simplicity
+  * @param {BBox} bbox
+  */
   cropByBBox(bbox) {
     _assertClass(bbox, BBox);
     wasm.resvg_cropByBBox(this.ptr, bbox.ptr);
   }
+  /**
+  * @returns {Array<any>}
+  */
   imagesToResolve() {
     try {
       const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
@@ -276,6 +356,10 @@ var Resvg = class {
       wasm.__wbindgen_add_to_stack_pointer(16);
     }
   }
+  /**
+  * @param {string} href
+  * @param {Uint8Array} buffer
+  */
   resolveImage(href, buffer) {
     try {
       const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
@@ -319,7 +403,7 @@ async function load(module, imports) {
 function getImports() {
   const imports = {};
   imports.wbg = {};
-  imports.wbg.__wbg_new_8d2af00bc1e329ee = function(arg0, arg1) {
+  imports.wbg.__wbg_new_15d3966e9981a196 = function(arg0, arg1) {
     const ret = new Error(getStringFromWasm0(arg0, arg1));
     return addHeapObject(ret);
   };
@@ -327,22 +411,22 @@ function getImports() {
     const ret = wasm.memory;
     return addHeapObject(ret);
   };
-  imports.wbg.__wbg_buffer_3f3d764d4747d564 = function(arg0) {
+  imports.wbg.__wbg_buffer_cf65c07de34b9a08 = function(arg0) {
     const ret = getObject(arg0).buffer;
     return addHeapObject(ret);
   };
-  imports.wbg.__wbg_newwithbyteoffsetandlength_d9aa266703cb98be = function(arg0, arg1, arg2) {
+  imports.wbg.__wbg_newwithbyteoffsetandlength_9fb2f11355ecadf5 = function(arg0, arg1, arg2) {
     const ret = new Uint8Array(getObject(arg0), arg1 >>> 0, arg2 >>> 0);
     return addHeapObject(ret);
   };
   imports.wbg.__wbindgen_object_drop_ref = function(arg0) {
     takeObject(arg0);
   };
-  imports.wbg.__wbg_new_8c3f0052272a457a = function(arg0) {
+  imports.wbg.__wbg_new_537b7341ce90bb31 = function(arg0) {
     const ret = new Uint8Array(getObject(arg0));
     return addHeapObject(ret);
   };
-  imports.wbg.__wbg_instanceof_Uint8Array_971eeda69eb75003 = function(arg0) {
+  imports.wbg.__wbg_instanceof_Uint8Array_01cebe79ca606cca = function(arg0) {
     let result;
     try {
       result = getObject(arg0) instanceof Uint8Array;
@@ -360,7 +444,7 @@ function getImports() {
     getInt32Memory0()[arg0 / 4 + 1] = len0;
     getInt32Memory0()[arg0 / 4 + 0] = ptr0;
   };
-  imports.wbg.__wbg_new_1d9a920c6bfc44a8 = function() {
+  imports.wbg.__wbg_new_b525de17f44a8943 = function() {
     const ret = new Array();
     return addHeapObject(ret);
   };
@@ -368,15 +452,15 @@ function getImports() {
     const ret = getStringFromWasm0(arg0, arg1);
     return addHeapObject(ret);
   };
-  imports.wbg.__wbg_push_740e4b286702d964 = function(arg0, arg1) {
+  imports.wbg.__wbg_push_49c286f04dd3bf59 = function(arg0, arg1) {
     const ret = getObject(arg0).push(getObject(arg1));
     return ret;
   };
-  imports.wbg.__wbg_length_9e1ae1900cb0fbd5 = function(arg0) {
+  imports.wbg.__wbg_length_27a2afe8ab42b09f = function(arg0) {
     const ret = getObject(arg0).length;
     return ret;
   };
-  imports.wbg.__wbg_set_83db9690f9353e79 = function(arg0, arg1, arg2) {
+  imports.wbg.__wbg_set_17499e8aa4003ebd = function(arg0, arg1, arg2) {
     getObject(arg0).set(getObject(arg1), arg2 >>> 0);
   };
   imports.wbg.__wbindgen_throw = function(arg0, arg1) {
@@ -389,8 +473,8 @@ function initMemory(imports, maybe_memory) {
 function finalizeInit(instance, module) {
   wasm = instance.exports;
   init.__wbindgen_wasm_module = module;
-  cachedInt32Memory0 = new Int32Array();
-  cachedUint8Memory0 = new Uint8Array();
+  cachedInt32Memory0 = null;
+  cachedUint8Memory0 = null;
   return wasm;
 }
 async function init(input) {
@@ -417,6 +501,10 @@ var initWasm = async (module_or_path) => {
   initialized = true;
 };
 var Resvg2 = class extends Resvg {
+  /**
+   * @param {Uint8Array | string} svg
+   * @param {ResvgRenderOptions | undefined} options
+   */
   constructor(svg, options) {
     if (!initialized)
       throw new Error("Wasm has not been initialized. Call `initWasm()` function.");
