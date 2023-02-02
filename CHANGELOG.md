@@ -9,6 +9,56 @@ This changelog also contains important changes in dependencies.
 
 ## [Unreleased]
 
+## [2.3.0] - 2023-02-02
+
+- fix: update napi-rs(2.10.13) to resolve Electron 21+ create Buffer issues. [#195](https://github.com/yisibl/resvg-js/issues/195)
+
+  > Electron 21 and later will have the V8 Memory Cage enabled, with implications for some native modules.
+  > https://www.electronjs.org/blog/v8-memory-cage
+
+  This means that all napi-rs-based native modules will be affected. Usually there is an error like this:
+
+  ```bash
+  UnhandledPromiseRejectionWarning: Error: Failed to create napi buffer
+  ```
+
+  Good thing napi-rs has implemented a compatible approach in the new version, thanks to [@Brooooooklyn's work](https://github.com/napi-rs/napi-rs/pull/1445).
+
+- feat: add wasm file to exports. Thanks to @hadeeb [#186](https://github.com/yisibl/resvg-js/issues/186)
+
+  This solves the problem that direct `require.resolve("@resvg/resvg-wasm/index_bg.wasm")` in tools like vite or webpack would report an error.
+
+  ```bash
+  Module not found: Package path ./index_bg.wasm is not exported from package
+  /playground/node_modules/@resvg/resvg-wasm (see exports field in
+  /playground/node_modules/@resvg/resvg-wasm/package.json)
+  ```
+
+  See the [Node.js documentation](https://nodejs.org/api/packages.html#package-entry-points) for details about why:
+  > Existing packages introducing the "exports" field will prevent consumers of the package from using any entry points that are not defined,
+
+- fix(ci): use zig to cross-compile armv7. [#176](https://github.com/yisibl/resvg-js/issues/176)
+
+  This solves the problem of CI errors:
+
+  ```shell
+  Error: /lib/arm-linux-gnueabihf/libm.so.6: version `GLIBC_2.35' not found (required by /build/resvgjs.linux-arm-gnueabihf.node)
+  ```
+
+  Due to the GitHub Actions Ubuntu [upgrade from 20.04 to 22.04](https://github.com/actions/runner-images/issues/5490), the glibc version became 2.35. To maintain our compatibility, zig cross-compilation is now enabled to support older versions of glibc systems.
+
+  | Distribution | Glibc | GCC |
+  | --- | --- | --- |
+  | CentOS 7 | 2.17 | 4.8.5 |
+  | Ubuntu 16.04 | 2.23 | 5.4.0 |
+  | Ubuntu 18.04 | 2.27 | 7.5.0 |
+  | Ubuntu 20.04 | 2.31 | 9.4.0 |
+  | **Ubuntu 22.04** | 2.35 | 11.2.0 |
+  | Debian 10.12 | 2.28 | 8.3.0 |
+  | Debian 11.4 | 2.31 | 10.2.1 |
+
+- doc: add Node.js 18 to 'Support matrix'. [#155](https://github.com/yisibl/resvg-js/issues/155)
+
 ## [2.2.0] - 2022-11-18
 
 Now resvg-js can be run natively (not Wasm) directly in Deno, this allows to get close to the performance of Node.js native addons in Deno.
@@ -424,7 +474,8 @@ The first official version, use [resvg 0.18.0](https://github.com/RazrFalcon/res
 - Support custom fonts and system fonts.
 - Supports setting the background color of PNG.
 
-[unreleased]: https://github.com/yisibl/resvg-js/compare/v2.2.0...HEAD
+[unreleased]: https://github.com/yisibl/resvg-js/compare/v2.3.0...HEAD
+[2.3.0]: https://github.com/yisibl/resvg-js/compare/v2.2.0...v2.3.0
 [2.2.0]: https://github.com/yisibl/resvg-js/compare/v2.1.0...v2.2.0
 [2.1.0]: https://github.com/yisibl/resvg-js/compare/v2.0.1...v2.1.0
 [2.0.1]: https://github.com/yisibl/resvg-js/compare/v2.0.0...v2.0.1
