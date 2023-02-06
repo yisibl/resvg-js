@@ -162,7 +162,7 @@ This package also ships a pure WebAssembly artifact built with `wasm-bindgen` to
 </script>
 ```
 
-See [playground](playground/index.html), it is also possible to [call Wasm in Node.js](example/wasm-node.js), but it is slower.
+See [playground](wasm/index.html), it is also possible to [call Wasm in Node.js](example/wasm-node.js), but it is slower.
 
 ## Sample Benchmark
 
