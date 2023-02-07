@@ -3,6 +3,7 @@
 <a href="https://github.com/yisibl/resvg-js/actions"><img alt="GitHub CI Status" src="https://github.com/yisibl/resvg-js/workflows/CI/badge.svg?branch=main"></a>
 <a href="https://www.npmjs.com/package/@resvg/resvg-js"><img src="https://img.shields.io/npm/v/@resvg/resvg-js.svg?sanitize=true" alt="@resvg/resvg-js npm version"></a>
 <a href="https://npmcharts.com/compare/@resvg/resvg-js?minimal=true"><img src="https://img.shields.io/npm/dm/@resvg/resvg-js.svg?sanitize=true" alt="@resvg/resvg-js downloads"></a>
+[![Rust 1.65+](https://img.shields.io/badge/rust-1.65+-orange.svg)](https://www.rust-lang.org)
 
 > resvg-js is a high-performance SVG renderer and toolkit, powered by Rust based [resvg](https://github.com/RazrFalcon/resvg/), with Node.js backend using [napi-rs](https://github.com/napi-rs/napi-rs), also a pure WebAssmebly backend.
 
@@ -165,6 +166,11 @@ This package also ships a pure WebAssembly artifact built with `wasm-bindgen` to
 See [playground](wasm/index.html), it is also possible to [call Wasm in Node.js](example/wasm-node.js), but it is slower.
 
 ## Sample Benchmark
+
+```shell
+npm i benny@3.x sharp@0.x @types/sharp svg2img@0.x
+npm run bench
+```
 
 ```shell
 Running "resize width" suite...
