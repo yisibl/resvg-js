@@ -14,9 +14,9 @@ log = "0.4"
 
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
-svgtypes = "0.9.0"
+svgtypes = "0.10.0"
 thiserror = "1.0.37"
-png = "0.17.5"
+png = "=0.17.5"
 pathfinder_geometry = "0.5.1"
 pathfinder_content = { version = "0.5.0", default-features = false }
 pathfinder_simd = { version = "0.5.1", features = ["pf-no-simd"] }
@@ -36,8 +36,8 @@ resvg = { version = "0.29.0", default-features = false, features = [
 ] }
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
-napi = { version = "2.10.13", features = ["serde-json", "async"] }
-napi-derive = "2.10.0"
+napi = { version = "2.10.16", features = ["serde-json", "async"] }
+napi-derive = "2.10.1"
 resvg = { version = "0.29.0", default-features = false, features = [
     "filter",
     "raster-images",
