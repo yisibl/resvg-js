@@ -11,8 +11,7 @@ function isMusl() {
   // For Node 10
   if (!process.report || typeof process.report.getReport !== 'function') {
     try {
-      const lddPath = require('child_process').execSync('which ldd').toString().trim();
-      return readFileSync(lddPath, 'utf8').includes('musl')
+      return readFileSync('/usr/bin/ldd', 'utf8').includes('musl')
     } catch (e) {
       return true
     }
@@ -102,15 +101,6 @@ switch (platform) {
     }
     break
   case 'darwin':
-    localFileExisted = existsSync(join(__dirname, 'resvgjs.darwin-universal.node'))
-    try {
-      if (localFileExisted) {
-        nativeBinding = require('./resvgjs.darwin-universal.node')
-      } else {
-        nativeBinding = require('@resvg/resvg-js-darwin-universal')
-      }
-      break
-    } catch {}
     switch (arch) {
       case 'x64':
         localFileExisted = existsSync(join(__dirname, 'resvgjs.darwin-x64.node'))
