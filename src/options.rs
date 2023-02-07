@@ -176,7 +176,6 @@ impl JsOptions {
             shape_rendering: self.shape_rendering,
             text_rendering: self.text_rendering,
             image_rendering: self.image_rendering,
-            keep_named_groups: false,
             default_size: usvg::Size::new(100.0_f64, 100.0_f64).unwrap(),
             image_href_resolver: usvg::ImageHrefResolver::default(),
         };

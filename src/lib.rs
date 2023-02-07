@@ -164,7 +164,7 @@ impl Resvg {
             Either::B(b) => usvg::Tree::from_data(b.as_ref(), &opts),
         }
         .map_err(|e| napi::Error::from_reason(format!("{}", e)))?;
-        tree.convert_text(&fontdb, false);
+        tree.convert_text(&fontdb);
         Ok(Resvg { tree, js_options })
     }
 
