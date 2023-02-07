@@ -21,7 +21,7 @@ pathfinder_geometry = "0.5.1"
 pathfinder_content = { version = "0.5.0", default-features = false }
 pathfinder_simd = { version = "0.5.1", features = ["pf-no-simd"] }
 futures = "0.3.21"
-usvg-writer = { git = "https://github.com/zimond/resvg", rev = "2c14be8" }
+usvg-writer = { git = "https://github.com/zimond/resvg", rev = "6201182c" }
 
 [target.'cfg(all(not(all(target_os = "linux", target_arch = "aarch64", target_env = "musl")), not(all(target_os = "windows", target_arch = "aarch64")), not(target_arch = "wasm32")))'.dependencies]
 mimalloc-rust = { version = "0.2" }
@@ -29,7 +29,7 @@ mimalloc-rust = { version = "0.2" }
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 wasm-bindgen = "0.2.84"
 js-sys = "0.3.61"
-resvg = { version = "0.28.0", default-features = false, features = [
+resvg = { version = "0.29.0", default-features = false, features = [
     "filter",
     "raster-images",
     "text",
@@ -38,7 +38,7 @@ resvg = { version = "0.28.0", default-features = false, features = [
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
 napi = { version = "2.10.13", features = ["serde-json", "async"] }
 napi-derive = "2.10.0"
-resvg = { version = "0.28.0", default-features = false, features = [
+resvg = { version = "0.29.0", default-features = false, features = [
     "filter",
     "raster-images",
     "text",
@@ -56,4 +56,4 @@ opt-level = 3
 codegen-units = 1
 
 [patch.crates-io]
-resvg = { git = "https://github.com/zimond/resvg", rev = "2c14be8" }
+resvg = { git = "https://github.com/zimond/resvg", rev = "6201182c" }
