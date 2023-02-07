@@ -73,15 +73,12 @@
     "version": "napi version"
   },
   "devDependencies": {
-    "@napi-rs/canvas": "^0.1.25",
-    "@napi-rs/cli": "^2.14.5",
+    "@napi-rs/cli": "^2.14.6",
     "@swc-node/register": "^1.5.1",
     "@types/node": "^18.0.0",
-    "@types/sharp": "^0.31.0",
     "@typescript-eslint/eslint-plugin": "^5.30.3",
     "@typescript-eslint/parser": "^5.30.3",
     "ava": "^5.0.0",
-    "benny": "^3.7.1",
     "copyfiles": "^2.4.1",
     "dts-bundle-generator": "^6.12.0",
     "esbuild": "^0.17.0",
@@ -96,7 +93,6 @@
     "node-fetch": "2.x",
     "npm-run-all": "^4.1.5",
     "prettier": "^2.7.1",
-    "sharp": "^0.31.0",
     "typescript": "^4.7.4"
   },
   "lint-staged": {
