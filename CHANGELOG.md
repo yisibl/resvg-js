@@ -9,6 +9,47 @@ This changelog also contains important changes in dependencies.
 
 ## [Unreleased]
 
+## [2.4.0] - 2023-02-09
+
+This is a brand new version with 2-3x faster performance. It also resolves an issue with a specific SVG causing an error, and all users are advised to upgrade to this version.
+
+```shell
+  resvg-js(Rust):
+    39.6 ops/s, ±1.72%   | fastest
+
+  sharp:
+    10.9 ops/s, ±31.43%   | 72.47% slower
+
+  svg2img(canvg + node-canvas):
+    10.8 ops/s, ±28.52%   | slowest, 72.73% slower
+```
+
+The upgrade will be hard due to the big changes made to upstream resvg. resvg 0.28.0 started with the removal of the ability to output SVG string, and we had to backport that functionality to a new crate: `usvg-writer`.
+
+Eventually, we upgraded resvg for 2 successive versions, and are now at the latest 0.29.0.
+
+### Changed
+
+- feat: upgrade resvg/usvg to 0.28.0. [#194](https://github.com/yisibl/resvg-js/issues/194) Thanks to @zimond
+- feat: upgrade resvg/usvg to 0.29.0. [#199](https://github.com/yisibl/resvg-js/issues/199) Thanks to @zimond
+- chore: upgrade rust-toolchain to nightly-2023-02-01. [#199](https://github.com/yisibl/resvg-js/issues/199) Thanks to @yisibl
+- chore: remove bench-related dependencies. [#200](https://github.com/yisibl/resvg-js/issues/200) Thanks to @yisibl
+
+### Fixed
+
+- fix: 'the previous segment must be M/L/C' error. [#204](https://github.com/yisibl/resvg-js/issues/204) Thanks to @yisibl
+
+  This is a normal error thrown by resvg when parsing Path Command, and has been confirmed as fixed in resvg 0.29.0.
+
+  Add a test to ensure it is now fixed.
+
+  ```shell
+  thread '<unnamed>' panicked at 'the previous segment must be M/L/C'
+
+  note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+  fatal runtime error: failed to initiate panic, error 5
+  ```
+
 ## [2.3.1] - 2023-02-02
 
 - feat: upgrade wasm-bindgen to 0.2.84
@@ -477,7 +518,8 @@ The first official version, use [resvg 0.18.0](https://github.com/RazrFalcon/res
 - Support custom fonts and system fonts.
 - Supports setting the background color of PNG.
 
-[unreleased]: https://github.com/yisibl/resvg-js/compare/v2.3.1...HEAD
+[unreleased]: https://github.com/yisibl/resvg-js/compare/v2.4.0...HEAD
+[2.4.0]: https://github.com/yisibl/resvg-js/compare/v2.3.1...v2.4.0
 [2.3.1]: https://github.com/yisibl/resvg-js/compare/v2.3.0...v2.3.1
 [2.3.0]: https://github.com/yisibl/resvg-js/compare/v2.2.0...v2.3.0
 [2.2.0]: https://github.com/yisibl/resvg-js/compare/v2.1.0...v2.2.0
