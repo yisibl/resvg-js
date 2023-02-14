@@ -13,6 +13,7 @@ use resvg::usvg_text_layout::fontdb::{Family, Query, Source};
 
 #[cfg(target_arch = "wasm32")]
 use wasm_bindgen::JsCast;
+use resvg::usvg_text_layout::fontdb::{Database, Family, Language, Query, Source};
 
 /// Loads fonts.
 #[cfg(not(target_arch = "wasm32"))]
@@ -46,6 +47,40 @@ pub fn load_fonts(font_options: &JsFontOptions) -> Database {
         fontdb.len(),
         now.elapsed().as_micros() as f64 / 1000.0
     );
+    let mut default_font_family = font_options.default_font_family.clone();
+    // 当默认字体为空时，尝试直接从 font_files 中加载读取字体名称，然后设置到默认的 font-family 中
+    // TODO: 判断只有 font_files 没有 default_font_family 选项的情况
+    if !font_options.default_font_family.is_empty() && font_options.font_files.len() > 0 {
+        fontdb.faces().into_iter().for_each(|face| {
+            let new_family = face
+                .families
+                .iter()
+                .find(|f| f.1 == Language::English_UnitedStates)
+                .unwrap();
+            default_font_family = new_family.0.clone();
+        });
+
+        // If a default font family exists, set all other families to that family.
+        // This prevents fonts from not being rendered in SVG.
+        fontdb.set_serif_family(&default_font_family);
+        fontdb.set_sans_serif_family(&default_font_family);
+        fontdb.set_cursive_family(&default_font_family);
+        fontdb.set_fantasy_family(&default_font_family);
+        fontdb.set_monospace_family(&default_font_family);
+    } else {
+        // Set generic font families
+        // - `serif` - Times New Roman
+        // - `sans-serif` - Arial
+        // - `cursive` - Comic Sans MS
+        // - `fantasy` - Impact (Papyrus on macOS)
+        // - `monospace` - Courier New
+        fontdb.set_serif_family(&font_options.serif_family);
+        fontdb.set_sans_serif_family(&font_options.sans_serif_family);
+        fontdb.set_cursive_family(&font_options.cursive_family);
+        fontdb.set_fantasy_family(&font_options.fantasy_family);
+        fontdb.set_monospace_family(&font_options.monospace_family);
+    }
+    debug!("默认字体 = {} ", font_options.default_font_family,);
 
     // 查找指定字体的路径
     let font_family: &str = &font_options.default_font_family;
