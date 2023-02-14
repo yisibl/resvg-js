@@ -42,21 +42,21 @@ pub fn load_fonts(font_options: &JsFontOptions) -> Database {
     // - `cursive` - Comic Sans MS
     // - `fantasy` - Impact (Papyrus on macOS)
     // - `monospace` - Courier New
-    // if !font_options.default_font_family.is_empty() {
-    //     // If a default font family exists, set all other families to that family.
-    //     // This prevents fonts from not being rendered in SVG.
-    //     fontdb.set_serif_family(&font_options.default_font_family);
-    //     fontdb.set_sans_serif_family(&font_options.default_font_family);
-    //     fontdb.set_cursive_family(&font_options.default_font_family);
-    //     fontdb.set_fantasy_family(&font_options.default_font_family);
-    //     fontdb.set_monospace_family(&font_options.default_font_family);
-    // } else {
-    fontdb.set_serif_family(&font_options.serif_family);
-    fontdb.set_sans_serif_family(&font_options.sans_serif_family);
-    fontdb.set_cursive_family(&font_options.cursive_family);
-    fontdb.set_fantasy_family(&font_options.fantasy_family);
-    fontdb.set_monospace_family(&font_options.monospace_family);
-    // }
+    if !font_options.default_font_family.is_empty() {
+        // If a default font family exists, set all other families to that family.
+        // This prevents fonts from not being rendered in SVG.
+        fontdb.set_serif_family(&font_options.default_font_family);
+        fontdb.set_sans_serif_family(&font_options.default_font_family);
+        fontdb.set_cursive_family(&font_options.default_font_family);
+        fontdb.set_fantasy_family(&font_options.default_font_family);
+        fontdb.set_monospace_family(&font_options.default_font_family);
+    } else {
+        fontdb.set_serif_family(&font_options.serif_family);
+        fontdb.set_sans_serif_family(&font_options.sans_serif_family);
+        fontdb.set_cursive_family(&font_options.cursive_family);
+        fontdb.set_fantasy_family(&font_options.fantasy_family);
+        fontdb.set_monospace_family(&font_options.monospace_family);
+    }
     debug!(
         "Loaded {} font faces in {}ms.",
         fontdb.len(),
