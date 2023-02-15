@@ -9,6 +9,14 @@ This changelog also contains important changes in dependencies.
 
 ## [Unreleased]
 
+## [2.4.1] - 2023-02-15
+
+### Fixed
+
+- fix: the `defaultFontFamily` not working. [#208](https://github.com/yisibl/resvg-js/pull/208) Thanks to @yisibl
+
+  Starting with resvg 0.28.0, the logic for font loading has [changed](https://github.com/RazrFalcon/resvg/commit/36b0e0b928015ef0788a9d0babcbc77eaf8f34aa#diff-6d4d24ae259685abf64776b23b1c6e7af8c3a9718591d7db8d092e3b6cbb216fR684-R686), which causes the family passed in the defaultFontFamily option to not be applied.
+
 ## [2.4.0] - 2023-02-09
 
 This is a brand new version with 2-3x faster performance. It also resolves an issue with a specific SVG causing an error, and all users are advised to upgrade to this version.
@@ -518,7 +526,8 @@ The first official version, use [resvg 0.18.0](https://github.com/RazrFalcon/res
 - Support custom fonts and system fonts.
 - Supports setting the background color of PNG.
 
-[unreleased]: https://github.com/yisibl/resvg-js/compare/v2.4.0...HEAD
+[unreleased]: https://github.com/yisibl/resvg-js/compare/v2.4.1...HEAD
+[2.4.1]: https://github.com/yisibl/resvg-js/compare/v2.4.0...v2.4.1
 [2.4.0]: https://github.com/yisibl/resvg-js/compare/v2.3.1...v2.4.0
 [2.3.1]: https://github.com/yisibl/resvg-js/compare/v2.3.0...v2.3.1
 [2.3.0]: https://github.com/yisibl/resvg-js/compare/v2.2.0...v2.3.0
