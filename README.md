@@ -35,6 +35,11 @@ npm i @resvg/resvg-js
 <script src="https://unpkg.com/@resvg/resvg-wasm"></script>
 ```
 
+## Docs
+
+- Node.js see [index.d.ts](./index.d.ts)
+- Wasm see [wasm/index.d.ts](./wasm/index.d.ts)
+
 ## Example
 
 ### [Node.js Example](example/index.js)

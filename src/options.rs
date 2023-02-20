@@ -210,10 +210,10 @@ pub struct JsFontOptions {
     /// Default: true
     pub load_system_fonts: bool,
 
-    /// A list of font files to load.
+    /// A list of local font file paths to load.
     pub font_files: Vec<String>,
 
-    /// A list of font directories to load.
+    /// A list of local font directories to load.
     pub font_dirs: Vec<String>,
 
     /// The default font family.
