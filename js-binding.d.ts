@@ -43,6 +43,8 @@ export class Resvg {
 export class RenderedImage {
   /** Write the image data to Buffer */
   asPng(): Buffer
+  /** Write the image data to Buffer */
+  asJpg(): Buffer
   /** Get the RGBA pixels of the image */
   get pixels(): Buffer
   /** Get the PNG width */

@@ -45,6 +45,14 @@ resvg = { version = "0.29.0", default-features = false, features = [
     "system-fonts",
 ] }
 
+[target.'cfg(target_arch = "x86_64")'.dependencies]
+mozjpeg = { version = "0.9" }
+
+[target.'cfg(any(target_arch = "arm64", target_arch = "wasm32"))'.dependencies]
+mozjpeg = { version = "0.9", default-features = false, features = [
+    "with_simd",
+] }
+
 [build-dependencies]
 napi-build = "2"
 

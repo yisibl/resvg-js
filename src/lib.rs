@@ -85,6 +85,14 @@ impl RenderedImage {
         Ok(buffer.into())
     }
 
+    #[cfg(not(target_arch = "wasm32"))]
+    #[napi]
+    /// Write the image data to Buffer
+    pub fn as_jpg(&self) -> Result<Buffer, NapiError> {
+        let buffer = self.pix.encode_png().map_err(Error::from)?;
+        Ok(buffer.into())
+    }
+
     #[cfg(target_arch = "wasm32")]
     #[wasm_bindgen(getter)]
     /// Get the PNG width
