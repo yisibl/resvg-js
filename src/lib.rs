@@ -6,7 +6,7 @@ use std::sync::Arc;
 
 #[cfg(not(target_arch = "wasm32"))]
 use napi::bindgen_prelude::{
-    AbortSignal, AsyncTask, Buffer, Either, Error as NapiError, Task, Undefined,
+    AbortSignal, AsyncTask, Buffer, Either, Env, Error as NapiError, Task, Undefined,
 };
 #[cfg(not(target_arch = "wasm32"))]
 use napi_derive::napi;
@@ -29,6 +29,7 @@ use wasm_bindgen::{
 
 mod error;
 mod fonts;
+mod moz_jepg;
 mod options;
 
 use error::Error;
@@ -88,9 +89,21 @@ impl RenderedImage {
     #[cfg(not(target_arch = "wasm32"))]
     #[napi]
     /// Write the image data to Buffer
-    pub fn as_jpg(&self) -> Result<Buffer, NapiError> {
-        let buffer = self.pix.encode_png().map_err(Error::from)?;
-        Ok(buffer.into())
+    pub fn as_jpeg(&self, env: Env, quality: u32) -> Result<napi::JsBuffer, NapiError> {
+        let pixels = self.pix.as_ref();
+        let buffer = unsafe {
+            crate::moz_jepg::encode(pixels.data(), pixels.width(), pixels.height(), quality)
+        }
+        .map_err(|_| {
+            napi::Error::new(
+                napi::Status::GenericFailure,
+                "encode jpeg from raw pixels failed",
+            )
+        })?;
+        unsafe {
+            env.create_buffer_with_borrowed_data(buffer.data, buffer.size, buffer, |b, _| drop(b))
+        }
+        .map(|b| b.into_raw())
     }
 
     #[cfg(target_arch = "wasm32")]
@@ -107,12 +120,23 @@ impl RenderedImage {
         self.pix.height()
     }
 
-    // napi-rs
     #[cfg(target_arch = "wasm32")]
     #[wasm_bindgen(js_name = asPng)]
     /// Write the image data to Uint8Array
     pub fn as_png(&self) -> Result<js_sys::Uint8Array, js_sys::Error> {
         let buffer = self.pix.encode_png().map_err(Error::from)?;
+        Ok(buffer.as_slice().into())
+    }
+
+    #[cfg(target_arch = "wasm32")]
+    #[wasm_bindgen(js_name = asJpeg)]
+    /// Write the image data to Uint8Array
+    pub fn as_jpeg(&self, quality: u32) -> Result<js_sys::Uint8Array, js_sys::Error> {
+        let pixels = self.pix.as_ref();
+        let buffer = unsafe {
+            crate::moz_jepg::encode(pixels.data(), pixels.width(), pixels.height(), quality)
+        }
+        .map_err(|_| js_sys::Error::new("encode jpeg from raw pixels failed"))?;
         Ok(buffer.as_slice().into())
     }
 
