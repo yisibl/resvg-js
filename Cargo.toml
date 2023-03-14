@@ -34,6 +34,8 @@ resvg = { version = "0.29.0", default-features = false, features = [
     "raster-images",
     "text",
 ] }
+console_error_panic_hook = "0.1.7"
+console_log = "1.0.0"
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
 napi = { version = "2.12.1", features = ["serde-json", "async"] }

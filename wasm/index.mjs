@@ -95,6 +95,13 @@ function _assertClass(instance, klass) {
   }
   return instance.ptr;
 }
+function handleError(f, args) {
+  try {
+    return f.apply(this, args);
+  } catch (e) {
+    wasm.__wbindgen_exn_store(addHeapObject(e));
+  }
+}
 var BBox = class {
   static __wrap(ptr) {
     const obj = Object.create(BBox.prototype);
@@ -240,13 +247,14 @@ var Resvg = class {
   /**
   * @param {Uint8Array | string} svg
   * @param {string | undefined} options
+  * @param {Array<any> | undefined} custom_font_buffers
   */
-  constructor(svg, options) {
+  constructor(svg, options, custom_font_buffers) {
     try {
       const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
       var ptr0 = isLikeNone(options) ? 0 : passStringToWasm0(options, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
       var len0 = WASM_VECTOR_LEN;
-      wasm.resvg_new(retptr, addHeapObject(svg), ptr0, len0);
+      wasm.resvg_new(retptr, addHeapObject(svg), ptr0, len0, isLikeNone(custom_font_buffers) ? 0 : addHeapObject(custom_font_buffers));
       var r0 = getInt32Memory0()[retptr / 4 + 0];
       var r1 = getInt32Memory0()[retptr / 4 + 1];
       var r2 = getInt32Memory0()[retptr / 4 + 2];
@@ -426,6 +434,24 @@ function getImports() {
     const ret = new Uint8Array(getObject(arg0));
     return addHeapObject(ret);
   };
+  imports.wbg.__wbg_values_97683218f24ed826 = function(arg0) {
+    const ret = getObject(arg0).values();
+    return addHeapObject(ret);
+  };
+  imports.wbg.__wbg_next_88560ec06a094dea = function() {
+    return handleError(function(arg0) {
+      const ret = getObject(arg0).next();
+      return addHeapObject(ret);
+    }, arguments);
+  };
+  imports.wbg.__wbg_done_1ebec03bbd919843 = function(arg0) {
+    const ret = getObject(arg0).done;
+    return ret;
+  };
+  imports.wbg.__wbg_value_6ac8da5cc5b3efda = function(arg0) {
+    const ret = getObject(arg0).value;
+    return addHeapObject(ret);
+  };
   imports.wbg.__wbg_instanceof_Uint8Array_01cebe79ca606cca = function(arg0) {
     let result;
     try {
@@ -456,6 +482,24 @@ function getImports() {
     const ret = getObject(arg0).push(getObject(arg1));
     return ret;
   };
+  imports.wbg.__wbg_new_abda76e883ba8a5f = function() {
+    const ret = new Error();
+    return addHeapObject(ret);
+  };
+  imports.wbg.__wbg_stack_658279fe44541cf6 = function(arg0, arg1) {
+    const ret = getObject(arg1).stack;
+    const ptr0 = passStringToWasm0(ret, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+    const len0 = WASM_VECTOR_LEN;
+    getInt32Memory0()[arg0 / 4 + 1] = len0;
+    getInt32Memory0()[arg0 / 4 + 0] = ptr0;
+  };
+  imports.wbg.__wbg_error_f851667af71bcfc6 = function(arg0, arg1) {
+    try {
+      console.error(getStringFromWasm0(arg0, arg1));
+    } finally {
+      wasm.__wbindgen_free(arg0, arg1);
+    }
+  };
   imports.wbg.__wbg_length_27a2afe8ab42b09f = function(arg0) {
     const ret = getObject(arg0).length;
     return ret;
@@ -465,6 +509,21 @@ function getImports() {
   };
   imports.wbg.__wbindgen_throw = function(arg0, arg1) {
     throw new Error(getStringFromWasm0(arg0, arg1));
+  };
+  imports.wbg.__wbg_debug_8db2eed1bf6c1e2a = function(arg0) {
+    console.debug(getObject(arg0));
+  };
+  imports.wbg.__wbg_error_fe807da27c4a4ced = function(arg0) {
+    console.error(getObject(arg0));
+  };
+  imports.wbg.__wbg_info_9e6db45ac337c3b5 = function(arg0) {
+    console.info(getObject(arg0));
+  };
+  imports.wbg.__wbg_log_7bb108d119bafbc1 = function(arg0) {
+    console.log(getObject(arg0));
+  };
+  imports.wbg.__wbg_warn_e57696dbb3977030 = function(arg0) {
+    console.warn(getObject(arg0));
   };
   return imports;
 }
@@ -508,9 +567,24 @@ var Resvg2 = class extends Resvg {
   constructor(svg, options) {
     if (!initialized)
       throw new Error("Wasm has not been initialized. Call `initWasm()` function.");
-    super(svg, JSON.stringify(options));
+    const font = options == null ? void 0 : options.font;
+    if (!!font && isCustomFontsOptions(font)) {
+      const serializableOptions = {
+        ...options,
+        font: {
+          ...font,
+          fontsBuffers: void 0
+        }
+      };
+      super(svg, JSON.stringify(serializableOptions), font.fontsBuffers);
+    } else {
+      super(svg, JSON.stringify(options));
+    }
   }
 };
+function isCustomFontsOptions(value) {
+  return value.hasOwnProperty("fontsBuffers");
+}
 export {
   Resvg2 as Resvg,
   initWasm

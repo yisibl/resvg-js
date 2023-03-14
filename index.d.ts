@@ -1,18 +1,7 @@
 /// <reference types="node" />
 
 export type ResvgRenderOptions = {
-  font?: {
-    loadSystemFonts?: boolean // Default: true. if set to false, it will be faster.
-    fontFiles?: string[] // A list of local font file paths to load.
-    fontDirs?: string[] // A list of local font directories to load.
-    defaultFontSize?: number // Default: 12
-    defaultFontFamily?: string
-    serifFamily?: string
-    sansSerifFamily?: string
-    cursiveFamily?: string
-    fantasyFamily?: string
-    monospaceFamily?: string
-  }
+  font?: SystemFontsOptions | CustomFontsOptions
   dpi?: number
   languages?: string[]
   shapeRendering?:
@@ -40,6 +29,27 @@ export type ResvgRenderOptions = {
   }
   logLevel?: 'off' | 'error' | 'warn' | 'info' | 'debug' | 'trace'
 }
+
+export type FontOptions = {
+  defaultFontSize?: number // Default: 12
+  defaultFontFamily?: string
+  serifFamily?: string
+  sansSerifFamily?: string
+  cursiveFamily?: string
+  fantasyFamily?: string
+  monospaceFamily?: string
+}
+
+export type CustomFontsOptions = {
+  fontsBuffers: Uint8Array[] // A list of raw font files to load.
+} & FontOptions
+
+export type SystemFontsOptions = {
+  loadSystemFonts?: boolean // Default: true. if set to false, it will be faster.
+  fontFiles?: string[] // A list of local font file paths to load.
+  fontDirs?: string[] // A list of local font directories to load.
+} & FontOptions
+
 export class BBox {
   x: number
   y: number
