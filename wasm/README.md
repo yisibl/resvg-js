@@ -9,7 +9,7 @@
 
 > resvg-js is a high-performance SVG renderer and toolkit, powered by Rust based [resvg](https://github.com/RazrFalcon/resvg/) and [napi-rs](https://github.com/napi-rs/napi-rs).
 
-This is the **WebAssembly** binary for [`@resvg/resvg-js`](https://github.com/yisibl/resvg-js)
+This is the **WebAssembly** binary for [`resvg-js`](https://github.com/yisibl/resvg-js)
 ## Playground
 
 https://resvg-js.vercel.app

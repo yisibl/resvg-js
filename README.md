@@ -7,6 +7,8 @@
 
 > resvg-js is a high-performance SVG renderer and toolkit, powered by Rust based [resvg](https://github.com/RazrFalcon/resvg/), with Node.js backend using [napi-rs](https://github.com/napi-rs/napi-rs), also a pure WebAssembly backend.
 
+Please use all lowercase `resvg-js` when referencing project names.
+
 ## Features
 
 - Fast, safe and zero dependencies, with correct output.
@@ -276,6 +278,8 @@ npm version minor
 ```
 
 ## License
+
+Please use all lowercase `resvg-js` when referencing project names.
 
 [MPLv2.0](https://www.mozilla.org/en-US/MPL/)
 
