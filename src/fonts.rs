@@ -79,6 +79,7 @@ pub fn load_fonts(font_options: &JsFontOptions) -> Database {
     fontdb
 }
 
+/// Loads fonts.
 #[cfg(target_arch = "wasm32")]
 pub fn load_fonts(
     font_options: &JsFontOptions,
