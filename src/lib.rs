@@ -17,10 +17,11 @@ use pathfinder_content::{
 };
 use pathfinder_geometry::rect::RectF;
 use pathfinder_geometry::vector::Vector2F;
-use resvg::usvg::{self, ImageKind, NodeKind};
-#[cfg(not(target_arch = "wasm32"))]
-use resvg::usvg_text_layout::TreeTextToPath;
-use resvg::{tiny_skia::Pixmap, usvg_text_layout::TreeTextToPath};
+use resvg::{
+    tiny_skia::Pixmap,
+    usvg::{self, ImageKind, NodeKind},
+    usvg_text_layout::TreeTextToPath,
+};
 #[cfg(target_arch = "wasm32")]
 use wasm_bindgen::{
     prelude::{wasm_bindgen, JsValue},
@@ -317,7 +318,6 @@ impl Resvg {
 
     /// Renders an SVG in Wasm
     pub fn render(&self) -> Result<RenderedImage, js_sys::Error> {
-        log::info!("Rendering!");
         Ok(self.render_inner()?)
     }
 
