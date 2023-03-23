@@ -22,6 +22,7 @@ pathfinder_content = { version = "0.5.0", default-features = false }
 pathfinder_simd = { version = "0.5.1", features = ["pf-no-simd"] }
 futures = "0.3.21"
 usvg-writer = { git = "https://github.com/zimond/resvg", rev = "6201182c" }
+woff2 = "0.3.0"
 
 [target.'cfg(all(not(all(target_os = "linux", target_arch = "aarch64", target_env = "musl")), not(all(target_os = "windows", target_arch = "aarch64")), not(target_arch = "wasm32")))'.dependencies]
 mimalloc-rust = { version = "0.2" }
@@ -57,3 +58,4 @@ codegen-units = 1
 
 [patch.crates-io]
 resvg = { git = "https://github.com/zimond/resvg", rev = "6201182c" }
+woff2 = { git="https://github.com/yisibl/woff2-rs", branch="fix-total-compressed-size" }
