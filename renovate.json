@@ -16,5 +16,5 @@
       "schedule:monthly"
     ]
   },
-  "ignoreDeps": ["png"]
+  "ignoreDeps": ["png", "resvg", "wasm-bindgen", "napi", "napi-derive"]
 }
