@@ -6,6 +6,7 @@ use std::sync::Arc;
 
 #[cfg(not(target_arch = "wasm32"))]
 use napi::bindgen_prelude::{
+    Env, Result as NapiResult, ObjectFinalize,
     AbortSignal, AsyncTask, Buffer, Either, Error as NapiError, Task, Undefined,
 };
 #[cfg(not(target_arch = "wasm32"))]
@@ -61,10 +62,19 @@ pub struct BBox {
 }
 
 #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
-#[cfg_attr(not(target_arch = "wasm32"), napi)]
+#[cfg_attr(not(target_arch = "wasm32"), napi(custom_finalize))]
 pub struct Resvg {
     tree: usvg::Tree,
     js_options: JsOptions,
+}
+
+impl ObjectFinalize for Resvg {
+    fn finalize(self, mut env: Env) -> NapiResult<()> {
+        let width = self.tree.size.width().round() as i64;
+        let height = self.tree.size.height().round() as i64;
+        env.adjust_external_memory(-((width * height * 10) as i64))?;
+        Ok(())
+    }
 }
 
 #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
@@ -141,11 +151,12 @@ impl RenderedImage {
 #[napi]
 impl Resvg {
     #[napi(constructor)]
-    pub fn new(svg: Either<String, Buffer>, options: Option<String>) -> Result<Resvg, NapiError> {
-        Resvg::new_inner(&svg, options)
+    pub fn new(env: Env, svg: Either<String, Buffer>, options: Option<String>) -> Result<Resvg, NapiError> {
+        Resvg::new_inner(env, &svg, options)
     }
 
     fn new_inner(
+        mut env: Env,
         svg: &Either<String, Buffer>,
         options: Option<String>,
     ) -> Result<Resvg, NapiError> {
@@ -165,6 +176,35 @@ impl Resvg {
         }
         .map_err(|e| napi::Error::from_reason(format!("{}", e)))?;
         tree.convert_text(&fontdb);
+
+        let width = tree.size.width().round() as i64;
+        let height = tree.size.height().round() as i64;
+        env.adjust_external_memory((width * height * 10) as i64)?;
+
+        Ok(Resvg { tree, js_options })
+    }
+
+    fn new_inner2(
+        svg: &Either<String, Buffer>,
+        options: Option<String>,
+    ) -> Result<Resvg, NapiError> {
+        let js_options: JsOptions = options
+            .and_then(|o| serde_json::from_str(o.as_str()).ok())
+            .unwrap_or_default();
+        let _ = env_logger::builder()
+            .filter_level(js_options.log_level)
+            .try_init();
+
+        let (mut opts, fontdb) = js_options.to_usvg_options();
+        options::tweak_usvg_options(&mut opts);
+        // Parse the SVG string into a tree.
+        let mut tree = match svg {
+            Either::A(a) => usvg::Tree::from_str(a.as_str(), &opts),
+            Either::B(b) => usvg::Tree::from_data(b.as_ref(), &opts),
+        }
+        .map_err(|e| napi::Error::from_reason(format!("{}", e)))?;
+        tree.convert_text(&fontdb);
+
         Ok(Resvg { tree, js_options })
     }
 
@@ -617,7 +657,7 @@ impl Task for AsyncRenderer {
     type JsValue = RenderedImage;
 
     fn compute(&mut self) -> Result<Self::Output, NapiError> {
-        let resvg = Resvg::new_inner(&self.svg, self.options.clone())?;
+        let resvg = Resvg::new_inner2(&self.svg, self.options.clone())?;
         Ok(resvg.render()?)
     }
 
