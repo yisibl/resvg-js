@@ -328,6 +328,29 @@ test('should return undefined if bbox is invalid', (t) => {
   t.is(resvg.innerBBox(), undefined)
 })
 
+test('should render using font buffer provided by options', async (t) => {
+  const svg = `<svg width='480' height='150' viewBox='-20 -80 550 100' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'>
+  <text x='0' y='0' font-size='100' font-family='Pacifico' fill='#000000'>Font Buffer</text>
+  </svg>`
+
+  const pacificoBuffer = await fs.readFile(join(__dirname, './Pacifico-Regular.ttf'))
+  const expectedResultBuffer = await fs.readFile(join(__dirname, './options_font_buffer_expected_result.png'))
+
+  const options = {
+    font: {
+      fontsBuffers: [pacificoBuffer],
+    },
+  }
+
+  const resvg = new Resvg(svg, options)
+  const renderedResult = resvg.render().asPng()
+
+  const expectedResult = await jimp.read(Buffer.from(expectedResultBuffer.buffer))
+  const actualPng = await jimp.read(Buffer.from(renderedResult))
+
+  t.is(jimp.diff(expectedResult, actualPng, 0.01).percent, 0) // 0 means similar, 1 means not similar
+})
+
 // throws
 test('should throw because invalid SVG (blank string)', (t) => {
   const error = t.throws(
