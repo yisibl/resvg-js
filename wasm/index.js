@@ -577,5 +577,5 @@ var Resvg2 = class extends Resvg {
   }
 };
 function isCustomFontsOptions(value) {
-  return value.hasOwnProperty("fontsBuffers");
+  return Object.prototype.hasOwnProperty.call(value, "fontsBuffers");
 }

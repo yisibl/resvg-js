@@ -44,5 +44,5 @@ export const Resvg = class extends _Resvg {
 }
 
 function isCustomFontsOptions(value: SystemFontsOptions | CustomFontsOptions): value is CustomFontsOptions {
-  return value.hasOwnProperty('fontsBuffers')
+  return Object.prototype.hasOwnProperty.call(value, 'fontsBuffers')
 }
