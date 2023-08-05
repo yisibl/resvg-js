@@ -95,6 +95,13 @@ function _assertClass(instance, klass) {
   }
   return instance.ptr;
 }
+function handleError(f, args) {
+  try {
+    return f.apply(this, args);
+  } catch (e) {
+    wasm.__wbindgen_exn_store(addHeapObject(e));
+  }
+}
 var BBox = class {
   static __wrap(ptr) {
     const obj = Object.create(BBox.prototype);
@@ -240,13 +247,14 @@ var Resvg = class {
   /**
   * @param {Uint8Array | string} svg
   * @param {string | undefined} options
+  * @param {Array<any> | undefined} custom_font_buffers
   */
-  constructor(svg, options) {
+  constructor(svg, options, custom_font_buffers) {
     try {
       const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
       var ptr0 = isLikeNone(options) ? 0 : passStringToWasm0(options, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
       var len0 = WASM_VECTOR_LEN;
-      wasm.resvg_new(retptr, addHeapObject(svg), ptr0, len0);
+      wasm.resvg_new(retptr, addHeapObject(svg), ptr0, len0, isLikeNone(custom_font_buffers) ? 0 : addHeapObject(custom_font_buffers));
       var r0 = getInt32Memory0()[retptr / 4 + 0];
       var r1 = getInt32Memory0()[retptr / 4 + 1];
       var r2 = getInt32Memory0()[retptr / 4 + 2];
@@ -426,6 +434,24 @@ function getImports() {
     const ret = new Uint8Array(getObject(arg0));
     return addHeapObject(ret);
   };
+  imports.wbg.__wbg_values_97683218f24ed826 = function(arg0) {
+    const ret = getObject(arg0).values();
+    return addHeapObject(ret);
+  };
+  imports.wbg.__wbg_next_88560ec06a094dea = function() {
+    return handleError(function(arg0) {
+      const ret = getObject(arg0).next();
+      return addHeapObject(ret);
+    }, arguments);
+  };
+  imports.wbg.__wbg_done_1ebec03bbd919843 = function(arg0) {
+    const ret = getObject(arg0).done;
+    return ret;
+  };
+  imports.wbg.__wbg_value_6ac8da5cc5b3efda = function(arg0) {
+    const ret = getObject(arg0).value;
+    return addHeapObject(ret);
+  };
   imports.wbg.__wbg_instanceof_Uint8Array_01cebe79ca606cca = function(arg0) {
     let result;
     try {
@@ -508,9 +534,24 @@ var Resvg2 = class extends Resvg {
   constructor(svg, options) {
     if (!initialized)
       throw new Error("Wasm has not been initialized. Call `initWasm()` function.");
-    super(svg, JSON.stringify(options));
+    const font = options == null ? void 0 : options.font;
+    if (!!font && isCustomFontsOptions(font)) {
+      const serializableOptions = {
+        ...options,
+        font: {
+          ...font,
+          fontsBuffers: void 0
+        }
+      };
+      super(svg, JSON.stringify(serializableOptions), font.fontsBuffers);
+    } else {
+      super(svg, JSON.stringify(options));
+    }
   }
 };
+function isCustomFontsOptions(value) {
+  return Object.prototype.hasOwnProperty.call(value, "fontsBuffers");
+}
 export {
   Resvg2 as Resvg,
   initWasm

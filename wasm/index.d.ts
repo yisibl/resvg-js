@@ -37,6 +37,7 @@ declare class RenderedImage {
 }
 export type InitInput = RequestInfo | URL | Response | BufferSource | WebAssembly.Module;
 export type ResvgRenderOptions = {
+	font?: SystemFontsOptions | CustomFontsOptions;
 	dpi?: number;
 	languages?: string[];
 	shapeRendering?: 0 // optimizeSpeed
@@ -67,6 +68,23 @@ export type ResvgRenderOptions = {
 		bottom?: number;
 	};
 };
+export type FontOptions = {
+	defaultFontSize?: number; // Default: 12
+	defaultFontFamily?: string;
+	serifFamily?: string;
+	sansSerifFamily?: string;
+	cursiveFamily?: string;
+	fantasyFamily?: string;
+	monospaceFamily?: string;
+};
+export type CustomFontsOptions = {
+	fontsBuffers: Uint8Array[]; // A list of raw font files to load.
+} & FontOptions;
+export type SystemFontsOptions = {
+	loadSystemFonts?: boolean; // Default: true. if set to false, it will be faster.
+	fontFiles?: string[]; // A list of local font file paths to load.
+	fontDirs?: string[]; // A list of local font directories to load.
+} & FontOptions;
 /**
  * Initialize Wasm module
  * @param module_or_path WebAssembly Module or .wasm url

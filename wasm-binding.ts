@@ -1,6 +1,5 @@
 import init, { Resvg as _Resvg, InitInput } from './wasm/dist'
-
-import { ResvgRenderOptions } from './index'
+import { CustomFontsOptions, ResvgRenderOptions, SystemFontsOptions } from './wasm/index'
 
 let initialized = false
 
@@ -24,6 +23,25 @@ export const Resvg = class extends _Resvg {
    */
   constructor(svg: Uint8Array | string, options?: ResvgRenderOptions) {
     if (!initialized) throw new Error('Wasm has not been initialized. Call `initWasm()` function.')
-    super(svg, JSON.stringify(options))
+
+    const font = options?.font
+
+    if (!!font && isCustomFontsOptions(font)) {
+      const serializableOptions = {
+        ...options,
+        font: {
+          ...font,
+          fontsBuffers: undefined,
+        },
+      }
+
+      super(svg, JSON.stringify(serializableOptions), font.fontsBuffers)
+    } else {
+      super(svg, JSON.stringify(options))
+    }
   }
+}
+
+function isCustomFontsOptions(value: SystemFontsOptions | CustomFontsOptions): value is CustomFontsOptions {
+  return Object.prototype.hasOwnProperty.call(value, 'fontsBuffers')
 }

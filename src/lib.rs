@@ -17,10 +17,11 @@ use pathfinder_content::{
 };
 use pathfinder_geometry::rect::RectF;
 use pathfinder_geometry::vector::Vector2F;
-use resvg::tiny_skia::Pixmap;
-use resvg::usvg::{self, ImageKind, NodeKind};
-#[cfg(not(target_arch = "wasm32"))]
-use resvg::usvg_text_layout::TreeTextToPath;
+use resvg::{
+    tiny_skia::Pixmap,
+    usvg::{self, ImageKind, NodeKind},
+    usvg_text_layout::TreeTextToPath,
+};
 #[cfg(target_arch = "wasm32")]
 use wasm_bindgen::{
     prelude::{wasm_bindgen, JsValue},
@@ -276,14 +277,21 @@ impl Resvg {
 #[wasm_bindgen]
 impl Resvg {
     #[wasm_bindgen(constructor)]
-    pub fn new(svg: IStringOrBuffer, options: Option<String>) -> Result<Resvg, js_sys::Error> {
+    pub fn new(
+        svg: IStringOrBuffer,
+        options: Option<String>,
+        custom_font_buffers: Option<js_sys::Array>,
+    ) -> Result<Resvg, js_sys::Error> {
         let js_options: JsOptions = options
             .and_then(|o| serde_json::from_str(o.as_str()).ok())
             .unwrap_or_default();
 
-        let (mut opts, _) = js_options.to_usvg_options();
+        let (mut opts, mut fontdb) = js_options.to_usvg_options();
+
+        crate::fonts::load_fonts(&js_options.font, custom_font_buffers, &mut fontdb)?;
+
         options::tweak_usvg_options(&mut opts);
-        let tree = if js_sys::Uint8Array::instanceof(&svg) {
+        let mut tree = if js_sys::Uint8Array::instanceof(&svg) {
             let uintarray = js_sys::Uint8Array::unchecked_from_js_ref(&svg);
             let svg_buffer = uintarray.to_vec();
             usvg::Tree::from_data(&svg_buffer, &opts).map_err(Error::from)
@@ -292,6 +300,7 @@ impl Resvg {
         } else {
             Err(Error::InvalidInput)
         }?;
+        tree.convert_text(&fontdb);
         Ok(Resvg { tree, js_options })
     }
 
