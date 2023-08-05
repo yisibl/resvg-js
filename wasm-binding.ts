@@ -1,6 +1,5 @@
 import init, { Resvg as _Resvg, InitInput } from './wasm/dist'
-
-import { CustomFontsOptions, ResvgRenderOptions, SystemFontsOptions } from './index'
+import { CustomFontsOptions, ResvgRenderOptions, SystemFontsOptions } from './wasm/index'
 
 let initialized = false
 
