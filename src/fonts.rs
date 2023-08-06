@@ -122,7 +122,7 @@ fn set_font_families(font_options: &JsFontOptions, fontdb: &mut Database) {
     fontdb.set_fantasy_family(&default_font_family);
     fontdb.set_monospace_family(&default_font_family);
 
-    debug!("default_font_family = {}", default_font_family);
+    debug!("📝 defaultFontFamily = {}", default_font_family);
 
     #[cfg(not(target_arch = "wasm32"))]
     find_and_debug_font_path(fontdb, default_font_family.as_str())

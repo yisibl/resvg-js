@@ -505,8 +505,7 @@ test('should render using font buffer provided by options', async (t) => {
   const resvg = new Resvg(svg, {
     font: {
       fontFiles: ['./__test__/Pacifico-Regular.ttf'],
-      // fontDirs: ['./__test__/'],
-      // loadSystemFonts: false,
+      loadSystemFonts: false,
       defaultFontFamily: '',
     },
     logLevel: 'debug',
@@ -515,8 +514,6 @@ test('should render using font buffer provided by options', async (t) => {
 
   const expectedResult = await jimp.read(Buffer.from(expectedResultBuffer.buffer))
   const actualPng = await jimp.read(Buffer.from(renderedResult))
-
-  await fs.writeFile(join(__dirname, './options_font_buffer_expected_extend.png'), renderedResult)
 
   t.is(jimp.diff(expectedResult, actualPng, 0.01).percent, 0) // 0 means similar, 1 means not similar
 })
