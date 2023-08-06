@@ -92,16 +92,18 @@ export type SystemFontsOptions = {
  */
 export declare const initWasm: (module_or_path: Promise<InitInput> | InitInput) => Promise<void>;
 export declare const Resvg: {
-	new (svg: Uint8Array | string, options?: ResvgRenderOptions | undefined): {
+	new (svg: Uint8Array | string, options?: ResvgRenderOptions): {
 		free(): void;
 		render(): RenderedImage;
 		toString(): string;
 		innerBBox(): BBox | undefined;
 		getBBox(): BBox | undefined;
 		cropByBBox(bbox: BBox): void;
-		imagesToResolve(): Array<string>;
+		imagesToResolve(): any[];
 		resolveImage(href: string, buffer: Uint8Array): void;
 		readonly height: number;
 		readonly width: number;
 	};
 };
+
+export {};

@@ -25,7 +25,7 @@ pub enum Error {
 #[cfg(not(target_arch = "wasm32"))]
 impl From<Error> for napi::Error {
     fn from(e: Error) -> Self {
-        napi::Error::from_reason(format!("{}", e))
+        napi::Error::from_reason(format!("{e}"))
     }
 }
 

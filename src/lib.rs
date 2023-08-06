@@ -164,7 +164,7 @@ impl Resvg {
             Either::A(a) => usvg::Tree::from_str(a.as_str(), &opts),
             Either::B(b) => usvg::Tree::from_data(b.as_ref(), &opts),
         }
-        .map_err(|e| napi::Error::from_reason(format!("{}", e)))?;
+        .map_err(|e| napi::Error::from_reason(format!("{e}")))?;
         tree.convert_text(&fontdb);
         Ok(Resvg { tree, js_options })
     }
@@ -627,7 +627,7 @@ impl Task for AsyncRenderer {
 
     fn compute(&mut self) -> Result<Self::Output, NapiError> {
         let resvg = Resvg::new_inner(&self.svg, self.options.clone())?;
-        Ok(resvg.render()?)
+        resvg.render()
     }
 
     fn resolve(

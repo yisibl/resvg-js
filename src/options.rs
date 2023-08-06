@@ -51,13 +51,13 @@ pub(crate) trait ResvgReadable {
 
 impl<'a> ResvgReadable for &'a str {
     fn load(&self, options: &usvg::Options) -> Result<usvg::Tree, usvg::Error> {
-        usvg::Tree::from_str(&self, &options)
+        usvg::Tree::from_str(self, options)
     }
 }
 
 impl<'a> ResvgReadable for &'a [u8] {
     fn load(&self, options: &usvg::Options) -> Result<usvg::Tree, usvg::Error> {
-        usvg::Tree::from_data(self, &options)
+        usvg::Tree::from_data(self, options)
     }
 }
 
@@ -308,8 +308,7 @@ where
         1 => Ok(usvg::ShapeRendering::CrispEdges),
         2 => Ok(usvg::ShapeRendering::GeometricPrecision),
         n => Err(serde::de::Error::custom(format_args!(
-            "Invalid ShapeRendering value: {}. Must be these numbers: 0 (OptimizeSpeed), 1 (CrispEdges), or 2 (GeometricPrecision).",
-            n
+            "Invalid ShapeRendering value: {n}. Must be these numbers: 0 (OptimizeSpeed), 1 (CrispEdges), or 2 (GeometricPrecision)."
         ))),
     }
 }
@@ -324,8 +323,7 @@ where
         1 => Ok(usvg::TextRendering::OptimizeLegibility),
         2 => Ok(usvg::TextRendering::GeometricPrecision),
         n => Err(serde::de::Error::custom(format_args!(
-            "Invalid TextRendering value: {}. Must be these numbers: 0 (OptimizeSpeed), 1 (OptimizeLegibility), or 2 (GeometricPrecision).",
-            n
+            "Invalid TextRendering value: {n}. Must be these numbers: 0 (OptimizeSpeed), 1 (OptimizeLegibility), or 2 (GeometricPrecision)."
         ))),
     }
 }
@@ -339,8 +337,7 @@ where
     0 => Ok(usvg::ImageRendering::OptimizeQuality),
     1 => Ok(usvg::ImageRendering::OptimizeSpeed),
     n => Err(serde::de::Error::custom(format_args!(
-      "Invalid ImageRendering value: {}. Must be these numbers: 0 (OptimizeQuality) or 1 (OptimizeSpeed).",
-      n
+      "Invalid ImageRendering value: {n}. Must be these numbers: 0 (OptimizeQuality) or 1 (OptimizeSpeed)."
     ))),
   }
 }
