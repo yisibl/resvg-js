@@ -206,6 +206,65 @@ test('Set the background without alpha by hsla()', async (t) => {
   t.is(result.hasAlpha(), false)
 })
 
+test('Load custom font(use fontsBuffers option)', async (t) => {
+  const filePath = '../example/text.svg'
+  const svg = await fs.readFile(join(__dirname, filePath))
+  const fontBuffer = await fs.readFile(join(__dirname, '../example/SourceHanSerifCN-Light-subset.ttf'))
+  const resvg = new Resvg(svg.toString('utf-8'), {
+    font: {
+      fontsBuffers: [fontBuffer], // Load custom fonts.
+    },
+  })
+  const pngBuffer = resvg.render().asPng()
+  const result = await jimp.read(Buffer.from(pngBuffer))
+
+  t.is(result.getWidth(), 1324)
+  t.is(result.getHeight(), 687)
+})
+
+test('should be load custom font(no defaultFontFamily option)', async (t) => {
+  const svg = `
+  <svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">
+    <text fill="blue" font-family="serif" font-size="120">
+      <tspan x="40" y="143">水</tspan>
+    </text>
+  </svg>
+  `
+  const fontBuffer = await fs.readFile(join(__dirname, '../example/SourceHanSerifCN-Light-subset.ttf'))
+  const resvg = new Resvg(svg, {
+    font: {
+      fontsBuffers: [fontBuffer],
+      // defaultFontFamily: 'Source Han Serif CN Light',
+    },
+  })
+  const pngData = resvg.render()
+  const originPixels = Array.from(pngData.pixels)
+
+  // Find the number of blue `rgb(0,255,255)`pixels
+  t.is(originPixels.join(',').match(/0,0,255/g)?.length, 1726)
+})
+
+test('should be load custom fontsBuffers(no defaultFontFamily option)', async (t) => {
+  const svg = `
+  <svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">
+    <text fill="blue" font-family="serif" font-size="120">
+      <tspan x="40" y="143">水</tspan>
+    </text>
+  </svg>
+  `
+  const fontBuffer = await fs.readFile(join(__dirname, '../example/SourceHanSerifCN-Light-subset.ttf'))
+  const resvg = new Resvg(svg, {
+    font: {
+      fontsBuffers: [fontBuffer],
+    },
+  })
+  const pngData = resvg.render()
+  const originPixels = Array.from(pngData.pixels)
+
+  // Find the number of blue `rgb(0,255,255)`pixels
+  t.is(originPixels.join(',').match(/0,0,255/g)?.length, 1726)
+})
+
 test('should generate a 80x80 png and opaque', async (t) => {
   const svg = `<svg width="200px" height="200px" viewBox="0 0 200 200" version="1.1" xmlns="http://www.w3.org/2000/svg">
     <rect fill="green" x="0" y="0" width="100" height="100"></rect>
@@ -330,7 +389,7 @@ test('should return undefined if bbox is invalid', (t) => {
 
 test('should render using font buffer provided by options', async (t) => {
   const svg = `<svg width='480' height='150' viewBox='-20 -80 550 100' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'>
-  <text x='0' y='0' font-size='100' fill='#000000'>Font Buffer</text>
+  <text x='0' y='0' font-size='100' fill='#000'>Font Buffer</text>
   </svg>`
 
   const pacificoBuffer = await fs.readFile(join(__dirname, './Pacifico-Regular.ttf'))
@@ -339,8 +398,7 @@ test('should render using font buffer provided by options', async (t) => {
   const options = {
     font: {
       fontsBuffers: [pacificoBuffer],
-      loadSystemFonts: false,
-      defaultFontFamily: 'Pacifico',
+      // defaultFontFamily: 'Pacifico',
     },
   }
 

@@ -224,6 +224,52 @@ test('Load custom font', async (t) => {
   t.is(result.getHeight(), 687)
 })
 
+test('should be load custom fontFiles(no defaultFontFamily option)', (t) => {
+  const svg = `
+  <svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">
+    <text fill="blue" font-family="serif" font-size="120">
+      <tspan x="40" y="143">水</tspan>
+    </text>
+  </svg>
+  `
+  const resvg = new Resvg(svg, {
+    font: {
+      fontFiles: ['./example/SourceHanSerifCN-Light-subset.ttf'],
+      loadSystemFonts: false,
+      // defaultFontFamily: 'Source Han Serif CN Light',
+    },
+    logLevel: 'debug',
+  })
+  const pngData = resvg.render()
+  const originPixels = pngData.pixels.toJSON().data
+
+  // Find the number of blue `rgb(0,255,255)`pixels
+  t.is(originPixels.join(',').match(/0,0,255/g)?.length, 1726)
+})
+
+test('should be load custom fontDirs(no defaultFontFamily option)', (t) => {
+  const svg = `
+  <svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">
+    <text fill="blue" font-family="serif" font-size="120">
+      <tspan x="40" y="143">水</tspan>
+    </text>
+  </svg>
+  `
+  const resvg = new Resvg(svg, {
+    font: {
+      fontDirs: ['./example/'],
+      // loadSystemFonts: false,
+      // defaultFontFamily: 'Source Han Serif CN Light',
+    },
+    logLevel: 'debug',
+  })
+  const pngData = resvg.render()
+  const originPixels = pngData.pixels.toJSON().data
+
+  // Find the number of blue `rgb(0,255,255)`pixels
+  t.is(originPixels.join(',').match(/0,0,255/g)?.length, 1726)
+})
+
 test('Async rendering', async (t) => {
   const filePath = '../example/text.svg'
   const svg = await fs.readFile(join(__dirname, filePath))
@@ -459,9 +505,9 @@ test('should render using font buffer provided by options', async (t) => {
   const resvg = new Resvg(svg, {
     font: {
       fontFiles: ['./__test__/Pacifico-Regular.ttf'],
-      // fontDirs: ['./__test__/',],
+      // fontDirs: ['./__test__/'],
       // loadSystemFonts: false,
-      // defaultFontFamily: ' ',
+      defaultFontFamily: '',
     },
     logLevel: 'debug',
   })
@@ -473,29 +519,6 @@ test('should render using font buffer provided by options', async (t) => {
   await fs.writeFile(join(__dirname, './options_font_buffer_expected_extend.png'), renderedResult)
 
   t.is(jimp.diff(expectedResult, actualPng, 0.01).percent, 0) // 0 means similar, 1 means not similar
-})
-
-test('should be load custom fonts', (t) => {
-  const svg = `
-  <svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">
-    <text fill="blue" font-family="serif" font-size="120">
-      <tspan x="40" y="143">水</tspan>
-    </text>
-  </svg>
-  `
-  const resvg = new Resvg(svg, {
-    font: {
-      fontFiles: ['./example/SourceHanSerifCN-Light-subset.ttf'],
-      loadSystemFonts: false,
-      defaultFontFamily: 'Source Han Serif CN Light',
-    },
-    logLevel: 'debug',
-  })
-  const pngData = resvg.render()
-  const originPixels = pngData.pixels.toJSON().data
-
-  // Find the number of blue `rgb(0,255,255)`pixels
-  t.is(originPixels.join(',').match(/0,0,255/g)?.length, 1726)
 })
 
 test('should throw because invalid SVG attribute (width attribute is 0)', (t) => {
