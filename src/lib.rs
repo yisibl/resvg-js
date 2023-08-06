@@ -288,7 +288,7 @@ impl Resvg {
 
         let (mut opts, mut fontdb) = js_options.to_usvg_options();
 
-        crate::fonts::load_fonts(&js_options.font, custom_font_buffers, &mut fontdb)?;
+        crate::fonts::load_wasm_fonts(&js_options.font, custom_font_buffers, &mut fontdb)?;
 
         options::tweak_usvg_options(&mut opts);
         let mut tree = if js_sys::Uint8Array::instanceof(&svg) {

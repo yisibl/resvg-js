@@ -330,7 +330,7 @@ test('should return undefined if bbox is invalid', (t) => {
 
 test('should render using font buffer provided by options', async (t) => {
   const svg = `<svg width='480' height='150' viewBox='-20 -80 550 100' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'>
-  <text x='0' y='0' font-size='100' font-family='Pacifico' fill='#000000'>Font Buffer</text>
+  <text x='0' y='0' font-size='100' fill='#000000'>Font Buffer</text>
   </svg>`
 
   const pacificoBuffer = await fs.readFile(join(__dirname, './Pacifico-Regular.ttf'))
@@ -339,6 +339,8 @@ test('should render using font buffer provided by options', async (t) => {
   const options = {
     font: {
       fontsBuffers: [pacificoBuffer],
+      loadSystemFonts: false,
+      defaultFontFamily: 'Pacifico',
     },
   }
 

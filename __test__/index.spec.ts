@@ -449,6 +449,32 @@ test('should return undefined if bbox is invalid', (t) => {
   t.is(resvg.innerBBox(), undefined)
 })
 
+test('should render using font buffer provided by options', async (t) => {
+  const svg = `<svg width='480' height='150' viewBox='-20 -80 550 100' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'>
+  <text x='0' y='0' font-size='100' fill='#000'>Font Buffer</text>
+  </svg>`
+
+  const expectedResultBuffer = await fs.readFile(join(__dirname, './options_font_buffer_expected_result.png'))
+
+  const resvg = new Resvg(svg, {
+    font: {
+      fontFiles: ['./__test__/Pacifico-Regular.ttf'],
+      // fontDirs: ['./__test__/',],
+      // loadSystemFonts: false,
+      // defaultFontFamily: ' ',
+    },
+    logLevel: 'debug',
+  })
+  const renderedResult = resvg.render().asPng()
+
+  const expectedResult = await jimp.read(Buffer.from(expectedResultBuffer.buffer))
+  const actualPng = await jimp.read(Buffer.from(renderedResult))
+
+  await fs.writeFile(join(__dirname, './options_font_buffer_expected_extend.png'), renderedResult)
+
+  t.is(jimp.diff(expectedResult, actualPng, 0.01).percent, 0) // 0 means similar, 1 means not similar
+})
+
 test('should be load custom fonts', (t) => {
   const svg = `
   <svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">
