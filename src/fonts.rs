@@ -172,16 +172,16 @@ fn set_wasm_font_families(
     fontdb.set_monospace_family(&default_font_family);
 }
 
+/// 查询指定 font family 的字体是否存在，如果不存在则使用 fallback_font_family 代替。
 #[cfg(not(target_arch = "wasm32"))]
 fn find_and_debug_font_path(fontdb: &mut Database, font_family: &str) {
-    // 查找指定字体的路径
     let query = Query {
         families: &[Family::Name(font_family)],
         ..Query::default()
     };
 
     let now = std::time::Instant::now();
-    // 当前使用的字体是否存在
+    // 查询当前使用的字体是否存在
     match fontdb.query(&query) {
         Some(id) => {
             let (src, index) = fontdb.face_source(id).unwrap();
@@ -195,6 +195,13 @@ fn find_and_debug_font_path(fontdb: &mut Database, font_family: &str) {
             }
         }
         None => {
+            let fallback_font_family = "Arial".to_string();
+            fontdb.set_serif_family(&fallback_font_family);
+            fontdb.set_sans_serif_family(&fallback_font_family);
+            fontdb.set_cursive_family(&fallback_font_family);
+            fontdb.set_fantasy_family(&fallback_font_family);
+            fontdb.set_monospace_family(&fallback_font_family);
+
             warn!(
                 "Warning: The default font-family '{}' not found.",
                 font_family
