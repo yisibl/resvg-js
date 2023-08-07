@@ -81,6 +81,7 @@ jobs:
             setup: |
               sudo apt-get update
               sudo apt-get install gcc-arm-linux-gnueabihf -y
+              sudo apt-get install libfontconfig1 -y
             build: |
               yarn build --target armv7-unknown-linux-gnueabihf
               arm-linux-gnueabihf-strip *.node
@@ -334,7 +335,7 @@ jobs:
         run: ls -R .
         shell: bash
       - name: Test bindings
-        run: docker run --rm -v /usr/share/fonts:/usr/share/fonts -v $(pwd):/build -w /build node:${{ matrix.node }}-slim ls /usr/share/fonts yarn test
+        run: docker run --rm -v /usr/share/fonts:/usr/share/fonts -v $(pwd):/build -w /build node:${{ matrix.node }}-slim sh -c "find /usr/share/fonts -name *.ttf && yarn test"
   test-linux-x64-musl-binding:
     name: Test bindings on x86_64-unknown-linux-musl - node@${{ matrix.node }}
     needs:
@@ -378,7 +379,7 @@ jobs:
         run: ls -R .
         shell: bash
       - name: Test bindings
-        run: docker run --rm -v /usr/share/fonts:/usr/share/fonts -v $(pwd):/build -w /build node:${{ matrix.node }}-alpine ls /usr/share/fonts yarn test
+        run: docker run --rm -v /usr/share/fonts:/usr/share/fonts -v $(pwd):/build -w /build node:${{ matrix.node }}-alpine sh -c "find /usr/share/fonts -name *.ttf && yarn test"
   test-linux-aarch64-gnu-binding:
     name: Test bindings on aarch64-unknown-linux-gnu - node@${{ matrix.node }}
     needs:
@@ -392,7 +393,7 @@ jobs:
           - '18'
     runs-on: ubuntu-latest
     steps:
-      - run: docker run --rm -v /usr/share/fonts:/usr/share/fonts --privileged multiarch/qemu-user-static:register --reset ls /usr/share/fonts
+      - run: docker run --rm -v /usr/share/fonts:/usr/share/fonts --privileged multiarch/qemu-user-static:register --reset
       - uses: actions/checkout@v3
       - name: Download artifacts
         uses: actions/download-artifact@v3
@@ -421,9 +422,10 @@ jobs:
         uses: addnab/docker-run-action@v3
         with:
           image: ghcr.io/napi-rs/napi-rs/nodejs:aarch64-${{ matrix.node }}
-          options: '-v ${{ github.workspace }}:/build -v /usr/share/fonts:/usr/share/fonts -w /build'
+          options: '-v /usr/local/share/fonts:/usr/local/share/fonts -v ${{ github.workspace }}:/build -w /build'
           run: |
             set -e
+            find /usr/local/share/fonts -name *.ttf
             ls -la
             yarn test
   test-linux-aarch64-musl-binding:
@@ -432,7 +434,7 @@ jobs:
       - build
     runs-on: ubuntu-latest
     steps:
-      - run: docker run --rm -v /usr/share/fonts:/usr/share/fonts --privileged multiarch/qemu-user-static:register --reset ls /usr/share/fonts
+      - run: docker run --rm -v /usr/share/fonts:/usr/share/fonts --privileged multiarch/qemu-user-static:register --reset
       - uses: actions/checkout@v3
       - name: Download artifacts
         uses: actions/download-artifact@v3
@@ -461,9 +463,13 @@ jobs:
         uses: addnab/docker-run-action@v3
         with:
           image: multiarch/alpine:aarch64-latest-stable
-          options: '-v ${{ github.workspace }}:/build -v /usr/share/fonts:/usr/share/fonts -w /build'
+          options: '-v /usr/share/fonts:/usr/share/fonts -v ${{ github.workspace }}:/build -w /build'
           run: |
             set -e
+            find /usr/share/fonts -name *.ttf
+            apk add fontconfig
+            fc-cache --force
+            fc-list :lang=en
             apk add nodejs npm yarn
             yarn test
   test-linux-arm-gnueabihf-binding:
@@ -479,7 +485,7 @@ jobs:
           - '18'
     runs-on: ubuntu-latest
     steps:
-      - run: docker run --rm -v /usr/share/fonts:/usr/share/fonts --privileged multiarch/qemu-user-static:register --reset ls /usr/share/fonts
+      - run: docker run --rm -v /usr/share/fonts:/usr/share/fonts --privileged multiarch/qemu-user-static:register --reset
       - uses: actions/checkout@v3
       - name: Download artifacts
         uses: actions/download-artifact@v3
@@ -507,9 +513,10 @@ jobs:
         uses: addnab/docker-run-action@v3
         with:
           image: ghcr.io/napi-rs/napi-rs/nodejs:armhf-${{ matrix.node }}
-          options: '-v ${{ github.workspace }}:/build -w /build'
+          options: '-v /usr/share/fonts:/usr/share/fonts -v ${{ github.workspace }}:/build -w /build'
           run: |
             set -e
+            find /usr/share/fonts -name *.ttf
             ls -la
             yarn test
 

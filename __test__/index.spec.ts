@@ -1,4 +1,4 @@
-import { promises as fs } from 'fs'
+import { PathLike, promises as fs, readdirSync } from 'fs'
 import { join } from 'path'
 
 import test from 'ava'
@@ -270,7 +270,7 @@ test('should be load custom fontDirs(no defaultFontFamily option)', (t) => {
   t.is(originPixels.join(',').match(/0,0,255/g)?.length, 1726)
 })
 
-test.only('The defaultFontFamily is not found in the OS and needs to be fallback', (t) => {
+test.only('The defaultFontFamily is not found in the OS and needs to be fallback', async (t) => {
   const svg = `
 <svg xmlns="http://www.w3.org/2000/svg" width="300" height="200" viewBox="0 0 300 200">
   <text fill="blue" font-family="" font-size="100">
@@ -278,9 +278,27 @@ test.only('The defaultFontFamily is not found in the OS and needs to be fallback
   </text>
 </svg>
   `
+
+  async function checkFileExists(filepath: PathLike) {
+    try {
+      await fs.access(filepath, fs.constants.F_OK)
+      return true
+    } catch (error) {
+      return false
+    }
+  }
+  const isExists = await checkFileExists('/usr/share/fonts')
+  console.info(`Node.js 开始读取字体目录 /usr/share/fonts`, isExists)
+  if (isExists) {
+    readdirSync('/usr/share/fonts').forEach((file) => {
+      console.info(`获取到文件 ${file}`)
+    })
+  }
+
   const resvg = new Resvg(svg, {
     font: {
       loadSystemFonts: true,
+      fontDirs: ['/usr/share/fonts'],
       defaultFontFamily: 'this-is-a-non-existent-font-family',
     },
     logLevel: 'debug',
