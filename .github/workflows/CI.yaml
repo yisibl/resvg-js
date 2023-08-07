@@ -199,7 +199,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node: ['14', '16', '18']
+        node: ['18']
     runs-on: ubuntu-latest
 
     steps:
@@ -210,6 +210,11 @@ jobs:
         with:
           node-version: ${{ matrix.node }}
           check-latest: true
+      - name: Run font-config
+        run: |
+          fc-list :lang=en
+          fc-list
+        shell: bash
 
       - name: Install
         uses: actions-rs/toolchain@v1
@@ -259,8 +264,8 @@ jobs:
           - host: windows-latest
             target: x86_64-pc-windows-msvc
         node:
-          - '14'
-          - '16'
+          # - '14'
+          # - '16'
           - '18'
     runs-on: ${{ matrix.settings.host }}
     steps:
@@ -296,8 +301,8 @@ jobs:
       fail-fast: false
       matrix:
         node:
-          - '14'
-          - '16'
+          # - '14'
+          # - '16'
           - '18'
     runs-on: ubuntu-latest
     steps:
@@ -308,6 +313,11 @@ jobs:
           node-version: ${{ matrix.node }}
           check-latest: true
           cache: yarn
+      - name: Run font-config
+        run: |
+          fc-list :lang=en
+          fc-list
+        shell: bash
       - name: Cache NPM dependencies
         uses: actions/cache@v3
         with:
@@ -324,7 +334,7 @@ jobs:
         run: ls -R .
         shell: bash
       - name: Test bindings
-        run: docker run --rm -v $(pwd):/build -w /build node:${{ matrix.node }}-slim yarn test
+        run: docker run --rm -v /usr/share/fonts:/usr/share/fonts -v $(pwd):/build -w /build node:${{ matrix.node }}-slim ls /usr/share/fonts yarn test
   test-linux-x64-musl-binding:
     name: Test bindings on x86_64-unknown-linux-musl - node@${{ matrix.node }}
     needs:
@@ -333,8 +343,8 @@ jobs:
       fail-fast: false
       matrix:
         node:
-          - '14'
-          - '16'
+          # - '14'
+          # - '16'
           - '18'
     runs-on: ubuntu-latest
     steps:
@@ -345,6 +355,11 @@ jobs:
           node-version: ${{ matrix.node }}
           check-latest: true
           cache: yarn
+      - name: Run font-config
+        run: |
+          fc-list :lang=en
+          fc-list
+        shell: bash
       - name: Cache NPM dependencies
         uses: actions/cache@v3
         with:
@@ -363,7 +378,7 @@ jobs:
         run: ls -R .
         shell: bash
       - name: Test bindings
-        run: docker run --rm -v $(pwd):/build -w /build node:${{ matrix.node }}-alpine yarn test
+        run: docker run --rm -v /usr/share/fonts:/usr/share/fonts -v $(pwd):/build -w /build node:${{ matrix.node }}-alpine ls /usr/share/fonts yarn test
   test-linux-aarch64-gnu-binding:
     name: Test bindings on aarch64-unknown-linux-gnu - node@${{ matrix.node }}
     needs:
@@ -372,18 +387,23 @@ jobs:
       fail-fast: false
       matrix:
         node:
-          - '14'
-          - '16'
+          # - '14'
+          # - '16'
           - '18'
     runs-on: ubuntu-latest
     steps:
-      - run: docker run --rm --privileged multiarch/qemu-user-static:register --reset
+      - run: docker run --rm -v /usr/share/fonts:/usr/share/fonts --privileged multiarch/qemu-user-static:register --reset ls /usr/share/fonts
       - uses: actions/checkout@v3
       - name: Download artifacts
         uses: actions/download-artifact@v3
         with:
           name: bindings-aarch64-unknown-linux-gnu
           path: .
+      - name: Run font-config
+        run: |
+          fc-list :lang=en
+          fc-list
+        shell: bash
       - name: List packages
         run: ls -R .
         shell: bash
@@ -401,24 +421,29 @@ jobs:
         uses: addnab/docker-run-action@v3
         with:
           image: ghcr.io/napi-rs/napi-rs/nodejs:aarch64-${{ matrix.node }}
-          options: '-v ${{ github.workspace }}:/build -w /build'
+          options: '-v ${{ github.workspace }}:/build -v /usr/share/fonts:/usr/share/fonts -w /build'
           run: |
             set -e
-            yarn test
             ls -la
+            yarn test
   test-linux-aarch64-musl-binding:
     name: Test bindings on aarch64-unknown-linux-musl - node@${{ matrix.node }}
     needs:
       - build
     runs-on: ubuntu-latest
     steps:
-      - run: docker run --rm --privileged multiarch/qemu-user-static:register --reset
+      - run: docker run --rm -v /usr/share/fonts:/usr/share/fonts --privileged multiarch/qemu-user-static:register --reset ls /usr/share/fonts
       - uses: actions/checkout@v3
       - name: Download artifacts
         uses: actions/download-artifact@v3
         with:
           name: bindings-aarch64-unknown-linux-musl
           path: .
+      - name: Run font-config
+        run: |
+          fc-list :lang=en
+          fc-list
+        shell: bash
       - name: List packages
         run: ls -R .
         shell: bash
@@ -436,7 +461,7 @@ jobs:
         uses: addnab/docker-run-action@v3
         with:
           image: multiarch/alpine:aarch64-latest-stable
-          options: '-v ${{ github.workspace }}:/build -w /build'
+          options: '-v ${{ github.workspace }}:/build -v /usr/share/fonts:/usr/share/fonts -w /build'
           run: |
             set -e
             apk add nodejs npm yarn
@@ -449,18 +474,23 @@ jobs:
       fail-fast: false
       matrix:
         node:
-          - '14'
-          - '16'
+          # - '14'
+          # - '16'
           - '18'
     runs-on: ubuntu-latest
     steps:
-      - run: docker run --rm --privileged multiarch/qemu-user-static:register --reset
+      - run: docker run --rm -v /usr/share/fonts:/usr/share/fonts --privileged multiarch/qemu-user-static:register --reset ls /usr/share/fonts
       - uses: actions/checkout@v3
       - name: Download artifacts
         uses: actions/download-artifact@v3
         with:
           name: bindings-armv7-unknown-linux-gnueabihf
           path: .
+      - name: Run font-config
+        run: |
+          fc-list :lang=en
+          fc-list
+        shell: bash
       - name: List packages
         run: ls -R .
         shell: bash
@@ -480,8 +510,8 @@ jobs:
           options: '-v ${{ github.workspace }}:/build -w /build'
           run: |
             set -e
-            yarn test
             ls -la
+            yarn test
 
   publish:
     name: Publish

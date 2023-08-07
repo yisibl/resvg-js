@@ -77,15 +77,15 @@ fn set_font_families(font_options: &JsFontOptions, fontdb: &mut Database) {
     let fallback_font_family = "Arial".to_string(); // 其他情况都 fallback 到指定的这个字体。
 
     // debug font list
-    // for face in fontdb.faces() {
-    //     let family = face
-    //         .families
-    //         .iter()
-    //         .find(|f| f.1 == Language::English_UnitedStates)
-    //         .unwrap_or(&face.families[0]);
+    for face in fontdb.faces() {
+        let family = face
+            .families
+            .iter()
+            .find(|f| f.1 == Language::English_UnitedStates)
+            .unwrap_or(&face.families[0]);
 
-    //     debug!("font_id = {}, family_name = {}", face.id, family.0);
-    // }
+        debug!("font_id = {}, family_name = {}", face.id, family.0);
+    }
 
     // 当 default_font_family 为空时，尝试把 fontdb 中字体列表的第一个字体设置为默认的字体。
     if font_options

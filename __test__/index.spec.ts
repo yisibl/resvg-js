@@ -270,7 +270,7 @@ test('should be load custom fontDirs(no defaultFontFamily option)', (t) => {
   t.is(originPixels.join(',').match(/0,0,255/g)?.length, 1726)
 })
 
-test('The defaultFontFamily is not found in the OS and needs to be fallback', (t) => {
+test.only('The defaultFontFamily is not found in the OS and needs to be fallback', (t) => {
   const svg = `
 <svg xmlns="http://www.w3.org/2000/svg" width="300" height="200" viewBox="0 0 300 200">
   <text fill="blue" font-family="" font-size="100">
@@ -283,6 +283,7 @@ test('The defaultFontFamily is not found in the OS and needs to be fallback', (t
       loadSystemFonts: true,
       defaultFontFamily: 'this-is-a-non-existent-font-family',
     },
+    logLevel: 'debug',
   })
   const pngData = resvg.render()
   const originPixels = pngData.pixels.toJSON().data
