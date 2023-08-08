@@ -81,7 +81,7 @@ jobs:
             setup: |
               sudo apt-get update
               sudo apt-get install gcc-arm-linux-gnueabihf -y
-              sudo apt-get install libfontconfig1 -y
+# sudo apt-get install libfontconfig1 -y
             build: |
               yarn build --target armv7-unknown-linux-gnueabihf
               arm-linux-gnueabihf-strip *.node
@@ -211,10 +211,6 @@ jobs:
         with:
           node-version: ${{ matrix.node }}
           check-latest: true
-      - name: Run font-config
-        run: |
-          fc-list :lang=en
-          fc-list
         shell: bash
 
       - name: Install
@@ -314,10 +310,6 @@ jobs:
           node-version: ${{ matrix.node }}
           check-latest: true
           cache: yarn
-      - name: Run font-config
-        run: |
-          fc-list :lang=en
-          fc-list
         shell: bash
       - name: Cache NPM dependencies
         uses: actions/cache@v3
@@ -356,10 +348,6 @@ jobs:
           node-version: ${{ matrix.node }}
           check-latest: true
           cache: yarn
-      - name: Run font-config
-        run: |
-          fc-list :lang=en
-          fc-list
         shell: bash
       - name: Cache NPM dependencies
         uses: actions/cache@v3
@@ -393,17 +381,13 @@ jobs:
           - '18'
     runs-on: ubuntu-latest
     steps:
-      - run: docker run --rm -v /usr/share/fonts:/usr/share/fonts --privileged multiarch/qemu-user-static:register --reset
+      - run: docker run --rm --privileged multiarch/qemu-user-static:register --reset
       - uses: actions/checkout@v3
       - name: Download artifacts
         uses: actions/download-artifact@v3
         with:
           name: bindings-aarch64-unknown-linux-gnu
           path: .
-      - name: Run font-config
-        run: |
-          fc-list :lang=en
-          fc-list
         shell: bash
       - name: List packages
         run: ls -R .
@@ -434,17 +418,13 @@ jobs:
       - build
     runs-on: ubuntu-latest
     steps:
-      - run: docker run --rm -v /usr/share/fonts:/usr/share/fonts --privileged multiarch/qemu-user-static:register --reset
+      - run: docker run --rm --privileged multiarch/qemu-user-static:register --reset
       - uses: actions/checkout@v3
       - name: Download artifacts
         uses: actions/download-artifact@v3
         with:
           name: bindings-aarch64-unknown-linux-musl
           path: .
-      - name: Run font-config
-        run: |
-          fc-list :lang=en
-          fc-list
         shell: bash
       - name: List packages
         run: ls -R .
@@ -467,9 +447,9 @@ jobs:
           run: |
             set -e
             find /usr/share/fonts -name *.ttf
-            apk add fontconfig
-            fc-cache --force
-            fc-list :lang=en
+# apk add fontconfig
+# fc-cache --force
+# fc-list :lang=en
             apk add nodejs npm yarn
             yarn test
   test-linux-arm-gnueabihf-binding:
@@ -485,17 +465,13 @@ jobs:
           - '18'
     runs-on: ubuntu-latest
     steps:
-      - run: docker run --rm -v /usr/share/fonts:/usr/share/fonts --privileged multiarch/qemu-user-static:register --reset
+      - run: docker run --rm --privileged multiarch/qemu-user-static:register --reset
       - uses: actions/checkout@v3
       - name: Download artifacts
         uses: actions/download-artifact@v3
         with:
           name: bindings-armv7-unknown-linux-gnueabihf
           path: .
-      - name: Run font-config
-        run: |
-          fc-list :lang=en
-          fc-list
         shell: bash
       - name: List packages
         run: ls -R .

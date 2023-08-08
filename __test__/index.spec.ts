@@ -287,18 +287,11 @@ test.only('The defaultFontFamily is not found in the OS and needs to be fallback
       return false
     }
   }
-  const isExists = await checkFileExists('/usr/share/fonts')
-  console.info(`Node.js 开始读取字体目录 /usr/share/fonts`, isExists)
+  const path1 = require('path').join('/usr/share/fonts')
+  const isExists = await checkFileExists(path1)
+  console.info(`Node.js 开始读取字体目录 ${path1}`, isExists)
   if (isExists) {
-    readdirSync('/usr/share/fonts').forEach((file) => {
-      console.info(`获取到文件 ${file}`)
-    })
-  }
-
-  const isExists2 = await checkFileExists('/usr/local/share/fonts')
-  console.info(`字体目录 /usr/local/share/fonts`, isExists2)
-  if (isExists2) {
-    readdirSync('/usr/local/share/fonts').forEach((file) => {
+    readdirSync(path1).forEach((file) => {
       console.info(`获取到文件 ${file}`)
     })
   }
@@ -306,6 +299,7 @@ test.only('The defaultFontFamily is not found in the OS and needs to be fallback
   const resvg = new Resvg(svg, {
     font: {
       loadSystemFonts: true,
+      fontDirs: ['/usr/share/fonts/'], // 防止在 CI 的 Docker 环境找不到字体
       defaultFontFamily: 'this-is-a-non-existent-font-family',
     },
     logLevel: 'debug',

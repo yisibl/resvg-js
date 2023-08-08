@@ -13,7 +13,7 @@ async function main() {
         <stop stop-color="#ff007e" offset="100%"/>
       </linearGradient>
     </defs>
-    <text fill="url(#fill)" font-family="serif" font-size="60">
+    <text fill="url(#fill)" font-family="" font-size="60">
       <tspan x="40" y="80">竹外桃花三两枝</tspan>
       <tspan x="40" y="160">Hello resvg-js</tspan>
     </text>
@@ -23,11 +23,12 @@ async function main() {
   const resvg = new Resvg(svg, {
     background: '#fff',
     font: {
+      loadSystemFonts: false, // It will be faster to disable loading system fonts.
       // fontFiles: ['./__test__/Pacifico-Regular.ttf'],
       fontDirs: ['./example'],
-      loadSystemFonts: false, // It will be faster to disable loading system fonts.
       // defaultFontFamily: 'Source Han Serif CN Light',
-      defaultFontFamily: 'foo',
+      // defaultFontFamily: 'Nabla',
+      defaultFontFamily: 'this-is-a-non-existent-font-family',
     },
     logLevel: 'debug', // Default Value: error
   })

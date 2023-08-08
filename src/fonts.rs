@@ -16,7 +16,7 @@ use wasm_bindgen::JsCast;
 
 /// Loads fonts.
 #[cfg(not(target_arch = "wasm32"))]
-pub fn load_fonts(font_options: &JsFontOptions) -> (Database, String) {
+pub fn load_fonts(font_options: &JsFontOptions) -> Database {
     // Create a new font database
     let mut fontdb = Database::new();
     let now = std::time::Instant::now();
@@ -40,7 +40,7 @@ pub fn load_fonts(font_options: &JsFontOptions) -> (Database, String) {
         fontdb.load_system_fonts();
     }
 
-    let default_font_family = set_font_families(font_options, &mut fontdb);
+    set_font_families(font_options, &mut fontdb);
 
     debug!(
         "Loaded {} font faces in {}ms.",
@@ -48,7 +48,7 @@ pub fn load_fonts(font_options: &JsFontOptions) -> (Database, String) {
         now.elapsed().as_micros() as f64 / 1000.0
     );
 
-    (fontdb, default_font_family)
+    fontdb
 }
 
 /// Loads fonts in Wasm.
@@ -71,12 +71,9 @@ pub fn load_wasm_fonts(
     Ok(())
 }
 
-/// 设置默认的 font family 并返回该值。
 #[cfg(not(target_arch = "wasm32"))]
-fn set_font_families(font_options: &JsFontOptions, fontdb: &mut Database) -> String {
+fn set_font_families(font_options: &JsFontOptions, fontdb: &mut Database) {
     let mut default_font_family = font_options.default_font_family.clone();
-    let fallback_font_family = "Arial".to_string(); // 其他情况都 fallback 到指定的这个字体。
-
     // debug font list
     for face in fontdb.faces() {
         let family = face
@@ -88,84 +85,34 @@ fn set_font_families(font_options: &JsFontOptions, fontdb: &mut Database) -> Str
         debug!("font_id = {}, family_name = {}", face.id, family.0);
     }
 
-    let first_font_families = get_first_font_families(fontdb);
+    let trimmed_default_font_family = default_font_family.trim();
+    let fontdb_found_default_font_family = fontdb
+        .faces()
+        .iter()
+        .find_map(|it| {
+            it.families
+                .iter()
+                .find(|f| f.0 == trimmed_default_font_family)
+                .map(|f| f.0.clone())
+        })
+        .unwrap_or_default();
 
-    // 当 default_font_family 为空时，尝试把 fontdb 中字体列表的第一个字体设置为默认的字体。
-    if font_options
-        .default_font_family
-        .to_string()
-        .trim()
-        .is_empty()
-    {
-        // font_files 或 font_dirs 选项不为空时, 从字体列表中获取第一个字体的 font family。
+    debug!(
+        "fontdb 找到的默认字体名称 = {}",
+        fontdb_found_default_font_family
+    );
+
+    // 当 default_font_family 为空或系统无该字体时，尝试把 fontdb
+    // 中字体列表的第一个字体设置为默认的字体。
+    if trimmed_default_font_family.is_empty() || fontdb_found_default_font_family.is_empty() {
+        // font_files 或 font_dirs 选项不为空时, 从已加载的字体列表中获取第一个字体的 font family。
         if !font_options.font_files.is_empty() || !font_options.font_dirs.is_empty() {
-            // 获取字体列表中第一个字体的 font family。
-            default_font_family = first_font_families.clone();
-            // match fontdb.faces().iter().next() {
-            //     Some(face) => {
-            //         let new_family = face
-            //             .families
-            //             .iter()
-            //             .find(|f| f.1 == Language::English_UnitedStates)
-            //             .unwrap_or(&face.families[0]);
-
-            //         default_font_family = new_family.0.clone();
-            //         debug!("📝 找到字体了 = {}", default_font_family);
-            //     }
-            //     None => {
-            //         default_font_family = fallback_font_family.clone();
-            //         debug!("📝 没找到字体 = {}", default_font_family);
-            //     }
-            // }
-        } else {
-            default_font_family = fallback_font_family.clone();
+            default_font_family = get_first_font_family_or_fallback(fontdb);
         }
-    }
-
-    debug!("📝 first_font_families = {}", first_font_families);
-    debug!("📝 default_font_family = {}", default_font_family);
-    // 查询默认字体是否已经加载到 fontdb 的列表中
-    let query = Query {
-        families: &[
-            Family::Name(default_font_family.as_str()),
-            Family::Name(first_font_families.as_str()),
-        ],
-        ..Query::default()
-    };
-
-    let now = std::time::Instant::now();
-
-    // 查找到当前匹配到的字体
-    match fontdb.query(&query) {
-        Some(id) => {
-            let (src, index) = fontdb.face_source(id).unwrap();
-            if let Source::File(ref path) = &src {
-                // 匹配到字体的 font family
-                let face = fontdb.face(id).unwrap();
-                let base_family = face
-                    .families
-                    .iter()
-                    .find(|f| f.1 == Language::English_UnitedStates)
-                    .unwrap_or(&face.families[0]);
-
-                default_font_family = base_family.0.clone();
-                debug!("📝 匹配到的 base_family = {}", base_family.0);
-
-                debug!(
-                    "Font '{}':{} found in {}ms.",
-                    path.display(),
-                    index,
-                    now.elapsed().as_micros() as f64 / 1000.0
-                );
-            }
-        }
-        None => {
-            default_font_family = fallback_font_family;
-            warn!(
-                "Warning: The default font-family '{}' not found.",
-                default_font_family
-            );
-        }
+        // else {
+        //     debug!("其他情况 = {}", default_font_family);
+        //     default_font_family = fallback_font_family;
+        // }
     }
 
     fontdb.set_serif_family(&default_font_family);
@@ -174,31 +121,10 @@ fn set_font_families(font_options: &JsFontOptions, fontdb: &mut Database) -> Str
     fontdb.set_fantasy_family(&default_font_family);
     fontdb.set_monospace_family(&default_font_family);
 
-    default_font_family
-}
+    debug!("📝 defaultFontFamily = {}", default_font_family);
 
-/// 获取 fontdb 中的第一个字体的 font family。
-#[cfg(not(target_arch = "wasm32"))]
-fn get_first_font_families(fontdb: &mut Database) -> String {
-    let mut default_font_family = "Arial".to_string();
-
-    match fontdb.faces().iter().next() {
-        Some(face) => {
-            let base_family = face
-                .families
-                .iter()
-                .find(|f| f.1 == Language::English_UnitedStates)
-                .unwrap_or(&face.families[0]);
-
-            default_font_family = base_family.0.clone();
-            debug!("📝 找到字体了 = {}", default_font_family);
-        }
-        None => {
-            debug!("📝 没找到字体 = {}", default_font_family);
-        }
-    }
-
-    default_font_family
+    #[cfg(not(target_arch = "wasm32"))]
+    find_and_debug_font_path(fontdb, default_font_family.as_str())
 }
 
 #[cfg(target_arch = "wasm32")]
@@ -245,8 +171,71 @@ fn set_wasm_font_families(
     fontdb.set_monospace_family(&default_font_family);
 }
 
-// 查询指定 font family 的字体是否存在，如果不存在则使用 fallback_font_family 代替。
-// #[cfg(not(target_arch = "wasm32"))]
-// fn find_and_debug_font_path(fontdb: &mut Database, default_font_family: &str) {
+/// 查询指定 font family 的字体是否存在，如果不存在则使用 fallback_font_family 代替。
+#[cfg(not(target_arch = "wasm32"))]
+fn find_and_debug_font_path(fontdb: &mut Database, font_family: &str) {
+    let query = Query {
+        families: &[Family::Name(font_family)],
+        ..Query::default()
+    };
 
-// }
+    let now = std::time::Instant::now();
+    // 查询当前使用的字体是否存在
+    match fontdb.query(&query) {
+        Some(id) => {
+            let (src, index) = fontdb.face_source(id).unwrap();
+            if let Source::File(ref path) = &src {
+                debug!(
+                    "Font '{}':{} found in {}ms.",
+                    path.display(),
+                    index,
+                    now.elapsed().as_micros() as f64 / 1000.0
+                );
+            }
+        }
+        None => {
+            let first_font_family = get_first_font_family_or_fallback(fontdb);
+
+            fontdb.set_serif_family(&first_font_family);
+            fontdb.set_sans_serif_family(&first_font_family);
+            fontdb.set_cursive_family(&first_font_family);
+            fontdb.set_fantasy_family(&first_font_family);
+            fontdb.set_monospace_family(&first_font_family);
+
+            warn!(
+                "Warning: The default font-family '{}' not found, set to '{}'.",
+                font_family, first_font_family,
+            );
+        }
+    }
+}
+
+/// 获取 fontdb 中的第一个字体的 font family。
+#[cfg(not(target_arch = "wasm32"))]
+fn get_first_font_family_or_fallback(fontdb: &mut Database) -> String {
+    let mut default_font_family = "Arial".to_string(); // 其他情况都 fallback 到指定的这个字体。
+
+    match fontdb.faces().iter().next() {
+        Some(face) => {
+            let base_family = face
+                .families
+                .iter()
+                .find(|f| f.1 == Language::English_UnitedStates)
+                .unwrap_or(&face.families[0]);
+
+            default_font_family = base_family.0.clone();
+            debug!(
+                "📝 get_first_font_family 找到字体了 = {}",
+                default_font_family
+            );
+        }
+        None => {
+            debug!(
+                "📝 get_first_font_family 没找到字体 = {}",
+                default_font_family
+            );
+        }
+    }
+
+    default_font_family
+}
