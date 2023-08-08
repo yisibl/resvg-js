@@ -1,4 +1,4 @@
-import { PathLike, promises as fs, readdirSync } from 'fs'
+import { PathLike, promises as fs, readdirSync, statSync } from 'fs'
 import { join } from 'path'
 
 import test from 'ava'
@@ -287,19 +287,37 @@ test.only('The defaultFontFamily is not found in the OS and needs to be fallback
       return false
     }
   }
-  const path1 = require('path').join('/usr/share/fonts')
-  const isExists = await checkFileExists(path1)
-  console.info(`Node.js 开始读取字体目录 ${path1}`, isExists)
-  if (isExists) {
-    readdirSync(path1).forEach((file) => {
-      console.info(`获取到文件 ${file}`)
+
+  function find_files(directoryPath: PathLike) {
+    // 获取目录下的所有文件和子目录
+    const items = readdirSync(directoryPath)
+
+    // 遍历每个文件或子目录
+    items.forEach((item) => {
+      const itemPath = require('path').join(directoryPath, item)
+      const stats = statSync(itemPath)
+
+      if (stats.isFile()) {
+        // 处理文件
+        console.info('文件:', itemPath)
+      } else if (stats.isDirectory()) {
+        // 处理子目录，并递归遍历
+        find_files(itemPath)
+      }
     })
+  }
+
+  const fontPath = require('path').join('/usr/share/fonts')
+  const isExists = await checkFileExists(fontPath)
+  console.info(`Node.js 开始读取字体目录 ${fontPath}`, isExists)
+  if (isExists) {
+    find_files(fontPath)
   }
 
   const resvg = new Resvg(svg, {
     font: {
       loadSystemFonts: true,
-      fontDirs: ['/usr/share/fonts/'], // 防止在 CI 的 Docker 环境找不到字体
+      // fontDirs: ['/usr/share/fonts/'], // 防止在 CI 的 Docker 环境找不到字体
       defaultFontFamily: 'this-is-a-non-existent-font-family',
     },
     logLevel: 'debug',

@@ -211,7 +211,6 @@ jobs:
         with:
           node-version: ${{ matrix.node }}
           check-latest: true
-        shell: bash
 
       - name: Install
         uses: actions-rs/toolchain@v1
@@ -310,7 +309,6 @@ jobs:
           node-version: ${{ matrix.node }}
           check-latest: true
           cache: yarn
-        shell: bash
       - name: Cache NPM dependencies
         uses: actions/cache@v3
         with:
@@ -348,7 +346,6 @@ jobs:
           node-version: ${{ matrix.node }}
           check-latest: true
           cache: yarn
-        shell: bash
       - name: Cache NPM dependencies
         uses: actions/cache@v3
         with:
@@ -388,7 +385,6 @@ jobs:
         with:
           name: bindings-aarch64-unknown-linux-gnu
           path: .
-        shell: bash
       - name: List packages
         run: ls -R .
         shell: bash
@@ -410,6 +406,9 @@ jobs:
           run: |
             set -e
             find /usr/share/fonts -name *.ttf
+            apk add fontconfig
+            fc-cache --force
+            fc-list :lang=en
             ls -la
             yarn test
   test-linux-aarch64-musl-binding:
@@ -425,7 +424,6 @@ jobs:
         with:
           name: bindings-aarch64-unknown-linux-musl
           path: .
-        shell: bash
       - name: List packages
         run: ls -R .
         shell: bash
@@ -447,9 +445,9 @@ jobs:
           run: |
             set -e
             find /usr/share/fonts -name *.ttf
-# apk add fontconfig
-# fc-cache --force
-# fc-list :lang=en
+            apk add fontconfig
+            fc-cache --force
+            fc-list :lang=en
             apk add nodejs npm yarn
             yarn test
   test-linux-arm-gnueabihf-binding:
@@ -472,7 +470,6 @@ jobs:
         with:
           name: bindings-armv7-unknown-linux-gnueabihf
           path: .
-        shell: bash
       - name: List packages
         run: ls -R .
         shell: bash
@@ -493,6 +490,9 @@ jobs:
           run: |
             set -e
             find /usr/share/fonts -name *.ttf
+            apk add fontconfig
+            fc-cache --force
+            fc-list :lang=en
             ls -la
             yarn test
 
