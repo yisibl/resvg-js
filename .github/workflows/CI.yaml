@@ -406,7 +406,7 @@ jobs:
           run: |
             set -e
             find /usr/share/fonts -name *.ttf
-            apk add fontconfig
+            apt-get install fontconfig -y
             fc-cache --force
             fc-list :lang=en
             ls -la
@@ -490,7 +490,7 @@ jobs:
           run: |
             set -e
             find /usr/share/fonts -name *.ttf
-            apk add fontconfig
+            apt-get install fontconfig -y
             fc-cache --force
             fc-list :lang=en
             ls -la
