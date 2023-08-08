@@ -422,10 +422,10 @@ jobs:
         uses: addnab/docker-run-action@v3
         with:
           image: ghcr.io/napi-rs/napi-rs/nodejs:aarch64-${{ matrix.node }}
-          options: '-v /usr/local/share/fonts:/usr/local/share/fonts -v ${{ github.workspace }}:/build -w /build'
+          options: '-v /usr/share/fonts:/usr/share/fonts -v ${{ github.workspace }}:/build -w /build'
           run: |
             set -e
-            find /usr/local/share/fonts -name *.ttf
+            find /usr/share/fonts -name *.ttf
             ls -la
             yarn test
   test-linux-aarch64-musl-binding:
