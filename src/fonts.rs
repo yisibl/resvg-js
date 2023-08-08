@@ -87,12 +87,19 @@ fn set_font_families(font_options: &JsFontOptions, fontdb: &mut Database) {
         debug!("font_id = {}, family_name = {}", face.id, family.0);
     }
 
-    // 当 default_font_family 为空时，尝试把 fontdb 中字体列表的第一个字体设置为默认的字体。
-    if font_options
-        .default_font_family
-        .to_string()
-        .trim()
-        .is_empty()
+    let default_font_family_name = default_font_family.trim();
+    // 当 default_font_family 为空或系统无该字体时，尝试把 fontdb 中字体列表的第一个字体设置为默认的字体。
+    if default_font_family_name.is_empty()
+        || fontdb
+            .faces()
+            .iter()
+            .find(|it| {
+                it.families
+                    .iter()
+                    .find(|f| f.0 == default_font_family_name)
+                    .is_some()
+            })
+            .is_none()
     {
         // font_files 或 font_dirs 选项不为空时, 从字体列表中获取第一个字体的 font family。
         if !font_options.font_files.is_empty() || !font_options.font_dirs.is_empty() {
