@@ -298,7 +298,6 @@ test.only('The defaultFontFamily is not found in the OS and needs to be fallback
   const resvg = new Resvg(svg, {
     font: {
       loadSystemFonts: true,
-      fontDirs: ['/usr/share/fonts'],
       defaultFontFamily: 'this-is-a-non-existent-font-family',
     },
     logLevel: 'debug',

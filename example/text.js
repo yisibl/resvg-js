@@ -23,10 +23,11 @@ async function main() {
   const resvg = new Resvg(svg, {
     background: '#fff',
     font: {
-      fontDirs: ['./__test__/'], // Load custom fonts from this directory.
-      fontFiles: ['./example/SourceHanSerifCN-Light-subset.ttf'], // Load custom fonts from this file.
+      // fontFiles: ['./__test__/Pacifico-Regular.ttf'],
+      fontDirs: ['./example'],
       loadSystemFonts: false, // It will be faster to disable loading system fonts.
       // defaultFontFamily: 'Source Han Serif CN Light',
+      defaultFontFamily: 'foo',
     },
     logLevel: 'debug', // Default Value: error
   })

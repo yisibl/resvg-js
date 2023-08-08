@@ -393,7 +393,7 @@ jobs:
           - '18'
     runs-on: ubuntu-latest
     steps:
-      - run: docker run --rm -v /usr/share/fonts:/usr/share/fonts --privileged multiarch/qemu-user-static:register --reset
+      - run: docker run --rm --privileged multiarch/qemu-user-static:register --reset
       - uses: actions/checkout@v3
       - name: Download artifacts
         uses: actions/download-artifact@v3
@@ -422,10 +422,10 @@ jobs:
         uses: addnab/docker-run-action@v3
         with:
           image: ghcr.io/napi-rs/napi-rs/nodejs:aarch64-${{ matrix.node }}
-          options: '-v /usr/local/share/fonts:/usr/local/share/fonts -v ${{ github.workspace }}:/build -w /build'
+          options: '-v /usr/share/fonts:/usr/share/fonts -v ${{ github.workspace }}:/build -w /build'
           run: |
             set -e
-            find /usr/local/share/fonts -name *.ttf
+            find /usr/share/fonts -name *.ttf
             ls -la
             yarn test
   test-linux-aarch64-musl-binding:
@@ -434,7 +434,7 @@ jobs:
       - build
     runs-on: ubuntu-latest
     steps:
-      - run: docker run --rm -v /usr/share/fonts:/usr/share/fonts --privileged multiarch/qemu-user-static:register --reset
+      - run: docker run --rm --privileged multiarch/qemu-user-static:register --reset
       - uses: actions/checkout@v3
       - name: Download artifacts
         uses: actions/download-artifact@v3
@@ -485,7 +485,7 @@ jobs:
           - '18'
     runs-on: ubuntu-latest
     steps:
-      - run: docker run --rm -v /usr/share/fonts:/usr/share/fonts --privileged multiarch/qemu-user-static:register --reset
+      - run: docker run --rm --privileged multiarch/qemu-user-static:register --reset
       - uses: actions/checkout@v3
       - name: Download artifacts
         uses: actions/download-artifact@v3

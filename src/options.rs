@@ -5,6 +5,7 @@
 use std::sync::Arc;
 
 use crate::error::Error;
+use log::debug;
 #[cfg(not(target_arch = "wasm32"))]
 use napi::{bindgen_prelude::Buffer, Either};
 use resvg::tiny_skia::Pixmap;
@@ -162,15 +163,20 @@ impl JsOptions {
     pub(crate) fn to_usvg_options(&self) -> (usvg::Options, Database) {
         // Load fonts
         #[cfg(not(target_arch = "wasm32"))]
-        let fontdb = crate::fonts::load_fonts(&self.font);
+        let (fontdb, default_font_family) = crate::fonts::load_fonts(&self.font);
+        // let fontdb = crate::fonts::load_fonts(&self.font);
         #[cfg(target_arch = "wasm32")]
         let fontdb = Database::new();
+        #[cfg(target_arch = "wasm32")]
+        let default_font_family = self.font.default_font_family.clone();
 
+        debug!("📝 最终的默认字体 = {}", default_font_family);
         // Build the SVG options
         let opts = usvg::Options {
             resources_dir: None,
             dpi: self.dpi,
-            font_family: self.font.default_font_family.clone(),
+            // font_family: self.font.default_font_family.clone(),
+            font_family: default_font_family,
             font_size: self.font.default_font_size,
             languages: self.languages.clone(),
             shape_rendering: self.shape_rendering,
