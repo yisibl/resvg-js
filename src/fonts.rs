@@ -73,46 +73,35 @@ pub fn load_wasm_fonts(
 
 #[cfg(not(target_arch = "wasm32"))]
 fn set_font_families(font_options: &JsFontOptions, fontdb: &mut Database) {
-    let mut default_font_family = font_options.default_font_family.clone();
-    // debug font list
-    for face in fontdb.faces() {
-        let family = face
-            .families
-            .iter()
-            .find(|f| f.1 == Language::English_UnitedStates)
-            .unwrap_or(&face.families[0]);
+    let mut default_font_family = font_options.default_font_family.clone().trim().to_string();
+    // Debug: get font lists
+    // for face in fontdb.faces() {
+    //     let family = face
+    //         .families
+    //         .iter()
+    //         .find(|f| f.1 == Language::English_UnitedStates)
+    //         .unwrap_or(&face.families[0]);
+    //     debug!("font_id = {}, family_name = {}", face.id, family.0);
+    // }
 
-        debug!("font_id = {}, family_name = {}", face.id, family.0);
-    }
-
-    let trimmed_default_font_family = default_font_family.trim();
     let fontdb_found_default_font_family = fontdb
         .faces()
         .iter()
         .find_map(|it| {
             it.families
                 .iter()
-                .find(|f| f.0 == trimmed_default_font_family)
+                .find(|f| f.0 == default_font_family)
                 .map(|f| f.0.clone())
         })
         .unwrap_or_default();
 
-    debug!(
-        "fontdb 找到的默认字体名称 = {}",
-        fontdb_found_default_font_family
-    );
-
     // 当 default_font_family 为空或系统无该字体时，尝试把 fontdb
     // 中字体列表的第一个字体设置为默认的字体。
-    if trimmed_default_font_family.is_empty() || fontdb_found_default_font_family.is_empty() {
+    if default_font_family.is_empty() || fontdb_found_default_font_family.is_empty() {
         // font_files 或 font_dirs 选项不为空时, 从已加载的字体列表中获取第一个字体的 font family。
         if !font_options.font_files.is_empty() || !font_options.font_dirs.is_empty() {
             default_font_family = get_first_font_family_or_fallback(fontdb);
         }
-        // else {
-        //     debug!("其他情况 = {}", default_font_family);
-        //     default_font_family = fallback_font_family;
-        // }
     }
 
     fontdb.set_serif_family(&default_font_family);
@@ -121,7 +110,7 @@ fn set_font_families(font_options: &JsFontOptions, fontdb: &mut Database) {
     fontdb.set_fantasy_family(&default_font_family);
     fontdb.set_monospace_family(&default_font_family);
 
-    debug!("📝 defaultFontFamily = {}", default_font_family);
+    debug!("📝 default_font_family = '{}'", default_font_family);
 
     #[cfg(not(target_arch = "wasm32"))]
     find_and_debug_font_path(fontdb, default_font_family.as_str())
@@ -224,14 +213,10 @@ fn get_first_font_family_or_fallback(fontdb: &mut Database) -> String {
                 .unwrap_or(&face.families[0]);
 
             default_font_family = base_family.0.clone();
-            debug!(
-                "📝 get_first_font_family 找到字体了 = {}",
-                default_font_family
-            );
         }
         None => {
             debug!(
-                "📝 get_first_font_family 没找到字体 = {}",
+                "📝 get_first_font_family not found = '{}'",
                 default_font_family
             );
         }

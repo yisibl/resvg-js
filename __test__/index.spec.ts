@@ -1,4 +1,4 @@
-import { PathLike, promises as fs, readdirSync, statSync } from 'fs'
+import { promises as fs } from 'fs'
 import { join } from 'path'
 
 import test from 'ava'
@@ -270,7 +270,7 @@ test('should be load custom fontDirs(no defaultFontFamily option)', (t) => {
   t.is(originPixels.join(',').match(/0,0,255/g)?.length, 1726)
 })
 
-test.only('The defaultFontFamily is not found in the OS and needs to be fallback', async (t) => {
+test('The defaultFontFamily is not found in the OS and needs to be fallback', (t) => {
   const svg = `
 <svg xmlns="http://www.w3.org/2000/svg" width="300" height="200" viewBox="0 0 300 200">
   <text fill="blue" font-family="" font-size="100">
@@ -278,46 +278,10 @@ test.only('The defaultFontFamily is not found in the OS and needs to be fallback
   </text>
 </svg>
   `
-
-  async function checkFileExists(filepath: PathLike) {
-    try {
-      await fs.access(filepath, fs.constants.F_OK)
-      return true
-    } catch (error) {
-      return false
-    }
-  }
-
-  function find_files(directoryPath: PathLike) {
-    // 获取目录下的所有文件和子目录
-    const items = readdirSync(directoryPath)
-
-    // 遍历每个文件或子目录
-    items.forEach((item) => {
-      const itemPath = require('path').join(directoryPath, item)
-      const stats = statSync(itemPath)
-
-      if (stats.isFile()) {
-        // 处理文件
-        console.info('文件:', itemPath)
-      } else if (stats.isDirectory()) {
-        // 处理子目录，并递归遍历
-        find_files(itemPath)
-      }
-    })
-  }
-
-  const fontPath = require('path').join('/usr/share/fonts')
-  const isExists = await checkFileExists(fontPath)
-  console.info(`Node.js 开始读取字体目录 ${fontPath}`, isExists)
-  if (isExists) {
-    find_files(fontPath)
-  }
-
   const resvg = new Resvg(svg, {
     font: {
       loadSystemFonts: true,
-      // fontDirs: ['/usr/share/fonts/'], // 防止在 CI 的 Docker 环境找不到字体
+      fontDirs: ['/usr/share/fonts/'], // 防止在 CI 的 Docker 环境找不到字体
       defaultFontFamily: 'this-is-a-non-existent-font-family',
     },
     logLevel: 'debug',
@@ -326,12 +290,11 @@ test.only('The defaultFontFamily is not found in the OS and needs to be fallback
   const originPixels = pngData.pixels.toJSON().data
   // Find the number of blue `rgb(0,255,255)`pixels
   const matchPixels = originPixels.join(',').match(/0,0,255/g)
-  console.info('✅ matchPixels length =', matchPixels?.length)
   t.true(matchPixels !== null) // If the font is not matched, there are no blue pixels.
   t.true((matchPixels?.length ?? 0) > 1500)
 })
 
-test('Test defaultFontFamily', async (t) => {
+test('Test defaultFontFamily', (t) => {
   const svg = `
 <svg xmlns="http://www.w3.org/2000/svg" width="300" height="200" viewBox="0 0 300 200">
   <text fill="blue" font-family="" font-size="100">
@@ -339,36 +302,11 @@ test('Test defaultFontFamily', async (t) => {
   </text>
 </svg>
   `
-
-  async function checkFileExists(filepath: PathLike) {
-    try {
-      await fs.access(filepath, fs.constants.F_OK)
-      return true
-    } catch (error) {
-      return false
-    }
-  }
-  const isExists = await checkFileExists('/usr/share/fonts')
-  console.info(`Node.js 开始读取字体目录 /usr/share/fonts`, isExists)
-  if (isExists) {
-    readdirSync('/usr/share/fonts').forEach((file) => {
-      console.info(`获取到文件 ${file}`)
-    })
-  }
-
-  const isExists2 = await checkFileExists('/usr/local/share/fonts')
-  console.info(`字体目录 /usr/local/share/fonts`, isExists2)
-  if (isExists2) {
-    readdirSync('/usr/local/share/fonts').forEach((file) => {
-      console.info(`获取到文件 ${file}`)
-    })
-  }
-
   const resvg = new Resvg(svg, {
     font: {
       loadSystemFonts: false,
       fontDirs: ['./example'],
-      defaultFontFamily: 'Source Han Serif CN Light', // 指定中文字体，期望自动 fallback 到 英文的 Pacifico.
+      defaultFontFamily: 'Source Han Serif CN Light', // 指定中文字体，期望自动 fallback 到英文 字体 Pacifico.
     },
     logLevel: 'debug',
   })
@@ -376,7 +314,6 @@ test('Test defaultFontFamily', async (t) => {
   const originPixels = pngData.pixels.toJSON().data
   // Find the number of blue `rgb(0,255,255)`pixels
   const matchPixels = originPixels.join(',').match(/0,0,255/g)
-  console.info('✅ matchPixels length =', matchPixels?.length)
   t.true(matchPixels !== null) // If the font is not matched, there are no blue pixels.
   t.true((matchPixels?.length ?? 0) > 1500)
 })
@@ -406,7 +343,7 @@ test('Async rendering', async (t) => {
 const MaybeTest = typeof AbortController !== 'undefined' ? test : test.skip
 
 MaybeTest('should be able to abort queued async rendering', async (t) => {
-  // fill the task queue
+  // Fill the task queue
   for (const _ of Array.from({ length: 100 })) {
     process.nextTick(() => {})
   }

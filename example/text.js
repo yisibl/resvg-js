@@ -26,9 +26,6 @@ async function main() {
       loadSystemFonts: false, // It will be faster to disable loading system fonts.
       // fontFiles: ['./__test__/Pacifico-Regular.ttf'],
       fontDirs: ['./example'],
-      // defaultFontFamily: 'Source Han Serif CN Light',
-      // defaultFontFamily: 'Nabla',
-      defaultFontFamily: 'this-is-a-non-existent-font-family',
     },
     logLevel: 'debug', // Default Value: error
   })

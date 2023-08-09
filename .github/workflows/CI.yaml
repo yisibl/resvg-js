@@ -81,7 +81,6 @@ jobs:
             setup: |
               sudo apt-get update
               sudo apt-get install gcc-arm-linux-gnueabihf -y
-# sudo apt-get install libfontconfig1 -y
             build: |
               yarn build --target armv7-unknown-linux-gnueabihf
               arm-linux-gnueabihf-strip *.node
@@ -260,8 +259,8 @@ jobs:
           - host: windows-latest
             target: x86_64-pc-windows-msvc
         node:
-          # - '14'
-          # - '16'
+          - '14'
+          - '16'
           - '18'
     runs-on: ${{ matrix.settings.host }}
     steps:
@@ -297,8 +296,8 @@ jobs:
       fail-fast: false
       matrix:
         node:
-          # - '14'
-          # - '16'
+          - '14'
+          - '16'
           - '18'
     runs-on: ubuntu-latest
     steps:
@@ -325,7 +324,7 @@ jobs:
         run: ls -R .
         shell: bash
       - name: Test bindings
-        run: docker run --rm -v /usr/share/fonts:/usr/share/fonts -v $(pwd):/build -w /build node:${{ matrix.node }}-slim sh -c "find /usr/share/fonts -name *.ttf && yarn test"
+        run: docker run --rm -v /usr/share/fonts:/usr/share/fonts -v $(pwd):/build -w /build node:${{ matrix.node }}-slim yarn test
   test-linux-x64-musl-binding:
     name: Test bindings on x86_64-unknown-linux-musl - node@${{ matrix.node }}
     needs:
@@ -334,8 +333,8 @@ jobs:
       fail-fast: false
       matrix:
         node:
-          # - '14'
-          # - '16'
+          - '14'
+          - '16'
           - '18'
     runs-on: ubuntu-latest
     steps:
@@ -364,7 +363,7 @@ jobs:
         run: ls -R .
         shell: bash
       - name: Test bindings
-        run: docker run --rm -v /usr/share/fonts:/usr/share/fonts -v $(pwd):/build -w /build node:${{ matrix.node }}-alpine sh -c "find /usr/share/fonts -name *.ttf && yarn test"
+        run: docker run --rm -v /usr/share/fonts:/usr/share/fonts -v $(pwd):/build -w /build node:${{ matrix.node }}-alpine yarn test
   test-linux-aarch64-gnu-binding:
     name: Test bindings on aarch64-unknown-linux-gnu - node@${{ matrix.node }}
     needs:
@@ -373,8 +372,8 @@ jobs:
       fail-fast: false
       matrix:
         node:
-          # - '14'
-          # - '16'
+          - '14'
+          - '16'
           - '18'
     runs-on: ubuntu-latest
     steps:
@@ -406,9 +405,6 @@ jobs:
           run: |
             set -e
             find /usr/share/fonts -name *.ttf
-            apt-get install fontconfig -y
-            fc-cache --force
-            fc-list :lang=en
             ls -la
             yarn test
   test-linux-aarch64-musl-binding:
@@ -445,9 +441,6 @@ jobs:
           run: |
             set -e
             find /usr/share/fonts -name *.ttf
-            apk add fontconfig
-            fc-cache --force
-            fc-list :lang=en
             apk add nodejs npm yarn
             yarn test
   test-linux-arm-gnueabihf-binding:
@@ -458,8 +451,8 @@ jobs:
       fail-fast: false
       matrix:
         node:
-          # - '14'
-          # - '16'
+          - '14'
+          - '16'
           - '18'
     runs-on: ubuntu-latest
     steps:
@@ -490,9 +483,6 @@ jobs:
           run: |
             set -e
             find /usr/share/fonts -name *.ttf
-            apt-get install fontconfig -y
-            fc-cache --force
-            fc-list :lang=en
             ls -la
             yarn test
 
