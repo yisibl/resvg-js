@@ -90,7 +90,7 @@
     "eslint-plugin-sonarjs": "^0.20.0",
     "husky": "^8.0.0",
     "jimp-compact": "^0.16.1-2",
-    "lint-staged": "^13.0.0",
+    "lint-staged": "^14.0.0",
     "node-fetch": "2.x",
     "npm-run-all": "^4.1.5",
     "prettier": "^2.7.1",
