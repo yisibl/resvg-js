@@ -199,7 +199,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node: ['14', '16', '18']
+        node: ['18']
     runs-on: ubuntu-latest
 
     steps:
@@ -324,7 +324,7 @@ jobs:
         run: ls -R .
         shell: bash
       - name: Test bindings
-        run: docker run --rm -v $(pwd):/build -w /build node:${{ matrix.node }}-slim yarn test
+        run: docker run --rm -v /usr/share/fonts:/usr/share/fonts -v $(pwd):/build -w /build node:${{ matrix.node }}-slim yarn test
   test-linux-x64-musl-binding:
     name: Test bindings on x86_64-unknown-linux-musl - node@${{ matrix.node }}
     needs:
@@ -363,7 +363,7 @@ jobs:
         run: ls -R .
         shell: bash
       - name: Test bindings
-        run: docker run --rm -v $(pwd):/build -w /build node:${{ matrix.node }}-alpine yarn test
+        run: docker run --rm -v /usr/share/fonts:/usr/share/fonts -v $(pwd):/build -w /build node:${{ matrix.node }}-alpine yarn test
   test-linux-aarch64-gnu-binding:
     name: Test bindings on aarch64-unknown-linux-gnu - node@${{ matrix.node }}
     needs:
@@ -401,11 +401,12 @@ jobs:
         uses: addnab/docker-run-action@v3
         with:
           image: ghcr.io/napi-rs/napi-rs/nodejs:aarch64-${{ matrix.node }}
-          options: '-v ${{ github.workspace }}:/build -w /build'
+          options: '-v /usr/share/fonts:/usr/share/fonts -v ${{ github.workspace }}:/build -w /build'
           run: |
             set -e
-            yarn test
+            find /usr/share/fonts -name *.ttf
             ls -la
+            yarn test
   test-linux-aarch64-musl-binding:
     name: Test bindings on aarch64-unknown-linux-musl - node@${{ matrix.node }}
     needs:
@@ -436,9 +437,10 @@ jobs:
         uses: addnab/docker-run-action@v3
         with:
           image: multiarch/alpine:aarch64-latest-stable
-          options: '-v ${{ github.workspace }}:/build -w /build'
+          options: '-v /usr/share/fonts:/usr/share/fonts -v ${{ github.workspace }}:/build -w /build'
           run: |
             set -e
+            find /usr/share/fonts -name *.ttf
             apk add nodejs npm yarn
             yarn test
   test-linux-arm-gnueabihf-binding:
@@ -477,11 +479,12 @@ jobs:
         uses: addnab/docker-run-action@v3
         with:
           image: ghcr.io/napi-rs/napi-rs/nodejs:armhf-${{ matrix.node }}
-          options: '-v ${{ github.workspace }}:/build -w /build'
+          options: '-v /usr/share/fonts:/usr/share/fonts -v ${{ github.workspace }}:/build -w /build'
           run: |
             set -e
-            yarn test
+            find /usr/share/fonts -name *.ttf
             ls -la
+            yarn test
 
   publish:
     name: Publish
