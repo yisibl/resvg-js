@@ -262,7 +262,7 @@ impl Default for JsFontOptions {
             load_system_fonts: true,
             font_files: vec![],
             font_dirs: vec![],
-            default_font_family: "Arial".to_string(),
+            default_font_family: "".to_string(),
             default_font_size: 12.0,
             serif_family: "Times New Roman".to_string(),
             sans_serif_family: "Arial".to_string(),
