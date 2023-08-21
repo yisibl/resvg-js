@@ -199,7 +199,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node: ['18']
+        node: ['14', '16', '18']
     runs-on: ubuntu-latest
 
     steps:
