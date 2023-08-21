@@ -236,7 +236,6 @@ test('should be load custom fontFiles(no defaultFontFamily option)', (t) => {
     font: {
       fontFiles: ['./example/SourceHanSerifCN-Light-subset.ttf'],
       loadSystemFonts: false,
-      // defaultFontFamily: 'Source Han Serif CN Light',
     },
     logLevel: 'debug',
   })
@@ -261,7 +260,6 @@ test('should be load custom fontDirs(no defaultFontFamily option)', (t) => {
       // loadSystemFonts: false,
       // defaultFontFamily: 'Source Han Serif CN Light',
     },
-    logLevel: 'debug',
   })
   const pngData = resvg.render()
   const originPixels = pngData.pixels.toJSON().data
@@ -282,7 +280,7 @@ test('The defaultFontFamily is not found in the OS and needs to be fallback', (t
     font: {
       loadSystemFonts: true,
       fontDirs: ['/usr/share/fonts/'], // 防止在 CI 的 Docker 环境找不到字体
-      defaultFontFamily: 'this-is-a-non-existent-font-family',
+      defaultFontFamily: 'non-existent-font-family',
     },
     logLevel: 'debug',
   })
@@ -325,7 +323,7 @@ test('Async rendering', async (t) => {
     font: {
       fontFiles: ['./example/SourceHanSerifCN-Light-subset.ttf'], // Load custom fonts.
       loadSystemFonts: false, // It will be faster to disable loading system fonts.
-      defaultFontFamily: 'Source Han Serif CN Light',
+      defaultFontFamily: '  Source Han Serif CN Light ',
     },
   }
   let syncRenderingResult = new Resvg(svg, params)

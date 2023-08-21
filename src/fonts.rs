@@ -122,34 +122,25 @@ fn set_wasm_font_families(
     fontdb: &mut Database,
     fonts_buffers: Option<js_sys::Array>,
 ) {
-    let mut default_font_family = font_options.default_font_family.clone();
-    let fallback_font_family = "Arial".to_string(); // 其他情况都 fallback 到指定的这个字体。
+    let mut default_font_family = font_options.default_font_family.clone().trim().to_string();
 
-    // 当默认字体为空时，尝试直接从 font_files 中加载读取字体名称，然后设置到默认的 font-family 中
-    if font_options
-        .default_font_family
-        .to_string()
-        .trim()
-        .is_empty()
-    {
+    let fontdb_found_default_font_family = fontdb
+        .faces()
+        .iter()
+        .find_map(|it| {
+            it.families
+                .iter()
+                .find(|f| f.0 == default_font_family)
+                .map(|f| f.0.clone())
+        })
+        .unwrap_or_default();
+
+    // 当 default_font_family 为空或系统无该字体时，尝试把 fontdb
+    // 中字体列表的第一个字体设置为默认的字体。
+    if default_font_family.is_empty() || fontdb_found_default_font_family.is_empty() {
+        // fonts_buffers 选项不为空时, 从已加载的字体列表中获取第一个字体的 font family。
         if let Some(_fonts_buffers) = fonts_buffers {
-            // 获取字体列表中第一个字体的 font family。
-            match fontdb.faces().iter().next() {
-                Some(face) => {
-                    let new_family = face
-                        .families
-                        .iter()
-                        .find(|f| f.1 == Language::English_UnitedStates)
-                        .unwrap_or(&face.families[0]);
-
-                    default_font_family = new_family.0.clone();
-                }
-                None => {
-                    default_font_family = fallback_font_family;
-                }
-            }
-        } else {
-            default_font_family = fallback_font_family;
+            default_font_family = get_first_font_family_or_fallback(fontdb);
         }
     }
 
@@ -200,7 +191,6 @@ fn find_and_debug_font_path(fontdb: &mut Database, font_family: &str) {
 }
 
 /// 获取 fontdb 中的第一个字体的 font family。
-#[cfg(not(target_arch = "wasm32"))]
 fn get_first_font_family_or_fallback(fontdb: &mut Database) -> String {
     let mut default_font_family = "Arial".to_string(); // 其他情况都 fallback 到指定的这个字体。
 
@@ -215,6 +205,7 @@ fn get_first_font_family_or_fallback(fontdb: &mut Database) -> String {
             default_font_family = base_family.0.clone();
         }
         None => {
+            #[cfg(not(target_arch = "wasm32"))]
             debug!(
                 "📝 get_first_font_family not found = '{}'",
                 default_font_family
