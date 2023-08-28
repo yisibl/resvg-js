@@ -108,6 +108,14 @@ async function main() {
 main()
 ```
 
+### Bun
+
+Starting with [Bun 0.8.1](https://github.com/oven-sh/bun/issues/172#issuecomment-1692930718), resvg-js can be run directly in Bun without any modification to the JS files, and is fully compatible with the syntax in Node.js.
+
+  ```shell
+  bun example/index.js
+  ```
+
 ### Deno
 
 Starting with [Deno 1.26.1](https://github.com/denoland/deno/releases/tag/v1.26.1), there is support for running Native Addons directly from Node.js.
