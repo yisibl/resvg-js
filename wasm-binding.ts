@@ -31,11 +31,11 @@ export const Resvg = class extends _Resvg {
         ...options,
         font: {
           ...font,
-          fontsBuffers: undefined,
+          fontBuffers: undefined,
         },
       }
 
-      super(svg, JSON.stringify(serializableOptions), font.fontsBuffers)
+      super(svg, JSON.stringify(serializableOptions), font.fontBuffers)
     } else {
       super(svg, JSON.stringify(options))
     }
@@ -43,5 +43,5 @@ export const Resvg = class extends _Resvg {
 }
 
 function isCustomFontsOptions(value: SystemFontsOptions | CustomFontsOptions): value is CustomFontsOptions {
-  return Object.prototype.hasOwnProperty.call(value, 'fontsBuffers')
+  return Object.prototype.hasOwnProperty.call(value, 'fontBuffers')
 }

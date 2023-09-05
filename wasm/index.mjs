@@ -102,9 +102,9 @@ function handleError(f, args) {
     wasm.__wbindgen_exn_store(addHeapObject(e));
   }
 }
-var BBox = class {
+var BBox = class _BBox {
   static __wrap(ptr) {
-    const obj = Object.create(BBox.prototype);
+    const obj = Object.create(_BBox.prototype);
     obj.ptr = ptr;
     return obj;
   }
@@ -170,9 +170,9 @@ var BBox = class {
     wasm.__wbg_set_bbox_height(this.ptr, arg0);
   }
 };
-var RenderedImage = class {
+var RenderedImage = class _RenderedImage {
   static __wrap(ptr) {
-    const obj = Object.create(RenderedImage.prototype);
+    const obj = Object.create(_RenderedImage.prototype);
     obj.ptr = ptr;
     return obj;
   }
@@ -229,9 +229,9 @@ var RenderedImage = class {
     return takeObject(ret);
   }
 };
-var Resvg = class {
+var Resvg = class _Resvg {
   static __wrap(ptr) {
-    const obj = Object.create(Resvg.prototype);
+    const obj = Object.create(_Resvg.prototype);
     obj.ptr = ptr;
     return obj;
   }
@@ -261,7 +261,7 @@ var Resvg = class {
       if (r2) {
         throw takeObject(r1);
       }
-      return Resvg.__wrap(r0);
+      return _Resvg.__wrap(r0);
     } finally {
       wasm.__wbindgen_add_to_stack_pointer(16);
     }
@@ -456,7 +456,7 @@ function getImports() {
     let result;
     try {
       result = getObject(arg0) instanceof Uint8Array;
-    } catch (e) {
+    } catch {
       result = false;
     }
     const ret = result;
@@ -534,23 +534,23 @@ var Resvg2 = class extends Resvg {
   constructor(svg, options) {
     if (!initialized)
       throw new Error("Wasm has not been initialized. Call `initWasm()` function.");
-    const font = options == null ? void 0 : options.font;
+    const font = options?.font;
     if (!!font && isCustomFontsOptions(font)) {
       const serializableOptions = {
         ...options,
         font: {
           ...font,
-          fontsBuffers: void 0
+          fontBuffers: void 0
         }
       };
-      super(svg, JSON.stringify(serializableOptions), font.fontsBuffers);
+      super(svg, JSON.stringify(serializableOptions), font.fontBuffers);
     } else {
       super(svg, JSON.stringify(options));
     }
   }
 };
 function isCustomFontsOptions(value) {
-  return Object.prototype.hasOwnProperty.call(value, "fontsBuffers");
+  return Object.prototype.hasOwnProperty.call(value, "fontBuffers");
 }
 export {
   Resvg2 as Resvg,

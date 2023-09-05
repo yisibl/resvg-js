@@ -78,7 +78,7 @@ export type FontOptions = {
 	monospaceFamily?: string;
 };
 export type CustomFontsOptions = {
-	fontsBuffers: Uint8Array[]; // A list of raw font files to load.
+	fontBuffers: Uint8Array[]; // A list of raw font buffers to load.
 } & FontOptions;
 export type SystemFontsOptions = {
 	loadSystemFonts?: boolean; // Default: true. if set to false, it will be faster.
