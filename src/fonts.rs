@@ -55,18 +55,18 @@ pub fn load_fonts(font_options: &JsFontOptions) -> Database {
 #[cfg(target_arch = "wasm32")]
 pub fn load_wasm_fonts(
     font_options: &JsFontOptions,
-    fonts_buffers: Option<js_sys::Array>,
+    font_buffers: Option<js_sys::Array>,
     fontdb: &mut Database,
 ) -> Result<(), js_sys::Error> {
-    if let Some(ref fonts_buffers) = fonts_buffers {
-        for font in fonts_buffers.values().into_iter() {
+    if let Some(ref font_buffers) = font_buffers {
+        for font in font_buffers.values().into_iter() {
             let raw_font = font?;
             let font_data = raw_font.dyn_into::<js_sys::Uint8Array>()?.to_vec();
             fontdb.load_font_data(font_data);
         }
     }
 
-    set_wasm_font_families(font_options, fontdb, fonts_buffers);
+    set_wasm_font_families(font_options, fontdb, font_buffers);
 
     Ok(())
 }
@@ -120,7 +120,7 @@ fn set_font_families(font_options: &JsFontOptions, fontdb: &mut Database) {
 fn set_wasm_font_families(
     font_options: &JsFontOptions,
     fontdb: &mut Database,
-    fonts_buffers: Option<js_sys::Array>,
+    font_buffers: Option<js_sys::Array>,
 ) {
     let mut default_font_family = font_options.default_font_family.clone().trim().to_string();
 
@@ -138,8 +138,8 @@ fn set_wasm_font_families(
     // 当 default_font_family 为空或系统无该字体时，尝试把 fontdb
     // 中字体列表的第一个字体设置为默认的字体。
     if default_font_family.is_empty() || fontdb_found_default_font_family.is_empty() {
-        // fonts_buffers 选项不为空时, 从已加载的字体列表中获取第一个字体的 font family。
-        if let Some(_fonts_buffers) = fonts_buffers {
+        // font_buffers 选项不为空时, 从已加载的字体列表中获取第一个字体的 font family。
+        if let Some(_font_buffers) = font_buffers {
             default_font_family = get_first_font_family_or_fallback(fontdb);
         }
     }

@@ -206,13 +206,13 @@ test('Set the background without alpha by hsla()', async (t) => {
   t.is(result.hasAlpha(), false)
 })
 
-test('Load custom font(use fontsBuffers option)', async (t) => {
+test('Load custom font(use fontBuffers option)', async (t) => {
   const filePath = '../example/text.svg'
   const svg = await fs.readFile(join(__dirname, filePath))
   const fontBuffer = await fs.readFile(join(__dirname, '../example/SourceHanSerifCN-Light-subset.ttf'))
   const resvg = new Resvg(svg.toString('utf-8'), {
     font: {
-      fontsBuffers: [fontBuffer], // Load custom fonts.
+      fontBuffers: [fontBuffer], // Load custom fonts.
     },
   })
   const pngBuffer = resvg.render().asPng()
@@ -233,7 +233,7 @@ test('should be load custom font(no defaultFontFamily option)', async (t) => {
   const fontBuffer = await fs.readFile(join(__dirname, '../example/SourceHanSerifCN-Light-subset.ttf'))
   const resvg = new Resvg(svg, {
     font: {
-      fontsBuffers: [fontBuffer],
+      fontBuffers: [fontBuffer],
       // defaultFontFamily: 'Source Han Serif CN Light',
     },
   })
@@ -244,7 +244,7 @@ test('should be load custom font(no defaultFontFamily option)', async (t) => {
   t.is(originPixels.join(',').match(/0,0,255/g)?.length, 1726)
 })
 
-test('should be load custom fontsBuffers(no defaultFontFamily option)', async (t) => {
+test('should be load custom fontBuffers(no defaultFontFamily option)', async (t) => {
   const svg = `
   <svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">
     <text fill="blue" font-family="serif" font-size="120">
@@ -255,7 +255,7 @@ test('should be load custom fontsBuffers(no defaultFontFamily option)', async (t
   const fontBuffer = await fs.readFile(join(__dirname, '../example/SourceHanSerifCN-Light-subset.ttf'))
   const resvg = new Resvg(svg, {
     font: {
-      fontsBuffers: [fontBuffer],
+      fontBuffers: [fontBuffer],
     },
   })
   const pngData = resvg.render()
@@ -265,7 +265,7 @@ test('should be load custom fontsBuffers(no defaultFontFamily option)', async (t
   t.is(originPixels.join(',').match(/0,0,255/g)?.length, 1726)
 })
 
-test('should be load custom multiple fontsBuffers', async (t) => {
+test('should be load custom multiple fontBuffers', async (t) => {
   const svg = `
   <svg xmlns="http://www.w3.org/2000/svg" width="500" height="200" viewBox="0 0 500 200">
     <text fill="blue" font-size="60">
@@ -278,7 +278,7 @@ test('should be load custom multiple fontsBuffers', async (t) => {
   const pacificoBuffer = await fs.readFile(join(__dirname, './Pacifico-Regular.ttf'))
   const resvg = new Resvg(svg, {
     font: {
-      fontsBuffers: [pacificoBuffer, fontBuffer],
+      fontBuffers: [pacificoBuffer, fontBuffer],
       defaultFontFamily: ' Pacifico  ', // Multiple spaces
     },
   })
@@ -421,7 +421,7 @@ test('should render using font buffer provided by options', async (t) => {
 
   const options = {
     font: {
-      fontsBuffers: [pacificoBuffer],
+      fontBuffers: [pacificoBuffer],
       defaultFontFamily: 'non-existent-font-family',
     },
   }
