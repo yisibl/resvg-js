@@ -7,10 +7,9 @@ use std::sync::Arc;
 use crate::error::Error;
 #[cfg(not(target_arch = "wasm32"))]
 use napi::{bindgen_prelude::Buffer, Either};
-use resvg::tiny_skia::Pixmap;
-use resvg::usvg::{self, ImageHrefResolver, ImageKind};
-use resvg::usvg::{Options, ScreenSize};
-use resvg::usvg_text_layout::fontdb::Database;
+use resvg::tiny_skia::{Pixmap, Transform};
+use resvg::usvg::fontdb::Database;
+use resvg::usvg::{self, ImageHrefResolver, ImageKind, Options, TreeParsing};
 use serde::{Deserialize, Deserializer};
 
 /// Image fit options.
@@ -20,10 +19,9 @@ use serde::{Deserialize, Deserializer};
     tag = "mode",
     content = "value",
     rename_all = "lowercase",
-    deny_unknown_fields,
-    remote = "usvg::FitTo"
+    deny_unknown_fields
 )]
-enum FitToDef {
+pub enum FitToDef {
     /// Keep original size.
     Original,
     /// Scale to width.
@@ -32,6 +30,31 @@ enum FitToDef {
     Height(u32),
     /// Zoom by factor.
     Zoom(f32),
+}
+
+impl FitToDef {
+    pub(crate) fn fit_to(&self, size: usvg::Size) -> Result<(u32, u32, Transform), Error> {
+        let mut transform = Transform::identity();
+        let width = size.width();
+        let height = size.height();
+        let scale = match self {
+            FitToDef::Original => 1.0,
+            FitToDef::Width(w) => *w as f32 / width,
+            FitToDef::Height(h) => *h as f32 / height,
+            FitToDef::Zoom(s) => *s,
+        };
+        let width = (width * scale).round().max(0.0) as u32;
+        let height = (height * scale).round().max(0.0) as u32;
+        transform = transform.pre_scale(
+            width as f32 / size.width() as f32,
+            height as f32 / size.height() as f32,
+        );
+        if width == 0 || height == 0 {
+            Err(Error::ZeroSized)
+        } else {
+            Ok((width, height, transform))
+        }
+    }
 }
 
 #[derive(Deserialize)]
@@ -88,7 +111,7 @@ pub struct JsOptions {
     /// https://github.com/RazrFalcon/resvg/issues/526#issuecomment-1190433890
     ///
     /// Default: 96.0
-    pub dpi: f64,
+    pub dpi: f32,
 
     /// A list of languages.
     ///
@@ -126,8 +149,7 @@ pub struct JsOptions {
     /// The size to render the SVG.
     ///
     /// Default: Original
-    #[serde(with = "FitToDef")]
-    pub fit_to: usvg::FitTo,
+    pub fit_to: FitToDef,
 
     /// The background color of the SVG.
     ///
@@ -150,7 +172,7 @@ impl Default for JsOptions {
             shape_rendering: usvg::ShapeRendering::default(),
             text_rendering: usvg::TextRendering::default(),
             image_rendering: usvg::ImageRendering::default(),
-            fit_to: usvg::FitTo::Original,
+            fit_to: FitToDef::Original,
             background: None,
             crop: JsCropOptions::default(),
             log_level: log::LevelFilter::Error,
@@ -176,13 +198,13 @@ impl JsOptions {
             shape_rendering: self.shape_rendering,
             text_rendering: self.text_rendering,
             image_rendering: self.image_rendering,
-            default_size: usvg::Size::new(100.0_f64, 100.0_f64).unwrap(),
+            default_size: usvg::Size::from_wh(100.0, 100.0).unwrap(),
             image_href_resolver: usvg::ImageHrefResolver::default(),
         };
         (opts, fontdb)
     }
 
-    pub(crate) fn create_pixmap(&self, size: ScreenSize) -> Result<Pixmap, Error> {
+    pub(crate) fn create_pixmap(&self, width: u32, height: u32) -> Result<Pixmap, Error> {
         // Parse the background
         let background = self
             .background
@@ -191,7 +213,7 @@ impl JsOptions {
             .transpose()?;
 
         // Unwrap is safe, because `size` is already valid.
-        let mut pixmap = Pixmap::new(size.width(), size.height()).unwrap();
+        let mut pixmap = Pixmap::new(width, height).unwrap();
 
         if let Some(bg) = background {
             let color = resvg::tiny_skia::Color::from_rgba8(bg.red, bg.green, bg.blue, bg.alpha);
@@ -228,7 +250,7 @@ pub struct JsFontOptions {
     /// Will be used when no `font-size` attribute is set in the SVG.
     ///
     /// Default: 12
-    pub default_font_size: f64,
+    pub default_font_size: f32,
 
     /// The 'serif' font family.
     ///
@@ -346,7 +368,7 @@ pub(crate) fn tweak_usvg_options(opts: &mut usvg::Options) {
     opts.image_href_resolver = ImageHrefResolver::default();
     opts.image_href_resolver.resolve_string = Arc::new(move |data: &str, opts: &Options| {
         if data.starts_with("https://") || data.starts_with("http://") {
-            Some(ImageKind::RAW(1, 1, data.as_bytes().to_vec()))
+            Some(ImageKind::RAW(1, 1, Arc::new(data.as_bytes().to_vec())))
         } else {
             let resolver = ImageHrefResolver::default().resolve_string;
             (resolver)(data, opts)
