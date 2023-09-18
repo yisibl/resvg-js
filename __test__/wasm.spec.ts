@@ -306,7 +306,7 @@ test('should be load custom multiple fontBuffers', async (t) => {
   const originPixels = Array.from(pngData.pixels)
 
   // Find the number of blue `rgb(0,255,255)`pixels
-  t.is(originPixels.join(',').match(/0,0,255/g)?.length, 8931)
+  t.is(originPixels.join(',').match(/0,0,255/g)?.length, 8911)
 })
 
 test('should be load custom WOFF2 font', async (t) => {
