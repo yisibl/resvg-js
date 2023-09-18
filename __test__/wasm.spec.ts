@@ -120,6 +120,26 @@ test('fit to width', async (t) => {
   t.is(result.getHeight(), 623)
 })
 
+test('fit to height', async (t) => {
+  const filePath = '../example/text.svg'
+  const svg = await fs.readFile(join(__dirname, filePath))
+  const svgString = svg.toString('utf-8')
+  const opts = {
+    background: '#eeebe6',
+    fitTo: {
+      mode: 'height',
+      value: 520,
+    },
+  }
+  const resvg = new Resvg(svgString, opts)
+  const pngData = resvg.render()
+  const pngBuffer = pngData.asPng()
+  const result = await jimp.read(Buffer.from(pngBuffer))
+
+  t.is(result.getWidth(), 1003)
+  t.is(result.getHeight(), 520)
+})
+
 test('Get SVG original size', async (t) => {
   const filePath = '../example/text.svg'
   const svg = await fs.readFile(join(__dirname, filePath))
