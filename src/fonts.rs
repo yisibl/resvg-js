@@ -3,13 +3,13 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 use crate::options::*;
-use resvg::usvg_text_layout::fontdb::{Database, Language};
+use resvg::usvg::fontdb::{Database, Language};
 
 #[cfg(not(target_arch = "wasm32"))]
 use log::{debug, warn};
 
 #[cfg(not(target_arch = "wasm32"))]
-use resvg::usvg_text_layout::fontdb::{Family, Query, Source};
+use resvg::usvg::fontdb::{Family, Query, Source};
 
 #[cfg(target_arch = "wasm32")]
 use wasm_bindgen::JsCast;
@@ -95,7 +95,6 @@ fn set_font_families(font_options: &JsFontOptions, fontdb: &mut Database) {
 
     let fontdb_found_default_font_family = fontdb
         .faces()
-        .iter()
         .find_map(|it| {
             it.families
                 .iter()
@@ -135,7 +134,6 @@ fn set_wasm_font_families(
 
     let fontdb_found_default_font_family = fontdb
         .faces()
-        .iter()
         .find_map(|it| {
             it.families
                 .iter()
@@ -203,7 +201,7 @@ fn find_and_debug_font_path(fontdb: &mut Database, font_family: &str) {
 fn get_first_font_family_or_fallback(fontdb: &mut Database) -> String {
     let mut default_font_family = "Arial".to_string(); // 其他情况都 fallback 到指定的这个字体。
 
-    match fontdb.faces().iter().next() {
+    match fontdb.faces().next() {
         Some(face) => {
             let base_family = face
                 .families

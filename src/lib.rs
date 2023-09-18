@@ -18,9 +18,8 @@ use pathfinder_content::{
 use pathfinder_geometry::rect::RectF;
 use pathfinder_geometry::vector::Vector2F;
 use resvg::{
-    tiny_skia::Pixmap,
-    usvg::{self, ImageKind, NodeKind},
-    usvg_text_layout::TreeTextToPath,
+    tiny_skia::{PathSegment, Pixmap, Point},
+    usvg::{self, ImageKind, NodeKind, TreeParsing, TreeTextToPath},
 };
 #[cfg(target_arch = "wasm32")]
 use wasm_bindgen::{
@@ -178,7 +177,8 @@ impl Resvg {
     #[napi]
     /// Output usvg-simplified SVG string
     pub fn to_string(&self) -> String {
-        usvg_writer::export_tree_to_string(&self.tree, &usvg_writer::XmlOptions::default())
+        use usvg::TreeWriting;
+        self.tree.to_string(&usvg::XmlOptions::default())
     }
 
     #[napi(js_name = innerBBox)]
@@ -191,8 +191,8 @@ impl Resvg {
     pub fn inner_bbox(&self) -> Either<BBox, Undefined> {
         let rect = self.tree.view_box.rect;
         let rect = points_to_rect(
-            usvg::Point::new(rect.x(), rect.y()),
-            usvg::Point::new(rect.right(), rect.bottom()),
+            Vector2F::new(rect.x(), rect.y()),
+            Vector2F::new(rect.right(), rect.bottom()),
         );
         let mut v = None;
         for child in self.tree.root.children() {
@@ -227,10 +227,10 @@ impl Resvg {
     pub fn get_bbox(&self) -> Either<BBox, Undefined> {
         match self.tree.root.calculate_bbox() {
             Some(bbox) => Either::A(BBox {
-                x: bbox.x(),
-                y: bbox.y(),
-                width: bbox.width(),
-                height: bbox.height(),
+                x: bbox.x() as f64,
+                y: bbox.y() as f64,
+                width: bbox.width() as f64,
+                height: bbox.height() as f64,
             }),
             None => Either::B(()),
         }
@@ -243,10 +243,11 @@ impl Resvg {
         if !bbox.width.is_finite() || !bbox.height.is_finite() {
             return;
         }
-        let width = bbox.width;
-        let height = bbox.height;
-        self.tree.view_box.rect = usvg::Rect::new(bbox.x, bbox.y, width, height).unwrap();
-        self.tree.size = usvg::Size::new(width, height).unwrap();
+        let width = bbox.width as f32;
+        let height = bbox.height as f32;
+        self.tree.view_box.rect =
+            usvg::NonZeroRect::from_xywh(bbox.x as f32, bbox.y as f32, width, height).unwrap();
+        self.tree.size = usvg::Size::from_wh(width, height).unwrap();
     }
 
     #[napi]
@@ -262,13 +263,13 @@ impl Resvg {
 
     /// Get the SVG width
     #[napi(getter)]
-    pub fn width(&self) -> f64 {
+    pub fn width(&self) -> f32 {
         self.tree.size.width().round()
     }
 
     /// Get the SVG height
     #[napi(getter)]
-    pub fn height(&self) -> f64 {
+    pub fn height(&self) -> f32 {
         self.tree.size.height().round()
     }
 }
@@ -306,13 +307,13 @@ impl Resvg {
 
     /// Get the SVG width
     #[wasm_bindgen(getter)]
-    pub fn width(&self) -> f64 {
+    pub fn width(&self) -> f32 {
         self.tree.size.width().round()
     }
 
     /// Get the SVG height
     #[wasm_bindgen(getter)]
-    pub fn height(&self) -> f64 {
+    pub fn height(&self) -> f32 {
         self.tree.size.height().round()
     }
 
@@ -324,7 +325,8 @@ impl Resvg {
     /// Output usvg-simplified SVG string
     #[wasm_bindgen(js_name = toString)]
     pub fn to_string(&self) -> String {
-        usvg_writer::export_tree_to_string(&self.tree, &usvg_writer::XmlOptions::default())
+        use usvg::TreeWriting;
+        self.tree.to_string(&usvg::XmlOptions::default())
     }
 
     /// Calculate a maximum bounding box of all visible elements in this SVG.
@@ -334,8 +336,8 @@ impl Resvg {
     pub fn inner_bbox(&self) -> Option<BBox> {
         let rect = self.tree.view_box.rect;
         let rect = points_to_rect(
-            usvg::Point::new(rect.x(), rect.y()),
-            usvg::Point::new(rect.right(), rect.bottom()),
+            Vector2F::new(rect.x(), rect.y()),
+            Vector2F::new(rect.right(), rect.bottom()),
         );
         let mut v = None;
         for child in self.tree.root.children() {
@@ -365,10 +367,10 @@ impl Resvg {
     pub fn get_bbox(&self) -> Option<BBox> {
         let bbox = self.tree.root.calculate_bbox()?;
         Some(BBox {
-            x: bbox.x(),
-            y: bbox.y(),
-            width: bbox.width(),
-            height: bbox.height(),
+            x: bbox.x() as f64,
+            y: bbox.y() as f64,
+            width: bbox.width() as f64,
+            height: bbox.height() as f64,
         })
     }
 
@@ -379,10 +381,11 @@ impl Resvg {
         if !bbox.width.is_finite() || !bbox.height.is_finite() {
             return;
         }
-        let width = bbox.width;
-        let height = bbox.height;
-        self.tree.view_box.rect = usvg::Rect::new(bbox.x, bbox.y, width, height).unwrap();
-        self.tree.size = usvg::Size::new(width, height).unwrap();
+        let width = bbox.width as f32;
+        let height = bbox.height as f32;
+        self.tree.view_box.rect =
+            usvg::NonZeroRect::from_xywh(bbox.x as f32, bbox.y as f32, width, height).unwrap();
+        self.tree.size = usvg::Size::from_wh(width, height).unwrap();
     }
 
     #[wasm_bindgen(js_name = imagesToResolve)]
@@ -426,16 +429,16 @@ impl Resvg {
                 let mut iter = p.data.segments().peekable();
                 while let Some(seg) = iter.next() {
                     match seg {
-                        usvg::PathSegment::MoveTo { x, y } => {
+                        PathSegment::MoveTo(p) => {
                             if !contour.is_empty() {
                                 outline
                                     .push_contour(std::mem::replace(&mut contour, Contour::new()));
                             }
-                            contour.push_endpoint(Vector2F::new(x as f32, y as f32));
+                            contour.push_endpoint(Vector2F::new(p.x, p.y))
                         }
-                        usvg::PathSegment::LineTo { x, y } => {
-                            let v = Vector2F::new(x as f32, y as f32);
-                            if let Some(usvg::PathSegment::ClosePath) = iter.peek() {
+                        PathSegment::LineTo(p) => {
+                            let v = Vector2F::new(p.x, p.y);
+                            if let Some(PathSegment::Close) = iter.peek() {
                                 let first = contour.position_of(0);
                                 if (first - v).square_length() < 1.0 {
                                     continue;
@@ -443,21 +446,18 @@ impl Resvg {
                             }
                             contour.push_endpoint(v);
                         }
-                        usvg::PathSegment::CurveTo {
-                            x1,
-                            y1,
-                            x2,
-                            y2,
-                            x,
-                            y,
-                        } => {
+                        PathSegment::CubicTo(p1, p2, p) => {
                             contour.push_cubic(
-                                Vector2F::new(x1 as f32, y1 as f32),
-                                Vector2F::new(x2 as f32, y2 as f32),
-                                Vector2F::new(x as f32, y as f32),
+                                Vector2F::new(p1.x, p1.y),
+                                Vector2F::new(p2.x, p2.y),
+                                Vector2F::new(p.x, p.y),
                             );
                         }
-                        usvg::PathSegment::ClosePath => {
+                        PathSegment::QuadTo(p1, p) => {
+                            contour
+                                .push_quadratic(Vector2F::new(p1.x, p1.y), Vector2F::new(p.x, p.y));
+                        }
+                        PathSegment::Close => {
                             contour.close();
                             outline.push_contour(std::mem::replace(&mut contour, Contour::new()));
                         }
@@ -511,24 +511,24 @@ impl Resvg {
             usvg::NodeKind::Image(image) => {
                 let rect = image.view_box.rect;
                 Some(points_to_rect(
-                    usvg::Point::new(rect.x(), rect.y()),
-                    usvg::Point::new(rect.right(), rect.bottom()),
+                    Vector2F::new(rect.x(), rect.y()),
+                    Vector2F::new(rect.right(), rect.bottom()),
                 ))
             }
             usvg::NodeKind::Text(_) => None,
         }?;
-        let (x1, y1) = transform.apply(bbox.min_x() as f64, bbox.min_y() as f64);
-        let (x2, y2) = transform.apply(bbox.max_x() as f64, bbox.max_y() as f64);
-        let (x3, y3) = transform.apply(bbox.min_x() as f64, bbox.max_y() as f64);
-        let (x4, y4) = transform.apply(bbox.max_x() as f64, bbox.min_y() as f64);
-        let x_min = x1.min(x2).min(x3).min(x4);
-        let x_max = x1.max(x2).max(x3).max(x4);
-        let y_min = y1.min(y2).min(y3).min(y4);
-        let y_max = y1.max(y2).max(y3).max(y4);
-        let r = points_to_rect(
-            usvg::Point::new(x_min, y_min),
-            usvg::Point::new(x_max, y_max),
-        );
+        let mut pts = vec![
+            Point::from_xy(bbox.min_x(), bbox.min_y()),
+            Point::from_xy(bbox.max_x(), bbox.max_y()),
+            Point::from_xy(bbox.min_x(), bbox.max_y()),
+            Point::from_xy(bbox.max_x(), bbox.min_y()),
+        ];
+        transform.map_points(&mut pts);
+        let x_min = pts[0].x.min(pts[1].x).min(pts[2].x).min(pts[3].x);
+        let x_max = pts[0].x.max(pts[1].x).max(pts[2].x).max(pts[3].x);
+        let y_min = pts[0].y.min(pts[1].y).min(pts[2].y).min(pts[3].y);
+        let y_max = pts[0].y.max(pts[1].y).max(pts[2].y).max(pts[3].y);
+        let r = points_to_rect(Vector2F::new(x_min, y_min), Vector2F::new(x_max, y_max));
         Some(r)
     }
 
@@ -540,32 +540,17 @@ impl Resvg {
     }
 
     fn render_inner(&self) -> Result<RenderedImage, Error> {
-        let pixmap_size = self
-            .js_options
-            .fit_to
-            .fit_to(self.tree.size.to_screen_size())
-            .ok_or_else(|| Error::ZeroSized)?;
-        let mut pixmap = self.js_options.create_pixmap(pixmap_size)?;
+        let (width, height, transform) = self.js_options.fit_to.fit_to(self.tree.size)?;
+        let mut pixmap = self.js_options.create_pixmap(width, height)?;
         // Render the tree
-        let _image = resvg::render(
-            &self.tree,
-            self.js_options.fit_to,
-            resvg::tiny_skia::Transform::default(),
-            pixmap.as_mut(),
-        );
+        let _image = resvg::Tree::from_usvg(&self.tree).render(transform, &mut pixmap.as_mut());
 
         // Crop the SVG
         let crop_rect = resvg::tiny_skia::IntRect::from_ltrb(
             self.js_options.crop.left,
             self.js_options.crop.top,
-            self.js_options
-                .crop
-                .right
-                .unwrap_or(pixmap_size.width() as i32),
-            self.js_options
-                .crop
-                .bottom
-                .unwrap_or(pixmap_size.height() as i32),
+            self.js_options.crop.right.unwrap_or(width as i32),
+            self.js_options.crop.bottom.unwrap_or(height as i32),
         );
 
         if let Some(crop_rect) = crop_rect {
@@ -580,7 +565,7 @@ impl Resvg {
         for node in self.tree.root.descendants() {
             if let NodeKind::Image(i) = &mut *node.borrow_mut() {
                 if let ImageKind::RAW(_, _, buffer) = &mut i.kind {
-                    let s = String::from_utf8(buffer.clone())?;
+                    let s = String::from_utf8(buffer.as_slice().to_vec())?;
                     data.push(s);
                 }
             }
@@ -596,7 +581,7 @@ impl Resvg {
         for node in self.tree.root.descendants() {
             if let NodeKind::Image(i) = &mut *node.borrow_mut() {
                 let matched = if let ImageKind::RAW(_, _, data) = &mut i.kind {
-                    let s = String::from_utf8(data.clone()).map_err(Error::from)?;
+                    let s = String::from_utf8(data.as_slice().to_vec()).map_err(Error::from)?;
                     s == href
                 } else {
                     false
@@ -652,9 +637,7 @@ pub fn render_async(
     }
 }
 
-fn points_to_rect(min: usvg::Point<f64>, max: usvg::Point<f64>) -> RectF {
-    let min = Vector2F::new(min.x as f32, min.y as f32);
-    let max = Vector2F::new(max.x as f32, max.y as f32);
+fn points_to_rect(min: Vector2F, max: Vector2F) -> RectF {
     RectF::new(min, max - min)
 }
 

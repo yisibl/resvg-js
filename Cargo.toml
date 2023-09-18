@@ -30,7 +30,7 @@ mimalloc-rust = { version = "0.2" }
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 wasm-bindgen = "0.2.87"
 js-sys = "0.3.64"
-resvg = { version = "0.29.0", default-features = false, features = [
+resvg = { version = "0.34.0", default-features = false, features = [
     "filter",
     "raster-images",
     "text",
@@ -39,8 +39,7 @@ resvg = { version = "0.29.0", default-features = false, features = [
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
 napi = { version = "2.13.3", features = ["serde-json", "async"] }
 napi-derive = "2.13.0"
-resvg = { version = "0.29.0", default-features = false, features = [
-    "filter",
+resvg = { version = "0.34.0", default-features = false, features = [
     "raster-images",
     "text",
     "system-fonts",

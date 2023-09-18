@@ -261,7 +261,7 @@ test('should be load custom fontFiles(no defaultFontFamily option)', (t) => {
   const originPixels = pngData.pixels.toJSON().data
 
   // Find the number of blue `rgb(0,255,255)`pixels
-  t.is(originPixels.join(',').match(/0,0,255/g)?.length, 1726)
+  t.is(originPixels.join(',').match(/0,0,255/g)?.length, 1727)
 })
 
 test('should be load custom fontDirs(no defaultFontFamily option)', (t) => {
@@ -283,7 +283,7 @@ test('should be load custom fontDirs(no defaultFontFamily option)', (t) => {
   const originPixels = pngData.pixels.toJSON().data
 
   // Find the number of blue `rgb(0,255,255)`pixels
-  t.is(originPixels.join(',').match(/0,0,255/g)?.length, 1726)
+  t.is(originPixels.join(',').match(/0,0,255/g)?.length, 1727)
 })
 
 test('The defaultFontFamily is not found in the OS and needs to be fallback', (t) => {
@@ -539,9 +539,9 @@ test('should get svg bbox(rect)', async (t) => {
     const result = await jimp.read(pngBuffer)
 
     t.is(bbox.width, 200)
-    t.is(bbox.height, 100.00000000000001)
-    t.is(bbox.x, 50.4)
-    t.is(bbox.y, 60.8)
+    t.is(bbox.height, 100)
+    t.is(bbox.x, 50.400001525878906)
+    t.is(bbox.y, 60.79999923706055)
 
     // Must not have Alpha
     t.is(result.hasAlpha(), false)

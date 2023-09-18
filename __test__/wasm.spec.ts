@@ -261,7 +261,7 @@ test('should be load custom font(no defaultFontFamily option)', async (t) => {
   const originPixels = Array.from(pngData.pixels)
 
   // Find the number of blue `rgb(0,255,255)`pixels
-  t.is(originPixels.join(',').match(/0,0,255/g)?.length, 1726)
+  t.is(originPixels.join(',').match(/0,0,255/g)?.length, 1727)
 })
 
 test('should be load custom fontBuffers(no defaultFontFamily option)', async (t) => {
@@ -282,7 +282,7 @@ test('should be load custom fontBuffers(no defaultFontFamily option)', async (t)
   const originPixels = Array.from(pngData.pixels)
 
   // Find the number of blue `rgb(0,255,255)`pixels
-  t.is(originPixels.join(',').match(/0,0,255/g)?.length, 1726)
+  t.is(originPixels.join(',').match(/0,0,255/g)?.length, 1727)
 })
 
 test('should be load custom multiple fontBuffers', async (t) => {
@@ -306,7 +306,7 @@ test('should be load custom multiple fontBuffers', async (t) => {
   const originPixels = Array.from(pngData.pixels)
 
   // Find the number of blue `rgb(0,255,255)`pixels
-  t.is(originPixels.join(',').match(/0,0,255/g)?.length, 8938)
+  t.is(originPixels.join(',').match(/0,0,255/g)?.length, 8931)
 })
 
 test('should be load custom WOFF2 font', async (t) => {
@@ -434,9 +434,9 @@ test('should get svg bbox(rect)', async (t) => {
     const result = await jimp.read(Buffer.from(pngBuffer))
 
     t.is(bbox.width, 200)
-    t.is(bbox.height, 100.00000000000001)
-    t.is(bbox.x, 50.4)
-    t.is(bbox.y, 60.8)
+    t.is(bbox.height, 100)
+    t.is(bbox.x, 50.400001525878906)
+    t.is(bbox.y, 60.79999923706055)
     // Must not have Alpha
     t.is(result.hasAlpha(), false)
     // Here the expected value is actually 200*100, and the calculation of the bbox needs to be fixed.
