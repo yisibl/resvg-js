@@ -87,25 +87,25 @@ test('svg to RGBA pixels Array', async (t) => {
 })
 
 test('fit to width', async (t) => {
-  const filePath = '../example/text.svg'
+  const filePath = '../example/bbox.svg'
   const svg = await fs.readFile(join(__dirname, filePath))
   const resvg = new Resvg(svg, {
     background: '#eeebe6',
     fitTo: {
       mode: 'width',
-      value: 1200,
+      value: 800,
     },
   })
   const pngData = resvg.render()
   const pngBuffer = pngData.asPng()
   const result = await jimp.read(pngBuffer)
 
-  t.is(result.getWidth(), 1200)
-  t.is(result.getHeight(), 623)
+  t.is(result.getWidth(), 800)
+  t.is(result.getHeight(), 1156)
 })
 
 test('fit to height', async (t) => {
-  const filePath = '../example/text.svg'
+  const filePath = '../example/bbox.svg'
   const svg = await fs.readFile(join(__dirname, filePath))
   const resvg = new Resvg(svg, {
     background: '#eeebe6',
@@ -118,23 +118,23 @@ test('fit to height', async (t) => {
   const pngBuffer = pngData.asPng()
   const result = await jimp.read(pngBuffer)
 
-  t.is(result.getWidth(), 1003)
+  t.is(result.getWidth(), 360)
   t.is(result.getHeight(), 520)
 })
 
 test('Get SVG original size', async (t) => {
-  const filePath = '../example/text.svg'
+  const filePath = '../example/bbox.svg'
   const svg = await fs.readFile(join(__dirname, filePath))
   const resvg = new Resvg(svg, {
     background: '#eeebe6',
     fitTo: {
       mode: 'width',
-      value: 1200, // The original size is not affected by the fitTo parameter
+      value: 600, // The original size is not affected by the fitTo parameter
     },
   })
 
-  t.is(resvg.width, 1324)
-  t.is(resvg.height, 687)
+  t.is(resvg.width, 180)
+  t.is(resvg.height, 260)
 })
 
 test('SVG size must be rounded to an integer', (t) => {
