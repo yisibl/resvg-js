@@ -86,7 +86,7 @@
     "eslint": "^8.39.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-import": "^2.26.0",
-    "eslint-plugin-prettier": "^4.2.1",
+    "eslint-plugin-prettier": "^5.0.0",
     "eslint-plugin-sonarjs": "^0.21.0",
     "husky": "^8.0.0",
     "jimp-compact": "^0.16.1-2",
