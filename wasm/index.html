@@ -34,6 +34,14 @@
       align-items: center;
     }
 
+    .site-title {
+      font-size: 36px;
+      background-image: linear-gradient(80deg, #FF8253, #DA1BC6);
+      -webkit-text-fill-color: transparent;
+      -webkit-background-clip: text;
+      background-clip: text;
+    }
+
     main {
       display: flex;
       flex-direction: column;
@@ -105,7 +113,7 @@
     #output .body {
       flex: 1;
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       justify-content: center;
     }
 
@@ -135,7 +143,14 @@
 
     .opts-cell label {
       margin-right: .5em;
+      white-space: nowrap;
     }
+
+    #slt-svg,
+    #slt-font {
+      max-width: 180px;
+    }
+
     .github {
       fill: #151513;
       color: #fff;
@@ -155,29 +170,124 @@
       animation: octocat-wave 560ms ease-in-out;
     }
   </style>
+  <script>
+    const fontList = [
+    {
+      name: '阿里妈妈东方大楷-subset',
+      fontFile: 'https://at.alicdn.com/wf/webfont/P1EXxgPTCEW1/yUf7uwuYYptO.woff2',
+    },
+    {
+      name: '得意黑-subset',
+      fontFile: 'https://at.alicdn.com/wf/webfont/P1EXxgPTCEW1/5yLDIpd3W1r2.woff2',
+    },
+    {
+      name: 'Pacifico Regular',
+      fontFile: './fonts/Pacifico-Regular.woff2',
+    },
+  ]
 
-<script>
+    const svgList = [{
+      name: 'Hello resvg-js',
+      svgString: `<svg width="600" height="300" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+    <linearGradient x1="0%" y1="45%" x2="100%" y2="55%" id="b">
+      <stop stop-color="#FF8253" offset="0%"/>
+      <stop stop-color="#DA1BC6" offset="100%"/>
+    </linearGradient>
+    <path id="a" d="M0 0h600v300H0z"/>
+  </defs>
+  <g fill="none" fill-rule="evenodd">
+    <use fill="url(#b)" xlink:href="#a"/>
+    <text x="50%" y="39%" font-size="58" fill="#FFF" dominant-baseline="middle" text-anchor="middle">Hello resvg-js</text>
+    <text x="50%" y="62%" font-size="38" fill="#FFF" dominant-baseline="middle" text-anchor="middle">高性能 SVG 渲染引擎和工具包</text>
+  </g>
+</svg>`
+    },
+    {
+      name: 'GitHub Octocat',
+      svgString: `<svg xmlns="http://www.w3.org/2000/svg" width="430px" height="400px" viewBox="0 0 430 400" version="1.1">
+    <g xmlns="http://www.w3.org/2000/svg" transform="translate(26.000000, 34.000000)" fill-rule="nonzero">
+        <path d="M296.933,295.434202 C296.933,315.967202 249.373,332.610202 190.713,332.610202 C132.043,332.610202 84.483,315.967202 84.483,295.434202 C84.483,274.901202 132.041,258.254202 190.713,258.254202 C249.373,258.254202 296.933,274.904202 296.933,295.434202 Z" fill="#9CDAF1" />
+        <g transform="translate(129.984364, 283.418209)" fill="#7DBBE6">
+            <path d="M31.8586363,47.8059929 L31.8586363,21.3059929 C31.8586363,17.8839929 31.2396363,15.0219929 30.2056363,12.6049929 C37.0586363,17.9269929 37.5216363,31.2999929 37.5216363,31.2999929 L37.5216363,48.3039929 C43.6876363,48.7849929 50.0556363,49.0769929 56.5746363,49.1649929 L56.4026363,32.2449929 C55.4586363,9.11499286 35.6336363,6.28399286 35.6336363,6.28399286 C28.3886363,4.63899286 28.4966363,8.27499286 29.2246363,10.6239929 C22.1166363,-1.49800714 3.06663632,0.0679928633 3.06663632,0.0679928633 C-3.54436368,2.42499286 2.59163632,6.67499286 2.59163632,6.67499286 C12.9786363,10.4499929 13.9216363,21.7799929 13.9216363,21.7799929 L13.9216363,45.4019929 C19.6416363,46.3819929 25.6316363,47.1919929 31.8616363,47.8019929 L31.8586363,47.8059929 Z" />
+            <path d="M115.408636,0.0659928633 C115.408636,0.0659928633 96.3556363,-1.5 89.2486363,10.6249929 C89.9766363,8.27499286 90.0876363,4.63599286 82.8406363,6.28199286 C82.8406363,6.28199286 63.0166363,9.11399286 62.0726363,32.2429929 L61.8986363,49.1889929 C68.4076363,49.1639929 74.7746363,48.9349929 80.9526363,48.5179929 L80.9526363,31.2989929 C80.9526363,31.2989929 81.4176363,17.9259929 88.2686363,12.6039929 C87.2346363,15.0209929 86.6156363,17.8819929 86.6156363,21.3049929 L86.6156363,48.0799929 C92.8296363,47.5359929 98.8266363,46.8009929 104.552636,45.8919929 L104.552636,21.7789929 C104.552636,21.7789929 105.496636,10.4489929 115.882636,6.67399286 C115.882636,6.66399286 122.012636,2.41399286 115.402636,0.0539928633 L115.408636,0.0659928633 Z" />
+        </g>
+        <path d="M378.173,141.324202 L378.453,139.935202 C347.291,133.704202 315.312,133.641202 295.966,134.445202 C299.144,122.994202 300.1,109.818202 300.1,95.1252023 C300.1,74.0522023 292.183,57.1942023 279.33,44.3662023 C281.576,37.1162023 284.576,21.0152023 276.334,0.403202262 C276.334,0.403202262 261.793,-4.21379774 228.903,17.7992023 C216.019,14.5792023 202.307,12.9892023 188.575,12.9892023 C173.466,12.9892023 158.199,14.9132023 143.96,18.8192023 C110.02,-4.33479774 95.037,0.408202262 95.037,0.408202262 C85.257,24.8652023 91.304,42.9742023 93.141,47.4712023 C81.646,59.8772023 74.628,75.7142023 74.628,95.1302023 C74.628,109.788202 76.297,122.938202 80.373,134.367202 C60.862,133.657202 30.05,133.930202 0,139.939202 L0.276,141.328202 C30.507,135.282202 61.513,135.072202 80.905,135.806202 C81.803,138.172202 82.804,140.467202 83.926,142.685202 C64.749,143.303202 32.004,145.747202 0.623,154.600202 L1.01,155.960202 C32.639,147.042202 65.668,144.659202 84.659,144.078202 C96.117,165.436202 118.707,179.230202 158.895,183.562202 C153.191,187.395202 147.372,193.911202 145.014,204.936202 C137.241,208.654202 112.635,217.729202 97.872,192.337202 C97.872,192.337202 89.608,177.228202 73.79,176.045202 C73.79,176.045202 58.446,175.810202 72.731,185.607202 C72.731,185.607202 82.998,190.445202 90.082,208.626202 C90.082,208.626202 99.323,239.636202 143.917,229.687202 L143.917,261.719202 C143.917,261.719202 142.974,273.049202 132.587,276.824202 C132.587,276.824202 126.45,281.073202 133.062,283.430202 C133.062,283.430202 161.854,285.791202 161.854,262.192202 L161.854,227.263202 C161.854,227.263202 160.712,213.411202 167.517,208.596202 L167.517,265.967202 C167.517,265.967202 167.047,279.655202 159.966,284.848202 C159.966,284.848202 155.243,293.342202 165.629,290.985202 C165.629,290.985202 185.453,288.153202 186.398,265.024202 L186.847,206.964202 L191.612,206.964202 L192.065,265.024202 C193.008,288.153202 212.833,290.985202 212.833,290.985202 C223.216,293.342202 218.496,284.848202 218.496,284.848202 C211.416,279.655202 210.945,265.967202 210.945,265.967202 L210.945,209.091202 C217.746,214.387202 216.608,227.262202 216.608,227.262202 L216.608,262.191202 C216.608,285.791202 245.401,283.429202 245.401,283.429202 C252.007,281.072202 245.875,276.823202 245.875,276.823202 C235.489,273.048202 234.545,261.718202 234.545,261.718202 L234.545,215.932202 C234.545,198.078202 227.027,188.623202 219.675,183.632202 C262.534,179.382202 283.101,165.543202 292.578,144.041202 C311.351,144.557202 345.135,146.844202 377.451,155.960202 L377.835,154.600202 C345.704,145.537202 312.143,143.192202 293.18,142.640202 C294.078,140.468202 294.862,138.209202 295.558,135.885202 C314.808,135.085202 346.938,135.095202 378.218,141.345202 L378.173,141.324202 Z" fill="#000000" />
+        <path d="M258.183,94.1362023 C267.414,102.499202 272.814,112.598202 272.814,123.479202 C272.814,174.283202 234.942,175.660202 188.229,175.660202 C141.508,175.660202 103.64,168.625202 103.64,123.479202 C103.64,112.670202 108.964,102.634202 118.081,94.3052023 C133.289,80.4242023 159.027,87.7742023 188.228,87.7742023 C217.298,87.7702023 242.948,80.3452023 258.178,94.1312023 L258.183,94.1362023 Z" fill="#F4CBB2" />
+        <path d="M160.093,126.064202 C160.093,140.058202 152.213,151.400202 142.493,151.400202 C132.773,151.400202 124.893,140.058202 124.893,126.064202 C124.893,112.072202 132.773,100.734202 142.493,100.734202 C152.213,100.744202 160.093,112.074202 160.093,126.064202 L160.093,126.064202 Z M254.523,126.064202 C254.523,140.058202 246.643,151.400202 236.923,151.400202 C227.203,151.400202 219.323,140.058202 219.323,126.064202 C219.323,112.072202 227.203,100.734202 236.923,100.734202 C246.643,100.744202 254.523,112.074202 254.523,126.064202 L254.523,126.064202 Z" fill="#FFFFFF" />
+        <g transform="translate(130.986000, 109.490202)" fill="#AD5C51">
+            <path d="M23.467,16.894 C23.467,26.222 18.207,33.781 11.733,33.781 C5.259,33.781 0,26.222 0,16.894 C0,7.563 5.255,1.42108547e-14 11.733,1.42108547e-14 C18.203,1.42108547e-14 23.463,7.56 23.463,16.89 L23.467,16.894 Z M117.887,16.894 C117.887,26.222 112.627,33.781 106.153,33.781 C99.679,33.781 94.42,26.222 94.42,16.894 C94.42,7.563 99.675,1.42108547e-14 106.153,1.42108547e-14 C112.623,1.42108547e-14 117.883,7.56 117.883,16.89 L117.887,16.894 Z" />
+            <circle cx="57.507" cy="39.074" r="4.401" />
+            <path d="M47.237,50.204 C46.977,49.466 47.365,48.659 48.098,48.399 C48.835,48.139 49.644,48.527 49.903,49.26 C51.037,52.458 54.07,54.606 57.454,54.606 C60.838,54.606 63.871,52.459 65.005,49.26 C65.265,48.522 66.072,48.139 66.81,48.399 C67.548,48.659 67.931,49.466 67.672,50.204 C66.143,54.528 62.033,57.433 57.454,57.433 C52.875,57.433 48.774,54.543 47.244,50.213 L47.237,50.204 Z" />
+        </g>
+        <path d="M80.634,179.824202 C80.634,180.998202 79.258,181.946202 77.564,181.946202 C75.871,181.946202 74.494,180.998202 74.494,179.824202 C74.494,178.649202 75.871,177.697202 77.564,177.697202 C79.258,177.697202 80.634,178.647202 80.634,179.827202 L80.634,179.824202 Z M89.134,184.544202 C89.134,185.718202 87.758,186.666202 86.064,186.666202 C84.371,186.666202 82.994,185.718202 82.994,184.544202 C82.994,183.369202 84.371,182.417202 86.064,182.417202 C87.758,182.417202 89.134,183.367202 89.134,184.547202 L89.134,184.544202 Z M94.327,190.684202 C94.327,191.858202 92.951,192.806202 91.257,192.806202 C89.564,192.806202 88.187,191.858202 88.187,190.684202 C88.187,189.509202 89.564,188.557202 91.257,188.557202 C92.951,188.557202 94.327,189.507202 94.327,190.687202 L94.327,190.684202 Z M99.047,197.764202 C99.047,198.938202 97.671,199.886202 95.977,199.886202 C94.284,199.886202 92.907,198.938202 92.907,197.764202 C92.907,196.589202 94.284,195.637202 95.977,195.637202 C97.671,195.637202 99.047,196.587202 99.047,197.767202 L99.047,197.764202 Z M104.235,204.374202 C104.235,205.548202 102.859,206.496202 101.165,206.496202 C99.472,206.496202 98.095,205.548202 98.095,204.374202 C98.095,203.199202 99.472,202.247202 101.165,202.247202 C102.859,202.247202 104.235,203.197202 104.235,204.377202 L104.235,204.374202 Z M111.325,210.034202 C111.325,211.208202 109.949,212.156202 108.255,212.156202 C106.562,212.156202 105.185,211.208202 105.185,210.034202 C105.185,208.859202 106.562,207.907202 108.255,207.907202 C109.949,207.907202 111.325,208.857202 111.325,210.037202 L111.325,210.034202 Z M121.235,213.814202 C121.235,214.988202 119.859,215.936202 118.165,215.936202 C116.472,215.936202 115.095,214.988202 115.095,213.814202 C115.095,212.639202 116.472,211.687202 118.165,211.687202 C119.859,211.687202 121.235,212.637202 121.235,213.817202 L121.235,213.814202 Z M131.105,213.814202 C131.105,214.988202 129.729,215.936202 128.035,215.936202 C126.342,215.936202 124.965,214.988202 124.965,213.814202 C124.965,212.639202 126.342,211.687202 128.035,211.687202 C129.729,211.687202 131.105,212.637202 131.105,213.817202 L131.105,213.814202 Z M141.115,212.174202 C141.115,213.348202 139.739,214.296202 138.045,214.296202 C136.352,214.296202 134.975,213.348202 134.975,212.174202 C134.975,210.999202 136.352,210.047202 138.045,210.047202 C139.739,210.047202 141.115,210.997202 141.115,212.177202 L141.115,212.174202 Z" fill="#C3E4D8" />
+        <path d="M69.362,186.124202 L66.296,196.807202 C66.296,196.807202 65.496,200.668202 69.136,201.353202 C72.936,201.279202 72.622,197.726202 72.359,196.572202 L69.362,186.124202 Z" fill="#9CDAF1" />
+    </g>
+</svg>
+`
+    }]
+
+    const defaultSvgNumber = 0
+    const defaultFontNumber = 0
+    const INIT_INPUT_SVG_STRING = svgList[defaultSvgNumber].svgString
+    let fetchFontLock = false
+    let fontFile = fontList[0].fontFile
+    let SVG_STRING = ''
+
+    async function getFontBuffer() {
+      if (fetchFontLock) return
+
+      fetchFontLock = true
+      const controller = new AbortController()
+      const signal = controller.signal
+      setTimeout(() => controller.abort(), 3000) // Cancel the fetch request
+
+      try {
+        const t = performance.now()
+        const font = await fetch(fontFile)
+
+        if (!font.ok) return
+
+        const data = await font.arrayBuffer()
+        const buffer = new Uint8Array(data)
+        fetchFontLock = false
+        console.info('✨ 字体请求用时:', performance.now() - t + 'ms')
+        return {
+          buffer,
+          family_name: 'Source Han Serif CN Light',
+        }
+      } catch (error) {
+        return console.error('fetch font error', error)
+      }
+    }
+
     (async function () {
       await resvg.initWasm(fetch('./index_bg.wasm'))
+      initSelectOptions('slt-svg', svgList, defaultSvgNumber)
+      initSelectOptions('slt-font', fontList, defaultFontNumber)
       const output = document.getElementById('output')
-      const svgElement = document.querySelector('#input-svg')
-      const inputSVG = svgElement.value.trim()
+      const svgInputElement = document.querySelector('#input-svg') // 在 textarea 中输入 SVG 字符串
+      svgInputElement.value = INIT_INPUT_SVG_STRING
 
-      const font = await fetch('../example/SourceHanSerifSC-Regular.woff2')
-      const buffer = new Uint8Array(await font.arrayBuffer())
-      console.log('font buffer size', buffer.length)
-
+      // INIT_INPUT_SVG_STRING to DOM
+      const inputSvgElement = new DOMParser().parseFromString(INIT_INPUT_SVG_STRING, 'image/svg+xml').documentElement
       let resvgOpts = {
-        font: {
-          fontsBuffers: [buffer],
-          // OpenType 中定义的 Font Family name，也就是 nameID=1
-          defaultFontFamily: 'Source Han Serif SC',
+        font: {},
+        fitTo: {
+          mode: 'zoom',
+          value: 2,
         },
       }
-      await svg2png(inputSVG, resvgOpts)
+
+      if (checkHasText()) {
+        const { buffer, family_name } = await getFontBuffer()
+        resvgOpts.font.fontBuffers = [buffer]
+        fontList[0].buffer = buffer
+      }
+      await svg2png(INIT_INPUT_SVG_STRING, resvgOpts)
 
       async function svg2png(svgString, opts, hasCrop) {
-        const svg = svgString ? svgString : svgElement.value.trim()
+        const svg = svgString ? svgString : svgInputElement.value.trim()
 
         if (!svg) {
           alert('SVG is empty')
@@ -188,10 +298,8 @@
 
         const resolved = await Promise.all(
           resvgJS.imagesToResolve().map(async (url) => {
-            console.log('image url', url)
             const img = await fetch(url)
             const buffer = await img.arrayBuffer()
-            // const MIME = img.headers.get('Content-Type')
             return {
               url,
               buffer: new Uint8Array(buffer),
@@ -207,8 +315,7 @@
 
         const innerBBox = resvgJS.innerBBox()
         const bbox = resvgJS.getBBox()
-        console.log('SVG innerBBox', innerBBox)
-        console.log('SVG getBBox', bbox)
+
         if (hasCrop && bbox) resvgJS.cropByBBox(bbox)
         const pngData = resvgJS.render()
         const pngBuffer = pngData.asPng()
@@ -220,11 +327,22 @@
         document.querySelector('#png-info').textContent = 'PNG size: ' + pngData.width + ' x ' + pngData.height + ' px'
       }
 
-      addMultipleEventListener(svgElement, ['change', 'keyup', 'paste'], function(event) {
-        const svgString = event.target.value.trim()
+      addMultipleEventListener(svgInputElement, ['change', 'keyup', 'paste'], async function (event) {
+        SVG_STRING = event.target.value.trim()
         const hasCrop = cropElement.checked
-        if (!svgString) return
-        svg2png(svgString, resvgOpts, hasCrop)
+        if (!SVG_STRING) return
+
+        // 通过 svgString 更新 inputSvgElement
+        const inputSvgElement = new DOMParser().parseFromString(SVG_STRING, 'image/svg+xml').documentElement
+        const errorNode = inputSvgElement.querySelector('parsererror')
+        if (errorNode) {
+          const errorText = errorNode.querySelector('div').textContent
+          console.error('Invalid SVG string: \n' + errorText)
+          return
+        }
+
+        await checkGetFontBuffer()
+        svg2png(SVG_STRING, resvgOpts, hasCrop)
       })
 
       function addMultipleEventListener(element, events, handler) {
@@ -234,23 +352,67 @@
       const colorPickerElement = document.querySelector('#color-picker')
       const svgSizeElement = document.querySelector('#svg-size')
       const cropElement = document.querySelector('#crop-by-bbox')
+      const svgSelectElement = document.querySelector('#slt-svg')
+      const fontSelectElement = document.querySelector('#slt-font')
 
-      colorPickerElement.addEventListener('change', function(event) {
+
+      svgSelectElement.addEventListener('change', function (event) {
+        const value = event.target.value
+        if (!value) return
+
+        for (const svg of svgList) {
+          if (svg.name == value) {
+            svgInputElement.value = SVG_STRING = svg.svgString
+            const event = new Event('change')
+            svgInputElement.dispatchEvent(event)
+          }
+        }
+      })
+
+      fontSelectElement.addEventListener('change', async function (event) {
+        const value = event.target.value
+        if (!value) return
+
+        for (const font of fontList) {
+          if (font.name == value) {
+            fontFile = font.fontFile
+            if (!font.buffer) {
+              const { buffer } = await getFontBuffer()
+              font.buffer = buffer
+            }
+
+            resvgOpts = {
+              font: {
+                fontBuffers: [font.buffer],
+              },
+              fitTo: {
+                mode: 'zoom',
+                value: 2,
+              },
+            }
+
+            await svg2png(SVG_STRING, resvgOpts)
+          }
+        }
+      })
+
+      colorPickerElement.addEventListener('change', function (event) {
         const value = event.target.value
         const hasCrop = cropElement.checked
         if (!value) return
-
         resvgOpts.background = value
         svg2png(null, resvgOpts, hasCrop)
       })
 
-      svgSizeElement.addEventListener('change', function(event) {
+      svgSizeElement.addEventListener('change', function (event) {
         const value = event.target.value
         const hasCrop = cropElement.checked
         if (!value) {
-          Object.assign(resvgOpts, { fitTo: {
-            mode: 'original',
-          }})
+          Object.assign(resvgOpts, {
+            fitTo: {
+              mode: 'original',
+            }
+          })
         } else {
           const limitWidth = 3000
           const title = `The width(${limitWidth}) is larger and generating images will be slower.\nAre you sure to continue?`
@@ -258,37 +420,103 @@
             return
           }
 
-          Object.assign(resvgOpts, { fitTo: {
-            mode: 'width',
-            value: parseInt(value, 10),
-          }})
+          Object.assign(resvgOpts, {
+            fitTo: {
+              mode: 'width',
+              value: parseInt(value, 10),
+            }
+          })
         }
 
         svg2png(null, resvgOpts, hasCrop)
       })
 
-      cropElement.addEventListener('change', function(event) {
+      cropElement.addEventListener('change', function (event) {
         const hasCrop = event.target.checked
         svg2png(null, resvgOpts, hasCrop)
       })
 
+      async function checkGetFontBuffer() {
+        if (checkHasText() && !checkHasBuffer().checkResult) {
+          const font = await getFontBuffer()
+          if (!font?.buffer) {
+            return
+          }
+          const fontIndex = checkHasBuffer().index
+          const { buffer } = font
+          resvgOpts.font.fontBuffers = [buffer]
+          fontList[fontIndex].buffer = buffer
+          // console.log("fontIndex:" + fontIndex + "  buffer：" + resvgOpts.font.fontBuffers[0].length)
+        }
+      }
+
     })()
+
+    function initSelectOptions(sltId, dataList, defaultVal) {
+      const selectElement = document.querySelector('#' + sltId)
+      let optionText = ''
+      for (const [i, item] of dataList.entries()) {
+        const optionElement = document.createElement('option')
+        optionElement.value = item.name
+        optionElement.innerText = item.name
+        if (i === defaultVal) {
+          optionElement.setAttribute('selected', true)
+        }
+        selectElement.appendChild(optionElement)
+      }
+    }
+
+    function checkHasText() {
+      const svgString = document.querySelector('#input-svg').value.trim()
+      const inputSvgElement = new DOMParser().parseFromString(svgString, 'image/svg+xml').documentElement
+      const allTextElement = inputSvgElement.querySelectorAll('text')
+      return allTextElement.length > 0
+    }
+
+    function checkHasBuffer() {
+      const fontName = document.querySelector('#slt-font').value
+      let currentFontIndex = -1
+      for (const [i, font] of fontList.entries()) {
+        if (font.name === fontName) {
+          currentFontIndex = i
+          if (font.buffer) {
+            return { checkResult: true, index: i }
+          }
+        }
+
+      }
+      return { checkResult: false, index: currentFontIndex }
+    }
   </script>
 </head>
+
 <body>
   <main>
     <header>
-      <h1>resvg-js playground</h1>
+      <h1 class="site-title">resvg-js playground</h1>
       <a href="https://github.com/yisibl/resvg-js" title="View source on GitHub">
         <svg width="80" height="80" viewBox="0 0 250 250" class="github">
           <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path>
-          <path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path>
-          <path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body">
+          <path
+            d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2"
+            fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path>
+          <path
+            d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z"
+            fill="currentColor" class="octo-body">
           </path>
         </svg>
       </a>
     </header>
     <div class="opts">
+      <div class="opts-cell">
+        <label for="slt-svg">Select SVG:</label>
+        <select name="svg" id="slt-svg"></select>
+      </div>
+      <div class="opts-cell">
+        <label for="slt-font">Select Font:</label>
+        <select name="svg" id="slt-font">
+        </select>
+      </div>
       <div class="opts-cell">
         <label for="color-picker">Change background:</label>
         <input type="color" name="color-picker" id="color-picker">
@@ -307,21 +535,7 @@
         <div class="header-info">
           <div class="info" id="svg-info"></div>
         </div>
-        <textarea name="input-svg" id="input-svg" placeholder="Enter the svg string" cols="30" rows="10"><svg width="600" height="300" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-            <defs>
-              <linearGradient x1="0%" y1="45%" x2="100%" y2="55%" id="b">
-                <stop stop-color="#FF8253" offset="0%"/>
-                <stop stop-color="#DA1BC6" offset="100%"/>
-              </linearGradient>
-              <path id="a" d="M0 0h600v300H0z"/>
-            </defs>
-            <g fill="none" fill-rule="evenodd">
-              <use fill="#D8D8D8" xlink:href="#a"/>
-              <use fill="url(#b)" xlink:href="#a"/>
-              <text x="50%" y="50%" font-size="60" fill="#FFF" dominant-baseline="middle" text-anchor="middle">思源宋体</text>
-            </g>
-          </svg>
-        </textarea>
+        <textarea name="input-svg" id="input-svg" placeholder="Enter the svg string" cols="30" rows="10"></textarea>
       </div>
       <div class="cell" id="output">
         <div class="header-info">
