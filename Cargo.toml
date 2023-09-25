@@ -27,8 +27,8 @@ usvg-writer = { git = "https://github.com/zimond/resvg", rev = "6201182c" }
 mimalloc-rust = { version = "0.2" }
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
-wasm-bindgen = "0.2.84"
-js-sys = "0.3.61"
+wasm-bindgen = "0.2.87"
+js-sys = "0.3.64"
 resvg = { version = "0.29.0", default-features = false, features = [
     "filter",
     "raster-images",
@@ -36,8 +36,8 @@ resvg = { version = "0.29.0", default-features = false, features = [
 ] }
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
-napi = { version = "2.12.1", features = ["serde-json", "async"] }
-napi-derive = "2.10.1"
+napi = { version = "2.13.3", features = ["serde-json", "async"] }
+napi-derive = "2.13.0"
 resvg = { version = "0.29.0", default-features = false, features = [
     "filter",
     "raster-images",
