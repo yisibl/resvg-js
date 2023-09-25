@@ -309,6 +309,27 @@ test('should be load custom multiple fontBuffers', async (t) => {
   t.is(originPixels.join(',').match(/0,0,255/g)?.length, 8938)
 })
 
+test('should be load custom WOFF2 font', async (t) => {
+  const svg = `
+  <svg xmlns="http://www.w3.org/2000/svg" width="500" height="200" viewBox="0 0 500 200">
+    <text fill="blue" font-size="60">
+      <tspan x="40" y="100">Hello resvg-js</tspan>
+    </text>
+  </svg>
+  `
+  const pacificoBuffer = await fs.readFile(join(__dirname, '../wasm/fonts/', 'Pacifico-Regular.woff2'))
+  const resvg = new Resvg(svg, {
+    font: {
+      fontBuffers: [pacificoBuffer],
+    },
+  })
+  const pngData = resvg.render()
+  const originPixels = Array.from(pngData.pixels)
+
+  // Find the number of blue `rgb(0,255,255)`pixels
+  t.is(originPixels.join(',').match(/0,0,255/g)?.length, 6067)
+})
+
 test('should generate a 80x80 png and opaque', async (t) => {
   const svg = `<svg width="200px" height="200px" viewBox="0 0 200 200" version="1.1" xmlns="http://www.w3.org/2000/svg">
     <rect fill="green" x="0" y="0" width="100" height="100"></rect>
