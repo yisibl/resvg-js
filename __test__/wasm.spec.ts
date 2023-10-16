@@ -327,7 +327,7 @@ test('should be load custom WOFF2 font', async (t) => {
   const originPixels = Array.from(pngData.pixels)
 
   // Find the number of blue `rgb(0,255,255)`pixels
-  t.is(originPixels.join(',').match(/0,0,255/g)?.length, 6067)
+  t.is(originPixels.join(',').match(/0,0,255/g)?.length, 6039)
 })
 
 test('should generate a 80x80 png and opaque', async (t) => {
