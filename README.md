@@ -92,7 +92,7 @@ async function main() {
     font: {
       fontFiles: ['./example/SourceHanSerifCN-Light-subset.ttf'], // Load custom fonts.
       loadSystemFonts: false, // It will be faster to disable loading system fonts.
-      defaultFontFamily: 'Source Han Serif CN Light',
+      // defaultFontFamily: 'Source Han Serif CN Light', // You can omit this.
     },
   }
   const resvg = new Resvg(svg, opts)
@@ -161,10 +161,20 @@ This package also ships a pure WebAssembly artifact built with `wasm-bindgen` to
   (async function () {
     // The Wasm must be initialized first
     await resvg.initWasm(fetch('https://unpkg.com/@resvg/resvg-wasm/index_bg.wasm'))
+
+    const font = await fetch('./fonts/Pacifico-Regular.woff2')
+    if (!font.ok) return
+
+    const fontData = await font.arrayBuffer()
+    const buffer = new Uint8Array(fontData)
+
     const opts = {
       fitTo: {
         mode: 'width', // If you need to change the size
         value: 800,
+      },
+      font: {
+        fontBuffers: [buffer], // New in 2.5.0, loading custom fonts
       },
     }
 

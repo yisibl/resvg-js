@@ -9,6 +9,56 @@ This changelog also contains important changes in dependencies.
 
 ## [Unreleased]
 
+## [2.5.0] - 2023-10-16
+
+### Added
+
+Now we can finally loading custom fonts in Wasm, including the WOFF2 format (see [playground](https://resvg-js.vercel.app/)), thanks to the high-performance `woff2-rs`.
+
+In addition, we implemented smarter default font family fallback. the `defaultFontFamily` option can now be omitted. We'll read the font-family from the incoming fonts and set it to the default.
+
+```html
+<script src="https://unpkg.com/@resvg/resvg-wasm"></script>
+<script>
+  (async function () {
+    await resvg.initWasm(fetch('https://unpkg.com/@resvg/resvg-wasm/index_bg.wasm'))
+
+    const font = await fetch('./fonts/Pacifico-Regular.woff2')
+    if (!font.ok) return
+
+    const fontData = await font.arrayBuffer()
+    const buffer = new Uint8Array(fontData)
+
+    const opts = {
+      font: {
+        fontBuffers: [buffer], // New in 2.5.0, loading custom fonts.
+        // defaultFontFamily: 'Pacifico', // You can omit this.
+      },
+    }
+
+    const svg = '<svg> ... </svg>' // Input SVG, String or Uint8Array
+    const resvgJS = new resvg.Resvg(svg, opts)
+    const pngData = resvgJS.render(svg, opts) // Output PNG data, Uint8Array
+    const pngBuffer = pngData.asPng()
+    const svgURL = URL.createObjectURL(new Blob([pngData], { type: 'image/png' }))
+    document.getElementById('output').src = svgURL
+  })()
+</script>
+```
+
+- feat: improve custom loaded fonts. Thanks to @yisibl [#209](https://github.com/yisibl/resvg-js/issues/209)
+- feat: support for loading custom fonts in Wasm, via the `fontBuffers` option. Thanks to @antmelnyk [#217](https://github.com/yisibl/resvg-js/issues/217)
+- feat: support loading WOFF2 font in Wasm. Thanks to @yisibl [#220](https://github.com/yisibl/resvg-js/issues/220)
+- chore: Wasm uses the same logic as Node.js to find the default font family.Thanks to @yisibl [#252](https://github.com/yisibl/resvg-js/issues/252)
+
+We have improved the [upstream svgtypes#14](https://github.com/RazrFalcon/svgtypes/pull/14), allow parsing of float `rgb()/rgba()` values from CSS Color 4 draft like `rgb(3.14, 110, 201)`.
+
+  - fix(deps): update rust crate svgtypes to 0.12.0. Thanks to @yisibl [#266](https://github.com/yisibl/resvg-js/issues/266)
+
+### Changed
+
+- test: fix test image timeout. [#262](https://github.com/yisibl/resvg-js/issues/262)
+
 ## [2.4.1] - 2023-02-15
 
 ### Fixed
@@ -526,7 +576,8 @@ The first official version, use [resvg 0.18.0](https://github.com/RazrFalcon/res
 - Support custom fonts and system fonts.
 - Supports setting the background color of PNG.
 
-[unreleased]: https://github.com/yisibl/resvg-js/compare/v2.4.1...HEAD
+[unreleased]: https://github.com/yisibl/resvg-js/compare/v2.5.0...HEAD
+[2.5.0]: https://github.com/yisibl/resvg-js/compare/v2.4.1...v2.5.0
 [2.4.1]: https://github.com/yisibl/resvg-js/compare/v2.4.0...v2.4.1
 [2.4.0]: https://github.com/yisibl/resvg-js/compare/v2.3.1...v2.4.0
 [2.3.1]: https://github.com/yisibl/resvg-js/compare/v2.3.0...v2.3.1
