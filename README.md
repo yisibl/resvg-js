@@ -9,6 +9,10 @@
 
 Please use all lowercase `resvg-js` when referencing project names.
 
+**💖 🙏[Sponsoring me](#sponsor)**
+
+> Your sponsorship means a lot to me. It will help me sustain my projects actively and make more of my ideas come true. Much appreciated!
+
 ## Features
 
 - Fast, safe and zero dependencies, with correct output.
@@ -22,6 +26,12 @@ Please use all lowercase `resvg-js` when referencing project names.
 - No need for node-gyp and postinstall, the `.node` file has been compiled for you.
 - Cross-platform support, including [Apple M Chips](https://www.apple.com/newsroom/2020/11/apple-unleashes-m1/).
 - Support for running as native addons in Deno.
+
+## Sponsor
+
+Alipay(支付宝)
+
+<img width="260" src="https://user-images.githubusercontent.com/2784308/275749798-dcecb901-6a44-46f6-aab3-98635664719e.jpeg">
 
 ## Installation
 
