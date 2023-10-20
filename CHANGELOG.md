@@ -9,6 +9,36 @@ This changelog also contains important changes in dependencies.
 
 ## [Unreleased]
 
+## [2.6.0] - 2023-10-20
+
+🚀 Up to **115x faster** for very large SVG files
+
+Now resvg has been upgraded from v0.29.0 to [v0.34.0](https://github.com/RazrFalcon/resvg/blob/master/CHANGELOG.md#user-content-0340---2023-05-27), bringing with it a host of new SVG features and performance improvements.
+
+- Support SVG2 `mask-type` property.
+- Allows quadratic Bézier curves: text might render slightly differently (better?). This is because TrueType fonts contain only quadratic curves and we were converting them to cubic before.
+
+- Clipping and masking is up to 20% faster.
+- Reduces the peak memory usages for SVGs with large paths (in terms of the number of segments).
+- A new rendering algorithm.<br>
+  When rendering [isolated groups](https://razrfalcon.github.io/notes-on-svg-parsing/isolated-groups.html),
+  aka layers, we have to know the layer bounding box beforehand, which is ridiculously hard in SVG.<br>
+  Previously, resvg would simply use the canvas size for all the layers.
+  Meaning that to render a 10x10px layer on a 1000x1000px canvas, we would have to allocate and then blend
+  a 1000x1000px layer, which is just a waste of CPU cycles.<br>
+  The new rendering algorithm is able to calculate layer bounding boxes, which dramatically improves
+  performance when rendering a lot of tiny layers on a large canvas.<br>
+  Moreover, it makes performance more linear with a canvas size increase.<br>
+  The [paris-30k.svg](https://github.com/google/forma/blob/681e8bfd348caa61aab47437e7d857764c2ce522/assets/svgs/paris-30k.svg)
+  sample from [google/forma](https://github.com/google/forma) is rendered _115 times_ faster on M1 Pro now.
+  From ~33760ms down to ~290ms. 5269x3593px canvas.<br>
+  If we restrict the canvas to 1000x1000px, which would contain only the actual `paris-30k.svg` content,
+  then we're _13 times_ faster. From ~3252ms down to ~253ms.
+
+### Added
+
+- feat: upgrade to usvg/resvg 0.34.0. [#268](https://github.com/yisibl/resvg-js/pull/268) Thanks to @zimond
+
 ## [2.5.0] - 2023-10-16
 
 ### Added
@@ -20,7 +50,7 @@ In addition, we implemented smarter default font family fallback. the `defaultFo
 ```html
 <script src="https://unpkg.com/@resvg/resvg-wasm"></script>
 <script>
-  (async function () {
+  ;(async function () {
     await resvg.initWasm(fetch('https://unpkg.com/@resvg/resvg-wasm/index_bg.wasm'))
 
     const font = await fetch('./fonts/Pacifico-Regular.woff2')
@@ -53,7 +83,7 @@ In addition, we implemented smarter default font family fallback. the `defaultFo
 
 We have improved the [upstream svgtypes#14](https://github.com/RazrFalcon/svgtypes/pull/14), allow parsing of float `rgb()/rgba()` values from CSS Color 4 draft like `rgb(3.14, 110, 201)`.
 
-  - fix(deps): update rust crate svgtypes to 0.12.0. Thanks to @yisibl [#266](https://github.com/yisibl/resvg-js/issues/266)
+- fix(deps): update rust crate svgtypes to 0.12.0. Thanks to @yisibl [#266](https://github.com/yisibl/resvg-js/issues/266)
 
 ### Changed
 
@@ -111,6 +141,7 @@ Eventually, we upgraded resvg for 2 successive versions, and are now at the late
 ## [2.3.1] - 2023-02-02
 
 - feat: upgrade wasm-bindgen to 0.2.84
+
 ## [2.3.0] - 2023-02-02
 
 - fix: update napi-rs(2.10.13) to resolve Electron 21+ create Buffer issues. [#195](https://github.com/yisibl/resvg-js/issues/195)
@@ -137,6 +168,7 @@ Eventually, we upgraded resvg for 2 successive versions, and are now at the late
   ```
 
   See the [Node.js documentation](https://nodejs.org/api/packages.html#package-entry-points) for details about why:
+
   > Existing packages introducing the "exports" field will prevent consumers of the package from using any entry points that are not defined,
 
 - fix(ci): use zig to cross-compile armv7. [#176](https://github.com/yisibl/resvg-js/issues/176)
@@ -149,15 +181,15 @@ Eventually, we upgraded resvg for 2 successive versions, and are now at the late
 
   Due to the GitHub Actions Ubuntu [upgrade from 20.04 to 22.04](https://github.com/actions/runner-images/issues/5490), the glibc version became 2.35. To maintain our compatibility, zig cross-compilation is now enabled to support older versions of glibc systems.
 
-  | Distribution | Glibc | GCC |
-  | --- | --- | --- |
-  | CentOS 7 | 2.17 | 4.8.5 |
-  | Ubuntu 16.04 | 2.23 | 5.4.0 |
-  | Ubuntu 18.04 | 2.27 | 7.5.0 |
-  | Ubuntu 20.04 | 2.31 | 9.4.0 |
-  | **Ubuntu 22.04** | 2.35 | 11.2.0 |
-  | Debian 10.12 | 2.28 | 8.3.0 |
-  | Debian 11.4 | 2.31 | 10.2.1 |
+  | Distribution     | Glibc | GCC    |
+  | ---------------- | ----- | ------ |
+  | CentOS 7         | 2.17  | 4.8.5  |
+  | Ubuntu 16.04     | 2.23  | 5.4.0  |
+  | Ubuntu 18.04     | 2.27  | 7.5.0  |
+  | Ubuntu 20.04     | 2.31  | 9.4.0  |
+  | **Ubuntu 22.04** | 2.35  | 11.2.0 |
+  | Debian 10.12     | 2.28  | 8.3.0  |
+  | Debian 11.4      | 2.31  | 10.2.1 |
 
 - doc: add Node.js 18 to 'Support matrix'. [#155](https://github.com/yisibl/resvg-js/issues/155)
 
@@ -576,7 +608,8 @@ The first official version, use [resvg 0.18.0](https://github.com/RazrFalcon/res
 - Support custom fonts and system fonts.
 - Supports setting the background color of PNG.
 
-[unreleased]: https://github.com/yisibl/resvg-js/compare/v2.5.0...HEAD
+[unreleased]: https://github.com/yisibl/resvg-js/compare/v2.6.0...HEAD
+[2.6.0]: https://github.com/yisibl/resvg-js/compare/v2.5.0...v2.6.0
 [2.5.0]: https://github.com/yisibl/resvg-js/compare/v2.4.1...v2.5.0
 [2.4.1]: https://github.com/yisibl/resvg-js/compare/v2.4.0...v2.4.1
 [2.4.0]: https://github.com/yisibl/resvg-js/compare/v2.3.1...v2.4.0

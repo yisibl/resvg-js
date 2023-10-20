@@ -78,9 +78,9 @@ Output PNG Size  : 1200 x 623
 ✨ Done in 66 ms
 ```
 
-| SVG                                                                                                                                                                                        | PNG                                                                                                                                                                                            |
-| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| <img width="500" src="example/text.svg">                                                                                                                                                   | <img width="500" src="example/text-out.png">                                                                                                                                                   |
+| SVG                                      | PNG                                          |
+| ---------------------------------------- | -------------------------------------------- |
+| <img width="500" src="example/text.svg"> | <img width="500" src="example/text-out.png"> |
 
 ## Usage
 
@@ -122,9 +122,9 @@ main()
 
 Starting with [Bun 0.8.1](https://github.com/oven-sh/bun/issues/172#issuecomment-1692930718), resvg-js can be run directly in Bun without any modification to the JS files, and is fully compatible with the syntax in Node.js.
 
-  ```shell
-  bun example/index.js
-  ```
+```shell
+bun example/index.js
+```
 
 ### Deno
 
@@ -168,7 +168,7 @@ This package also ships a pure WebAssembly artifact built with `wasm-bindgen` to
 ```html
 <script src="https://unpkg.com/@resvg/resvg-wasm"></script>
 <script>
-  (async function () {
+  ;(async function () {
     // The Wasm must be initialized first
     await resvg.initWasm(fetch('https://unpkg.com/@resvg/resvg-wasm/index_bg.wasm'))
 
@@ -224,20 +224,20 @@ Running "resize width" suite...
 
 ## Support matrix
 
-|                  | Node.js 12 | Node.js 14 | Node.js 16 | Node.js 18 | npm |
-| ---------------- | ---------- | ---------- | ---------- | ---------- | --- |
-| Windows x64      | ✓          | ✓          | ✓          |  ✓         |[![npm version](https://img.shields.io/npm/v/@resvg/resvg-js-win32-x64-msvc.svg?sanitize=true)](https://www.npmjs.com/package/@resvg/resvg-js-win32-x64-msvc) |
-| Windows x32      | ✓          | ✓          | ✓          |  ✓         |[![npm version](https://img.shields.io/npm/v/@resvg/resvg-js-win32-ia32-msvc.svg?sanitize=true)](https://www.npmjs.com/package/@resvg/resvg-js-win32-ia32-msvc) |
-| Windows arm64    | ✓          | ✓          | ✓          |  ✓         |[![npm version](https://img.shields.io/npm/v/@resvg/resvg-js-win32-arm64-msvc.svg?sanitize=true)](https://www.npmjs.com/package/@resvg/resvg-js-win32-arm64-msvc) |
-| macOS x64        | ✓          | ✓          | ✓          |  ✓         |[![npm version](https://img.shields.io/npm/v/@resvg/resvg-js-darwin-x64.svg?sanitize=true)](https://www.npmjs.com/package/@resvg/resvg-js-darwin-x64) |
-| macOS arm64(M1)  | ✓          | ✓          | ✓          |  ✓         |[![npm version](https://img.shields.io/npm/v/@resvg/resvg-js-darwin-arm64.svg?sanitize=true)](https://www.npmjs.com/package/@resvg/resvg-js-darwin-arm64) |
-| Linux x64 gnu    | ✓          | ✓          | ✓          |  ✓         |[![npm version](https://img.shields.io/npm/v/@resvg/resvg-js-linux-x64-gnu.svg?sanitize=true)](https://www.npmjs.com/package/@resvg/resvg-js-linux-x64-gnu) |
-| Linux x64 musl   | ✓          | ✓          | ✓          |  ✓         |[![npm version](https://img.shields.io/npm/v/@resvg/resvg-js-linux-x64-musl.svg?sanitize=true)](https://www.npmjs.com/package/@resvg/resvg-js-linux-x64-musl) |
-| Linux arm gnu    | ✓          | ✓          | ✓          |  ✓         |[![npm version](https://img.shields.io/npm/v/@resvg/resvg-js-linux-arm-gnueabihf.svg?sanitize=true)](https://www.npmjs.com/package/@resvg/resvg-js-linux-arm-gnueabihf) |
-| Linux arm64 gnu  | ✓          | ✓          | ✓          |  ✓         |[![npm version](https://img.shields.io/npm/v/@resvg/resvg-js-linux-arm64-gnu.svg?sanitize=true)](https://www.npmjs.com/package/@resvg/resvg-js-linux-arm64-gnu) |
-| Linux arm64 musl | ✓          | ✓          | ✓          |  ✓         |[![npm version](https://img.shields.io/npm/v/@resvg/resvg-js-linux-arm64-musl.svg?sanitize=true)](https://www.npmjs.com/package/@resvg/resvg-js-linux-arm64-musl) |
-| Android arm64    | ✓          | ✓          | ✓          |  ✓         |[![npm version](https://img.shields.io/npm/v/@resvg/resvg-js-android-arm64.svg?sanitize=true)](https://www.npmjs.com/package/@resvg/resvg-js-android-arm64) |
-| Android armv7    | ✓          | ✓          | ✓          |  ✓         |[![npm version](https://img.shields.io/npm/v/@resvg/resvg-js-android-arm-eabi.svg?sanitize=true)](https://www.npmjs.com/package/@resvg/resvg-js-android-arm-eabi) |
+|                  | Node.js 12 | Node.js 14 | Node.js 16 | Node.js 18 | npm                                                                                                                                                                     |
+| ---------------- | ---------- | ---------- | ---------- | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Windows x64      | ✓          | ✓          | ✓          | ✓          | [![npm version](https://img.shields.io/npm/v/@resvg/resvg-js-win32-x64-msvc.svg?sanitize=true)](https://www.npmjs.com/package/@resvg/resvg-js-win32-x64-msvc)           |
+| Windows x32      | ✓          | ✓          | ✓          | ✓          | [![npm version](https://img.shields.io/npm/v/@resvg/resvg-js-win32-ia32-msvc.svg?sanitize=true)](https://www.npmjs.com/package/@resvg/resvg-js-win32-ia32-msvc)         |
+| Windows arm64    | ✓          | ✓          | ✓          | ✓          | [![npm version](https://img.shields.io/npm/v/@resvg/resvg-js-win32-arm64-msvc.svg?sanitize=true)](https://www.npmjs.com/package/@resvg/resvg-js-win32-arm64-msvc)       |
+| macOS x64        | ✓          | ✓          | ✓          | ✓          | [![npm version](https://img.shields.io/npm/v/@resvg/resvg-js-darwin-x64.svg?sanitize=true)](https://www.npmjs.com/package/@resvg/resvg-js-darwin-x64)                   |
+| macOS arm64(M1)  | ✓          | ✓          | ✓          | ✓          | [![npm version](https://img.shields.io/npm/v/@resvg/resvg-js-darwin-arm64.svg?sanitize=true)](https://www.npmjs.com/package/@resvg/resvg-js-darwin-arm64)               |
+| Linux x64 gnu    | ✓          | ✓          | ✓          | ✓          | [![npm version](https://img.shields.io/npm/v/@resvg/resvg-js-linux-x64-gnu.svg?sanitize=true)](https://www.npmjs.com/package/@resvg/resvg-js-linux-x64-gnu)             |
+| Linux x64 musl   | ✓          | ✓          | ✓          | ✓          | [![npm version](https://img.shields.io/npm/v/@resvg/resvg-js-linux-x64-musl.svg?sanitize=true)](https://www.npmjs.com/package/@resvg/resvg-js-linux-x64-musl)           |
+| Linux arm gnu    | ✓          | ✓          | ✓          | ✓          | [![npm version](https://img.shields.io/npm/v/@resvg/resvg-js-linux-arm-gnueabihf.svg?sanitize=true)](https://www.npmjs.com/package/@resvg/resvg-js-linux-arm-gnueabihf) |
+| Linux arm64 gnu  | ✓          | ✓          | ✓          | ✓          | [![npm version](https://img.shields.io/npm/v/@resvg/resvg-js-linux-arm64-gnu.svg?sanitize=true)](https://www.npmjs.com/package/@resvg/resvg-js-linux-arm64-gnu)         |
+| Linux arm64 musl | ✓          | ✓          | ✓          | ✓          | [![npm version](https://img.shields.io/npm/v/@resvg/resvg-js-linux-arm64-musl.svg?sanitize=true)](https://www.npmjs.com/package/@resvg/resvg-js-linux-arm64-musl)       |
+| Android arm64    | ✓          | ✓          | ✓          | ✓          | [![npm version](https://img.shields.io/npm/v/@resvg/resvg-js-android-arm64.svg?sanitize=true)](https://www.npmjs.com/package/@resvg/resvg-js-android-arm64)             |
+| Android armv7    | ✓          | ✓          | ✓          | ✓          | [![npm version](https://img.shields.io/npm/v/@resvg/resvg-js-android-arm-eabi.svg?sanitize=true)](https://www.npmjs.com/package/@resvg/resvg-js-android-arm-eabi)       |
 
 ## Test or Contributing
 
