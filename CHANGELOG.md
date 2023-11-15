@@ -127,12 +127,12 @@ Eventually, we upgraded resvg for 2 successive versions, and are now at the late
 
 - fix: 'the previous segment must be M/L/C' error. [#204](https://github.com/yisibl/resvg-js/issues/204) Thanks to @yisibl
 
-  This is a normal error thrown by resvg when parsing Path Command, and has been confirmed as fixed in resvg 0.29.0.
+  This is a normal error thrown by resvg when parsing Path Command and has been confirmed as fixed in [resvg 0.30.0](https://github.com/RazrFalcon/resvg/blob/master/CHANGELOG.md#fixed-8)(see [commit](https://github.com/RazrFalcon/resvg/commit/82d77a0b54535e3c3cc514848ef17409b0a4c2b5)).
 
   Add a test to ensure it is now fixed.
 
   ```shell
-  thread '<unnamed>' panicked at 'the previous segment must be M/L/C'
+  thread 'main' panicked at 'the previous segment must be M/L/C', usvg/src/pathdata.rs:219:17
 
   note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
   fatal runtime error: failed to initiate panic, error 5
