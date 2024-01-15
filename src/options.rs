@@ -242,7 +242,7 @@ pub struct JsFontOptions {
     ///
     /// Will be used when no `font-family` attribute is set in the SVG.
     ///
-    /// Default: Times New Roman
+    /// Default: ""
     pub default_font_family: String,
 
     /// The default font size.
