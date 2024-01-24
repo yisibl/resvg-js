@@ -19,7 +19,7 @@ thiserror = "1.0.37"
 png = "=0.17.5"
 pathfinder_geometry = "0.5.1"
 pathfinder_content = { version = "0.5.0", default-features = false }
-pathfinder_simd = { version = "0.5.1", features = ["pf-no-simd"] }
+pathfinder_simd = { version = "0.5.2", features = ["pf-no-simd"] }
 futures = "0.3.21"
 woff2 = "0.3.0"
 
