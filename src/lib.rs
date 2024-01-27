@@ -19,8 +19,9 @@ use pathfinder_geometry::rect::RectF;
 use pathfinder_geometry::vector::Vector2F;
 use resvg::{
     tiny_skia::{PathSegment, Pixmap, Point},
-    usvg::{self, ImageKind, NodeKind, TreeParsing, TreeTextToPath},
+    usvg::{self, ImageKind, Node, TreeParsing},
 };
+use resvg::usvg::TreePostProc;
 #[cfg(target_arch = "wasm32")]
 use wasm_bindgen::{
     prelude::{wasm_bindgen, JsValue},
@@ -32,13 +33,12 @@ mod fonts;
 mod options;
 
 use error::Error;
-use usvg::NodeExt;
 
 #[cfg(all(
-    not(target_arch = "wasm32"),
-    not(debug_assertions),
-    not(all(target_os = "windows", target_arch = "aarch64")),
-    not(all(target_os = "linux", target_arch = "aarch64", target_env = "musl")),
+not(target_arch = "wasm32"),
+not(debug_assertions),
+not(all(target_os = "windows", target_arch = "aarch64")),
+not(all(target_os = "linux", target_arch = "aarch64", target_env = "musl")),
 ))]
 #[global_allocator]
 static ALLOC: mimalloc_rust::GlobalMiMalloc = mimalloc_rust::GlobalMiMalloc;
@@ -137,8 +137,7 @@ impl RenderedImage {
     }
 }
 
-#[cfg(not(target_arch = "wasm32"))]
-#[napi]
+#[cfg_attr(not(target_arch = "wasm32"), napi)]
 impl Resvg {
     #[napi(constructor)]
     pub fn new(svg: Either<String, Buffer>, options: Option<String>) -> Result<Resvg, NapiError> {
@@ -163,8 +162,11 @@ impl Resvg {
             Either::A(a) => usvg::Tree::from_str(a.as_str(), &opts),
             Either::B(b) => usvg::Tree::from_data(b.as_ref(), &opts),
         }
-        .map_err(|e| napi::Error::from_reason(format!("{e}")))?;
-        tree.convert_text(&fontdb);
+            .map_err(|e| napi::Error::from_reason(format!("{e}")))?;
+        tree.postprocess(
+            Default::default(),
+            &fontdb,
+        );
         Ok(Resvg { tree, js_options })
     }
 
@@ -195,7 +197,7 @@ impl Resvg {
             Vector2F::new(rect.right(), rect.bottom()),
         );
         let mut v = None;
-        for child in self.tree.root.children() {
+        for child in self.tree.root.children {
             let child_viewbox = match self.node_bbox(child).and_then(|v| v.intersection(rect)) {
                 Some(v) => v,
                 None => continue,
@@ -225,7 +227,7 @@ impl Resvg {
     // Either<T, Undefined> depends on napi 2.4.3
     // https://github.com/napi-rs/napi-rs/releases/tag/napi@2.4.3
     pub fn get_bbox(&self) -> Either<BBox, Undefined> {
-        match self.tree.root.calculate_bbox() {
+        match self.tree.root.bounding_box {
             Some(bbox) => Either::A(BBox {
                 x: bbox.x() as f64,
                 y: bbox.y() as f64,
@@ -408,19 +410,19 @@ impl Resvg {
 
 impl Resvg {
     fn node_bbox(&self, node: usvg::Node) -> Option<RectF> {
-        let transform = node.borrow().transform();
-        let bbox = match &*node.borrow() {
-            usvg::NodeKind::Path(p) => {
+        let transform = node.abs_transform();
+        let bbox: RectF = match &node {
+            usvg::Node::Path(p) => {
                 let no_fill = p.fill.is_none()
                     || p.fill
-                        .as_ref()
-                        .map(|f| f.opacity.get() == 0.0)
-                        .unwrap_or_default();
+                    .as_ref()
+                    .map(|f| f.opacity.get() == 0.0)
+                    .unwrap_or_default();
                 let no_stroke = p.stroke.is_none()
                     || p.stroke
-                        .as_ref()
-                        .map(|f| f.opacity.get() == 0.0)
-                        .unwrap_or_default();
+                    .as_ref()
+                    .map(|f| f.opacity.get() == 0.0)
+                    .unwrap_or_default();
                 if no_fill && no_stroke {
                     return None;
                 }
@@ -483,18 +485,18 @@ impl Resvg {
                 }
                 Some(outline.bounds())
             }
-            usvg::NodeKind::Group(g) => {
-                let clippath = if let Some(clippath) =
-                    g.clip_path.as_ref().and_then(|n| n.root.first_child())
+            usvg::Node::Group(g) => {
+                let clippath = if let Some(&clippath) =
+                    g.clip_path.as_ref().and_then(|n| n.borrow().root.children.first())
                 {
                     self.node_bbox(clippath)
-                } else if let Some(mask) = g.mask.as_ref().and_then(|n| n.root.first_child()) {
+                } else if let Some(&mask) = g.mask.as_ref().and_then(|n| n.borrow().root.children.first()) {
                     self.node_bbox(mask)
                 } else {
                     Some(self.viewbox())
                 }?;
                 let mut v = None;
-                for child in node.children() {
+                for child in g.children {
                     let child_viewbox =
                         match self.node_bbox(child).and_then(|v| v.intersection(clippath)) {
                             Some(v) => v,
@@ -508,14 +510,14 @@ impl Resvg {
                 }
                 v.and_then(|v| v.intersection(self.viewbox()))
             }
-            usvg::NodeKind::Image(image) => {
+            usvg::Node::Image(image) => {
                 let rect = image.view_box.rect;
                 Some(points_to_rect(
                     Vector2F::new(rect.x(), rect.y()),
                     Vector2F::new(rect.right(), rect.bottom()),
                 ))
             }
-            usvg::NodeKind::Text(_) => None,
+            usvg::Node::Text(_) => None,
         }?;
         let mut pts = vec![
             Point::from_xy(bbox.min_x(), bbox.min_y()),
@@ -543,7 +545,7 @@ impl Resvg {
         let (width, height, transform) = self.js_options.fit_to.fit_to(self.tree.size)?;
         let mut pixmap = self.js_options.create_pixmap(width, height)?;
         // Render the tree
-        let _image = resvg::Tree::from_usvg(&self.tree).render(transform, &mut pixmap.as_mut());
+        let _image = resvg::render(&self.tree, transform, &mut pixmap.as_mut());
 
         // Crop the SVG
         let crop_rect = resvg::tiny_skia::IntRect::from_ltrb(
@@ -562,10 +564,16 @@ impl Resvg {
 
     fn images_to_resolve_inner(&self) -> Result<Vec<String>, Error> {
         let mut data = vec![];
-        for node in self.tree.root.descendants() {
-            if let NodeKind::Image(i) = &mut *node.borrow_mut() {
-                if let ImageKind::RAW(_, _, buffer) = &mut i.kind {
-                    let s = String::from_utf8(buffer.as_slice().to_vec())?;
+        for node in self.tree.root.children {
+            if let Node::Image(i) = node {
+                if is_image_need_resolve(&i) {
+                    let s = match &i.kind {
+                        ImageKind::JPEG(d) => String::from_utf8(d.as_slice().to_vec()).map_err(Error::from)?,
+                        ImageKind::PNG(d) => String::from_utf8(d.as_slice().to_vec()).map_err(Error::from)?,
+                        ImageKind::GIF(d) => String::from_utf8(d.as_slice().to_vec()).map_err(Error::from)?,
+                        _ => unreachable!()
+                    };
+
                     data.push(s);
                 }
             }
@@ -578,15 +586,11 @@ impl Resvg {
         let (options, _) = self.js_options.to_usvg_options();
         let mime = MimeType::parse(&buffer)?.mime_type().to_string();
 
-        for node in self.tree.root.descendants() {
-            if let NodeKind::Image(i) = &mut *node.borrow_mut() {
-                let matched = if let ImageKind::RAW(_, _, data) = &mut i.kind {
-                    let s = String::from_utf8(data.as_slice().to_vec()).map_err(Error::from)?;
-                    s == href
-                } else {
-                    false
-                };
-                if matched {
+        for node in self.tree.root.children {
+            if let Node::Image(i) = node {
+                let need_fallback = is_image_need_resolve(&i);
+
+                if need_fallback {
                     let data = (resolver)(&mime, Arc::new(buffer.clone()), &options);
                     if let Some(kind) = data {
                         i.kind = kind;
@@ -596,6 +600,25 @@ impl Resvg {
         }
         Ok(())
     }
+}
+
+fn is_image_need_resolve(image: &Box<usvg::Image>) -> bool {
+    match image.kind {
+        ImageKind::JPEG(d) =>
+            is_http_or_https(d.clone()),
+
+        ImageKind::PNG(d) =>
+            is_http_or_https(d.clone()),
+
+        ImageKind::GIF(d) =>
+            is_http_or_https(d.clone()),
+
+        ImageKind::SVG(_) => false
+    }
+}
+
+fn is_http_or_https(data: Arc<Vec<u8>>) -> bool {
+    return data.starts_with(b"http://") || data.starts_with(b"https://");
 }
 
 #[cfg(not(target_arch = "wasm32"))]
