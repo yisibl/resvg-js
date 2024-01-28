@@ -22,8 +22,6 @@ async function main() {
 
   const resolved = await Promise.all(
     resvg.imagesToResolve().map(async (url) => {
-      console.log("??????")
-      console.info('image url', url)
       const img = await fetch(url)
       const buffer = await img.arrayBuffer()
       return {

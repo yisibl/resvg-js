@@ -54,5 +54,5 @@ opt-level = 3
 codegen-units = 1
 
 [patch.crates-io]
-#resvg = { git = "https://github.com/zimond/resvg", rev = "3495d870" }
+resvg = { path="../resvg/crates/resvg" }
 woff2 = { git="https://github.com/yisibl/woff2-rs", branch="fix-total-compressed-size" }

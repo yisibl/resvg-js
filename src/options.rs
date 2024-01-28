@@ -368,9 +368,8 @@ where
 pub(crate) fn tweak_usvg_options(opts: &mut usvg::Options) {
     opts.image_href_resolver = ImageHrefResolver::default();
     opts.image_href_resolver.resolve_string = Box::new(move |data: &str, opts: &Options| {
-        println!("data: {}", data);
         if data.starts_with("https://") || data.starts_with("http://") {
-            Some(ImageKind::GIF(Arc::new(data.as_bytes().to_vec())))
+            Some(ImageKind::HOLE(data.to_string()))
         } else {
             let resolver = ImageHrefResolver::default().resolve_string;
             (resolver)(data, opts)

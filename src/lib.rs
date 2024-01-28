@@ -2,7 +2,6 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-use std::fs;
 use std::sync::Arc;
 
 #[cfg(not(target_arch = "wasm32"))]
@@ -22,7 +21,7 @@ use resvg::{
     tiny_skia::{PathSegment, Pixmap, Point},
     usvg::{self, ImageKind, Node, TreeParsing},
 };
-use resvg::usvg::{TreePostProc, TreeWriting};
+use resvg::usvg::{Image, TreePostProc, TreeWriting};
 #[cfg(target_arch = "wasm32")]
 use wasm_bindgen::{
     prelude::{wasm_bindgen, JsValue},
@@ -170,8 +169,6 @@ impl Resvg {
         );
         tree.calculate_abs_transforms();
         tree.calculate_bounding_boxes();
-
-        println!("??????????????????{}", tree.root.has_children());
 
         Ok(Resvg { tree, js_options })
     }
@@ -417,114 +414,8 @@ impl Resvg {
 impl Resvg {
     fn node_bbox(&self, node: &usvg::Node) -> Option<RectF> {
         let transform = node.abs_transform();
-        let bbox: RectF = match &node {
-            usvg::Node::Path(p) => {
-                let no_fill = p.fill.is_none()
-                    || p.fill
-                    .as_ref()
-                    .map(|f| f.opacity.get() == 0.0)
-                    .unwrap_or_default();
-                let no_stroke = p.stroke.is_none()
-                    || p.stroke
-                    .as_ref()
-                    .map(|f| f.opacity.get() == 0.0)
-                    .unwrap_or_default();
-                if no_fill && no_stroke {
-                    return None;
-                }
-                let mut outline = Outline::new();
-                let mut contour = Contour::new();
-                let mut iter = p.data.segments().peekable();
-                while let Some(seg) = iter.next() {
-                    match seg {
-                        PathSegment::MoveTo(p) => {
-                            if !contour.is_empty() {
-                                outline
-                                    .push_contour(std::mem::replace(&mut contour, Contour::new()));
-                            }
-                            contour.push_endpoint(Vector2F::new(p.x, p.y))
-                        }
-                        PathSegment::LineTo(p) => {
-                            let v = Vector2F::new(p.x, p.y);
-                            if let Some(PathSegment::Close) = iter.peek() {
-                                let first = contour.position_of(0);
-                                if (first - v).square_length() < 1.0 {
-                                    continue;
-                                }
-                            }
-                            contour.push_endpoint(v);
-                        }
-                        PathSegment::CubicTo(p1, p2, p) => {
-                            contour.push_cubic(
-                                Vector2F::new(p1.x, p1.y),
-                                Vector2F::new(p2.x, p2.y),
-                                Vector2F::new(p.x, p.y),
-                            );
-                        }
-                        PathSegment::QuadTo(p1, p) => {
-                            contour
-                                .push_quadratic(Vector2F::new(p1.x, p1.y), Vector2F::new(p.x, p.y));
-                        }
-                        PathSegment::Close => {
-                            contour.close();
-                            outline.push_contour(std::mem::replace(&mut contour, Contour::new()));
-                        }
-                    }
-                }
-                if !contour.is_empty() {
-                    outline.push_contour(std::mem::replace(&mut contour, Contour::new()));
-                }
-                if let Some(stroke) = p.stroke.as_ref() {
-                    if !no_stroke {
-                        let mut style = StrokeStyle::default();
-                        style.line_width = stroke.width.get() as f32;
-                        style.line_join = LineJoin::Miter(style.line_width);
-                        style.line_cap = match stroke.linecap {
-                            usvg::LineCap::Butt => LineCap::Butt,
-                            usvg::LineCap::Round => LineCap::Round,
-                            usvg::LineCap::Square => LineCap::Square,
-                        };
-                        let mut filler = OutlineStrokeToFill::new(&outline, style);
-                        filler.offset();
-                        outline = filler.into_outline();
-                    }
-                }
-                Some(outline.bounds())
-            }
-            usvg::Node::Group(g) => {
-                let clippath = if let Some(clippath) =
-                    g.clip_path.as_ref().and_then(|n| n.borrow().root.children.first().cloned())
-                {
-                    self.node_bbox(&clippath)
-                } else if let Some(mask) = g.mask.as_ref().and_then(|n| n.borrow().root.children.first().cloned()) {
-                    self.node_bbox(&mask)
-                } else {
-                    Some(self.viewbox())
-                }?;
-                let mut v = None;
-                for child in &g.children {
-                    let child_viewbox =
-                        match self.node_bbox(child).and_then(|v| v.intersection(clippath)) {
-                            Some(v) => v,
-                            None => continue,
-                        };
-                    if let Some(v) = v.as_mut() {
-                        *v = child_viewbox.union_rect(*v);
-                    } else {
-                        v = Some(child_viewbox)
-                    };
-                }
-                v.and_then(|v| v.intersection(self.viewbox()))
-            }
-            usvg::Node::Image(image) => {
-                let rect = image.view_box.rect;
-                Some(points_to_rect(
-                    Vector2F::new(rect.x(), rect.y()),
-                    Vector2F::new(rect.right(), rect.bottom()),
-                ))
-            }
-            usvg::Node::Text(_) => None,
-        }?;
+        let bbox = node.bounding_box()?;
+        let bbox = RectF::new(Vector2F::new(bbox.x(), bbox.y()), Vector2F::new(bbox.width(), bbox.height()));
         let mut pts = vec![
             Point::from_xy(bbox.min_x(), bbox.min_y()),
             Point::from_xy(bbox.max_x(), bbox.max_y()),
@@ -569,60 +460,29 @@ impl Resvg {
     }
 
     fn images_to_resolve_inner(&self) -> Result<Vec<String>, Error> {
-        println!("test");
         let mut data = vec![];
         let mut err: Option<Error> = None;
-        println!("has children: {}, {} x {}", self.tree.root.has_children(), self.tree.size.width(), self.tree.size.height());
         for node in &self.tree.root.children {
-            println!("for loop");
             if err.is_some() {
                 break;
             }
             let err = &mut err;
             let data = &mut data;
             traverse_tree(node, &mut |node| {
-                println!("traverse_tree start");
-                if let Node::Image(i) = node {
+                if let Node::Image(img) = node {
                     if err.is_some() {
                         return;
                     }
-                    if is_image_need_resolve(&i) {
-                        let s = match &i.kind {
-                            ImageKind::JPEG(d) => {
-                                let r = String::from_utf8(d.as_slice().to_vec()).map_err(Error::from);
-                                if let Err(e) = r {
-                                    err.replace(e);
-                                    return;
-                                } else {
-                                    r.unwrap()
-                                }
-                            }
-                            ImageKind::PNG(d) => {
-                                let r = String::from_utf8(d.as_slice().to_vec()).map_err(Error::from);
-                                if let Err(e) = r {
-                                    err.replace(e);
-                                    return;
-                                } else {
-                                    r.unwrap()
-                                }
-                            }
-                            ImageKind::GIF(d) => {
-                                let r = String::from_utf8(d.as_slice().to_vec()).map_err(Error::from);
-                                if let Err(e) = r {
-                                    err.replace(e);
-                                    return;
-                                } else {
-                                    r.unwrap()
-                                }
-                            }
-                            _ => unreachable!()
-                        };
 
-                        data.push(s);
+                    match &img.kind {
+                        ImageKind::HOLE(url) => {
+                            if is_http_or_https(&url) {
+                                data.push(url.clone());
+                            }
+                        }
+                        _ => {}
                     }
                 }
-
-                println!("traverse_tree end");
             });
         }
         Ok(data)
@@ -637,7 +497,10 @@ impl Resvg {
         for node in &mut self.tree.root.children {
             traverse_tree_mut(node, &|node| {
                 if let Node::Image(ref mut i) = node {
-                    let need_fallback = is_image_need_resolve(&i);
+                    let need_fallback = match &i.kind {
+                        ImageKind::HOLE(_) => true,
+                        _ => false,
+                    };
 
                     if need_fallback {
                         let data = (resolver)(&mime, Arc::new(buffer.clone()), &options);
@@ -653,24 +516,8 @@ impl Resvg {
     }
 }
 
-fn is_image_need_resolve(image: &Box<usvg::Image>) -> bool {
-    println!("??????");
-    match &image.kind {
-        ImageKind::JPEG(d) =>
-            is_http_or_https(d.clone()),
-
-        ImageKind::PNG(d) =>
-            is_http_or_https(d.clone()),
-
-        ImageKind::GIF(d) =>
-            is_http_or_https(d.clone()),
-
-        ImageKind::SVG(_) => false,
-    }
-}
-
-fn is_http_or_https(data: Arc<Vec<u8>>) -> bool {
-    return data.starts_with(b"http://") || data.starts_with(b"https://");
+fn is_http_or_https(data: &String) -> bool {
+    return data.starts_with("http://") || data.starts_with("https://");
 }
 
 fn traverse_tree_mut<F>(node: &mut usvg::Node, f: &F)
@@ -768,19 +615,4 @@ impl MimeType {
             _ => "image/jpeg",
         }
     }
-}
-
-
-#[test]
-fn test_parse() {
-    use resvg::*;
-
-    let svg = r#"  <!-- From https://octodex.github.com/nyantocat/ -->
-  <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <image href="https://octodex.github.com/images/nyantocat.gif" width="500" height="500"/>
-  </svg>"#;
-
-    let tree = usvg::Tree::from_str(svg, &Default::default()).unwrap();
-
-    assert_eq!(tree.root.has_children(), true);
 }
