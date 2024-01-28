@@ -2,6 +2,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+use std::fs;
 use std::sync::Arc;
 
 #[cfg(not(target_arch = "wasm32"))]
@@ -21,7 +22,7 @@ use resvg::{
     tiny_skia::{PathSegment, Pixmap, Point},
     usvg::{self, ImageKind, Node, TreeParsing},
 };
-use resvg::usvg::TreePostProc;
+use resvg::usvg::{TreePostProc, TreeWriting};
 #[cfg(target_arch = "wasm32")]
 use wasm_bindgen::{
     prelude::{wasm_bindgen, JsValue},
@@ -167,6 +168,11 @@ impl Resvg {
             Default::default(),
             &fontdb,
         );
+        tree.calculate_abs_transforms();
+        tree.calculate_bounding_boxes();
+
+        println!("??????????????????{}", tree.root.has_children());
+
         Ok(Resvg { tree, js_options })
     }
 
@@ -190,15 +196,15 @@ impl Resvg {
 
     // Either<T, Undefined> depends on napi 2.4.3
     // https://github.com/napi-rs/napi-rs/releases/tag/napi@2.4.3
-    pub fn inner_bbox(&self) -> Either<BBox, Undefined> {
+    pub fn inner_bbox(&mut self) -> Either<BBox, Undefined> {
         let rect = self.tree.view_box.rect;
         let rect = points_to_rect(
             Vector2F::new(rect.x(), rect.y()),
             Vector2F::new(rect.right(), rect.bottom()),
         );
         let mut v = None;
-        for child in self.tree.root.children {
-            let child_viewbox = match self.node_bbox(child).and_then(|v| v.intersection(rect)) {
+        for child in &self.tree.root.children {
+            let child_viewbox = match self.node_bbox(&child).and_then(|v| v.intersection(rect)) {
                 Some(v) => v,
                 None => continue,
             };
@@ -258,7 +264,7 @@ impl Resvg {
     }
 
     #[napi]
-    pub fn resolve_image(&self, href: String, buffer: Buffer) -> Result<(), NapiError> {
+    pub fn resolve_image(&mut self, href: String, buffer: Buffer) -> Result<(), NapiError> {
         let buffer = buffer.to_vec();
         Ok(self.resolve_image_inner(href, buffer)?)
     }
@@ -409,7 +415,7 @@ impl Resvg {
 }
 
 impl Resvg {
-    fn node_bbox(&self, node: usvg::Node) -> Option<RectF> {
+    fn node_bbox(&self, node: &usvg::Node) -> Option<RectF> {
         let transform = node.abs_transform();
         let bbox: RectF = match &node {
             usvg::Node::Path(p) => {
@@ -486,17 +492,17 @@ impl Resvg {
                 Some(outline.bounds())
             }
             usvg::Node::Group(g) => {
-                let clippath = if let Some(&clippath) =
-                    g.clip_path.as_ref().and_then(|n| n.borrow().root.children.first())
+                let clippath = if let Some(clippath) =
+                    g.clip_path.as_ref().and_then(|n| n.borrow().root.children.first().cloned())
                 {
-                    self.node_bbox(clippath)
-                } else if let Some(&mask) = g.mask.as_ref().and_then(|n| n.borrow().root.children.first()) {
-                    self.node_bbox(mask)
+                    self.node_bbox(&clippath)
+                } else if let Some(mask) = g.mask.as_ref().and_then(|n| n.borrow().root.children.first().cloned()) {
+                    self.node_bbox(&mask)
                 } else {
                     Some(self.viewbox())
                 }?;
                 let mut v = None;
-                for child in g.children {
+                for child in &g.children {
                     let child_viewbox =
                         match self.node_bbox(child).and_then(|v| v.intersection(clippath)) {
                             Some(v) => v,
@@ -563,47 +569,93 @@ impl Resvg {
     }
 
     fn images_to_resolve_inner(&self) -> Result<Vec<String>, Error> {
+        println!("test");
         let mut data = vec![];
-        for node in self.tree.root.children {
-            if let Node::Image(i) = node {
-                if is_image_need_resolve(&i) {
-                    let s = match &i.kind {
-                        ImageKind::JPEG(d) => String::from_utf8(d.as_slice().to_vec()).map_err(Error::from)?,
-                        ImageKind::PNG(d) => String::from_utf8(d.as_slice().to_vec()).map_err(Error::from)?,
-                        ImageKind::GIF(d) => String::from_utf8(d.as_slice().to_vec()).map_err(Error::from)?,
-                        _ => unreachable!()
-                    };
-
-                    data.push(s);
-                }
+        let mut err: Option<Error> = None;
+        println!("has children: {}, {} x {}", self.tree.root.has_children(), self.tree.size.width(), self.tree.size.height());
+        for node in &self.tree.root.children {
+            println!("for loop");
+            if err.is_some() {
+                break;
             }
+            let err = &mut err;
+            let data = &mut data;
+            traverse_tree(node, &mut |node| {
+                println!("traverse_tree start");
+                if let Node::Image(i) = node {
+                    if err.is_some() {
+                        return;
+                    }
+                    if is_image_need_resolve(&i) {
+                        let s = match &i.kind {
+                            ImageKind::JPEG(d) => {
+                                let r = String::from_utf8(d.as_slice().to_vec()).map_err(Error::from);
+                                if let Err(e) = r {
+                                    err.replace(e);
+                                    return;
+                                } else {
+                                    r.unwrap()
+                                }
+                            }
+                            ImageKind::PNG(d) => {
+                                let r = String::from_utf8(d.as_slice().to_vec()).map_err(Error::from);
+                                if let Err(e) = r {
+                                    err.replace(e);
+                                    return;
+                                } else {
+                                    r.unwrap()
+                                }
+                            }
+                            ImageKind::GIF(d) => {
+                                let r = String::from_utf8(d.as_slice().to_vec()).map_err(Error::from);
+                                if let Err(e) = r {
+                                    err.replace(e);
+                                    return;
+                                } else {
+                                    r.unwrap()
+                                }
+                            }
+                            _ => unreachable!()
+                        };
+
+                        data.push(s);
+                    }
+                }
+
+                println!("traverse_tree end");
+            });
         }
         Ok(data)
     }
 
-    fn resolve_image_inner(&self, href: String, buffer: Vec<u8>) -> Result<(), Error> {
+    fn resolve_image_inner(&mut self, href: String, buffer: Vec<u8>) -> Result<(), Error> {
         let resolver = usvg::ImageHrefResolver::default_data_resolver();
         let (options, _) = self.js_options.to_usvg_options();
         let mime = MimeType::parse(&buffer)?.mime_type().to_string();
 
-        for node in self.tree.root.children {
-            if let Node::Image(i) = node {
-                let need_fallback = is_image_need_resolve(&i);
 
-                if need_fallback {
-                    let data = (resolver)(&mime, Arc::new(buffer.clone()), &options);
-                    if let Some(kind) = data {
-                        i.kind = kind;
+        for node in &mut self.tree.root.children {
+            traverse_tree_mut(node, &|node| {
+                if let Node::Image(ref mut i) = node {
+                    let need_fallback = is_image_need_resolve(&i);
+
+                    if need_fallback {
+                        let data = (resolver)(&mime, Arc::new(buffer.clone()), &options);
+                        if let Some(ref kind) = data {
+                            i.as_mut().kind = kind.clone();
+                        }
                     }
                 }
-            }
+            });
         }
+
         Ok(())
     }
 }
 
 fn is_image_need_resolve(image: &Box<usvg::Image>) -> bool {
-    match image.kind {
+    println!("??????");
+    match &image.kind {
         ImageKind::JPEG(d) =>
             is_http_or_https(d.clone()),
 
@@ -613,12 +665,36 @@ fn is_image_need_resolve(image: &Box<usvg::Image>) -> bool {
         ImageKind::GIF(d) =>
             is_http_or_https(d.clone()),
 
-        ImageKind::SVG(_) => false
+        ImageKind::SVG(_) => false,
     }
 }
 
 fn is_http_or_https(data: Arc<Vec<u8>>) -> bool {
     return data.starts_with(b"http://") || data.starts_with(b"https://");
+}
+
+fn traverse_tree_mut<F>(node: &mut usvg::Node, f: &F)
+    where
+        F: Fn(&mut usvg::Node),
+{
+    f(node);
+    if let usvg::Node::Group(g) = node {
+        for child in &mut g.children {
+            traverse_tree_mut(child, f);
+        }
+    }
+}
+
+fn traverse_tree<F>(node: &usvg::Node, f: &mut F)
+    where
+        F: FnMut(&usvg::Node),
+{
+    f(node);
+    if let usvg::Node::Group(g) = node {
+        for child in &g.children {
+            traverse_tree(child, f);
+        }
+    }
 }
 
 #[cfg(not(target_arch = "wasm32"))]
@@ -692,4 +768,19 @@ impl MimeType {
             _ => "image/jpeg",
         }
     }
+}
+
+
+#[test]
+fn test_parse() {
+    use resvg::*;
+
+    let svg = r#"  <!-- From https://octodex.github.com/nyantocat/ -->
+  <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <image href="https://octodex.github.com/images/nyantocat.gif" width="500" height="500"/>
+  </svg>"#;
+
+    let tree = usvg::Tree::from_str(svg, &Default::default()).unwrap();
+
+    assert_eq!(tree.root.has_children(), true);
 }

@@ -7,6 +7,7 @@ use std::sync::Arc;
 use crate::error::Error;
 #[cfg(not(target_arch = "wasm32"))]
 use napi::{bindgen_prelude::Buffer, Either};
+use napi::bindgen_prelude::JsValuesTupleIntoVec;
 use resvg::tiny_skia::{Pixmap, Transform};
 use resvg::usvg::fontdb::Database;
 use resvg::usvg::{self, ImageHrefResolver, ImageKind, Options, TreeParsing};
@@ -366,9 +367,10 @@ where
 
 pub(crate) fn tweak_usvg_options(opts: &mut usvg::Options) {
     opts.image_href_resolver = ImageHrefResolver::default();
-    opts.image_href_resolver.resolve_string = Arc::new(move |data: &str, opts: &Options| {
+    opts.image_href_resolver.resolve_string = Box::new(move |data: &str, opts: &Options| {
+        println!("data: {}", data);
         if data.starts_with("https://") || data.starts_with("http://") {
-            Some(ImageKind::RAW(1, 1, Arc::new(data.as_bytes().to_vec())))
+            Some(ImageKind::GIF(Arc::new(data.as_bytes().to_vec())))
         } else {
             let resolver = ImageHrefResolver::default().resolve_string;
             (resolver)(data, opts)

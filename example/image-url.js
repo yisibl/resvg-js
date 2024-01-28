@@ -9,7 +9,7 @@ async function main() {
   const svg = `
   <!-- From https://octodex.github.com/nyantocat/ -->
   <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <image href="https://octodex.github.com/images/nyantocat.gif" width="500" height="500"/>
+    <image xlink:href="https://octodex.github.com/images/nyantocat.gif" width="500" height="500"/>
   </svg>
   `
   const opts = {
@@ -22,6 +22,7 @@ async function main() {
 
   const resolved = await Promise.all(
     resvg.imagesToResolve().map(async (url) => {
+      console.log("??????")
       console.info('image url', url)
       const img = await fetch(url)
       const buffer = await img.arrayBuffer()
