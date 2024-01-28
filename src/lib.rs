@@ -13,11 +13,11 @@ use napi_derive::napi;
 use options::JsOptions;
 use pathfinder_geometry::rect::RectF;
 use pathfinder_geometry::vector::Vector2F;
+use resvg::usvg::TreePostProc;
 use resvg::{
     tiny_skia::{Pixmap, Point},
     usvg::{self, ImageKind, Node, TreeParsing},
 };
-use resvg::usvg::TreePostProc;
 #[cfg(target_arch = "wasm32")]
 use wasm_bindgen::{
     prelude::{wasm_bindgen, JsValue},
@@ -31,10 +31,10 @@ mod options;
 use error::Error;
 
 #[cfg(all(
-not(target_arch = "wasm32"),
-not(debug_assertions),
-not(all(target_os = "windows", target_arch = "aarch64")),
-not(all(target_os = "linux", target_arch = "aarch64", target_env = "musl")),
+    not(target_arch = "wasm32"),
+    not(debug_assertions),
+    not(all(target_os = "windows", target_arch = "aarch64")),
+    not(all(target_os = "linux", target_arch = "aarch64", target_env = "musl")),
 ))]
 #[global_allocator]
 static ALLOC: mimalloc_rust::GlobalMiMalloc = mimalloc_rust::GlobalMiMalloc;
@@ -159,11 +159,8 @@ impl Resvg {
             Either::A(a) => usvg::Tree::from_str(a.as_str(), &opts),
             Either::B(b) => usvg::Tree::from_data(b.as_ref(), &opts),
         }
-            .map_err(|e| napi::Error::from_reason(format!("{e}")))?;
-        tree.postprocess(
-            Default::default(),
-            &fontdb,
-        );
+        .map_err(|e| napi::Error::from_reason(format!("{e}")))?;
+        tree.postprocess(Default::default(), &fontdb);
         tree.calculate_abs_transforms();
         tree.calculate_bounding_boxes();
 
@@ -303,10 +300,7 @@ impl Resvg {
         } else {
             Err(Error::InvalidInput)
         }?;
-        tree.postprocess(
-            Default::default(),
-            &fontdb,
-        );
+        tree.postprocess(Default::default(), &fontdb);
         tree.calculate_abs_transforms();
         tree.calculate_bounding_boxes();
         Ok(Resvg { tree, js_options })
@@ -417,7 +411,10 @@ impl Resvg {
     fn node_bbox(&self, node: &usvg::Node) -> Option<RectF> {
         let transform = node.abs_transform();
         let bbox = node.bounding_box()?;
-        let bbox = RectF::new(Vector2F::new(bbox.x(), bbox.y()), Vector2F::new(bbox.width(), bbox.height()));
+        let bbox = RectF::new(
+            Vector2F::new(bbox.x(), bbox.y()),
+            Vector2F::new(bbox.width(), bbox.height()),
+        );
         let mut pts = vec![
             Point::from_xy(bbox.min_x(), bbox.min_y()),
             Point::from_xy(bbox.max_x(), bbox.max_y()),
@@ -488,7 +485,6 @@ impl Resvg {
         let (options, _) = self.js_options.to_usvg_options();
         let mime = MimeType::parse(&buffer)?.mime_type().to_string();
 
-
         for node in &mut self.tree.root.children {
             traverse_tree_mut(node, &|node| {
                 if let Node::Image(ref mut i) = node {
@@ -516,8 +512,8 @@ fn is_http_or_https(data: &String) -> bool {
 }
 
 fn traverse_tree_mut<F>(node: &mut usvg::Node, f: &F)
-    where
-        F: Fn(&mut usvg::Node),
+where
+    F: Fn(&mut usvg::Node),
 {
     f(node);
     if let usvg::Node::Group(g) = node {
@@ -528,8 +524,8 @@ fn traverse_tree_mut<F>(node: &mut usvg::Node, f: &F)
 }
 
 fn traverse_tree<F>(node: &usvg::Node, f: &mut F)
-    where
-        F: FnMut(&usvg::Node),
+where
+    F: FnMut(&usvg::Node),
 {
     f(node);
     if let usvg::Node::Group(g) = node {
