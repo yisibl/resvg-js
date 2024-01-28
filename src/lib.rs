@@ -11,17 +11,13 @@ use napi::bindgen_prelude::{
 #[cfg(not(target_arch = "wasm32"))]
 use napi_derive::napi;
 use options::JsOptions;
-use pathfinder_content::{
-    outline::{Contour, Outline},
-    stroke::{LineCap, LineJoin, OutlineStrokeToFill, StrokeStyle},
-};
 use pathfinder_geometry::rect::RectF;
 use pathfinder_geometry::vector::Vector2F;
 use resvg::{
-    tiny_skia::{PathSegment, Pixmap, Point},
+    tiny_skia::{Pixmap, Point},
     usvg::{self, ImageKind, Node, TreeParsing},
 };
-use resvg::usvg::{Image, TreePostProc, TreeWriting};
+use resvg::usvg::TreePostProc;
 #[cfg(target_arch = "wasm32")]
 use wasm_bindgen::{
     prelude::{wasm_bindgen, JsValue},
@@ -261,9 +257,9 @@ impl Resvg {
     }
 
     #[napi]
-    pub fn resolve_image(&mut self, href: String, buffer: Buffer) -> Result<(), NapiError> {
+    pub fn resolve_image(&mut self, _href: String, buffer: Buffer) -> Result<(), NapiError> {
         let buffer = buffer.to_vec();
-        Ok(self.resolve_image_inner(href, buffer)?)
+        Ok(self.resolve_image_inner(buffer)?)
     }
 
     /// Get the SVG width
@@ -431,13 +427,6 @@ impl Resvg {
         Some(r)
     }
 
-    fn viewbox(&self) -> RectF {
-        RectF::new(
-            Vector2F::new(0.0, 0.0),
-            Vector2F::new(self.width() as f32, self.height() as f32),
-        )
-    }
-
     fn render_inner(&self) -> Result<RenderedImage, Error> {
         let (width, height, transform) = self.js_options.fit_to.fit_to(self.tree.size)?;
         let mut pixmap = self.js_options.create_pixmap(width, height)?;
@@ -488,7 +477,7 @@ impl Resvg {
         Ok(data)
     }
 
-    fn resolve_image_inner(&mut self, href: String, buffer: Vec<u8>) -> Result<(), Error> {
+    fn resolve_image_inner(&mut self, buffer: Vec<u8>) -> Result<(), Error> {
         let resolver = usvg::ImageHrefResolver::default_data_resolver();
         let (options, _) = self.js_options.to_usvg_options();
         let mime = MimeType::parse(&buffer)?.mime_type().to_string();

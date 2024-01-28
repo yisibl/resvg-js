@@ -2,12 +2,9 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-use std::sync::Arc;
-
 use crate::error::Error;
 #[cfg(not(target_arch = "wasm32"))]
 use napi::{bindgen_prelude::Buffer, Either};
-use napi::bindgen_prelude::JsValuesTupleIntoVec;
 use resvg::tiny_skia::{Pixmap, Transform};
 use resvg::usvg::fontdb::Database;
 use resvg::usvg::{self, ImageHrefResolver, ImageKind, Options, TreeParsing};
