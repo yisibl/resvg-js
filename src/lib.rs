@@ -133,7 +133,8 @@ impl RenderedImage {
     }
 }
 
-#[cfg_attr(not(target_arch = "wasm32"), napi)]
+#[cfg(not(target_arch = "wasm32"))]
+#[napi]
 impl Resvg {
     #[napi(constructor)]
     pub fn new(svg: Either<String, Buffer>, options: Option<String>) -> Result<Resvg, NapiError> {
@@ -302,7 +303,12 @@ impl Resvg {
         } else {
             Err(Error::InvalidInput)
         }?;
-        tree.convert_text(&fontdb);
+        tree.postprocess(
+            Default::default(),
+            &fontdb,
+        );
+        tree.calculate_abs_transforms();
+        tree.calculate_bounding_boxes();
         Ok(Resvg { tree, js_options })
     }
 
@@ -341,7 +347,7 @@ impl Resvg {
             Vector2F::new(rect.right(), rect.bottom()),
         );
         let mut v = None;
-        for child in self.tree.root.children() {
+        for child in &self.tree.root.children {
             let child_viewbox = match self.node_bbox(child).and_then(|v| v.intersection(rect)) {
                 Some(v) => v,
                 None => continue,
@@ -366,7 +372,7 @@ impl Resvg {
     /// This will first apply transform.
     /// Similar to `SVGGraphicsElement.getBBox()` DOM API.
     pub fn get_bbox(&self) -> Option<BBox> {
-        let bbox = self.tree.root.calculate_bbox()?;
+        let bbox = self.tree.root.bounding_box?;
         Some(BBox {
             x: bbox.x() as f64,
             y: bbox.y() as f64,
@@ -398,12 +404,12 @@ impl Resvg {
 
     #[wasm_bindgen(js_name = resolveImage)]
     pub fn resolve_image(
-        &self,
-        href: String,
+        &mut self,
+        _href: String,
         buffer: js_sys::Uint8Array,
     ) -> Result<(), js_sys::Error> {
         let buffer = buffer.to_vec();
-        Ok(self.resolve_image_inner(href, buffer)?)
+        Ok(self.resolve_image_inner(buffer)?)
     }
 }
 
