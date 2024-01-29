@@ -3,13 +3,13 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 use crate::error::Error;
+use crate::is_not_data_url;
 #[cfg(not(target_arch = "wasm32"))]
 use napi::{bindgen_prelude::Buffer, Either};
 use resvg::tiny_skia::{Pixmap, Transform};
 use resvg::usvg::fontdb::Database;
 use resvg::usvg::{self, ImageHrefResolver, ImageKind, Options, TreeParsing};
 use serde::{Deserialize, Deserializer};
-use crate::is_not_data_url;
 
 /// Image fit options.
 /// This provides the deserializer for `usvg::FitTo`.
