@@ -9,7 +9,7 @@ async function main() {
   const svg = `
   <!-- From https://octodex.github.com/nyantocat/ -->
   <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <image xlink:href="https://octodex.github.com/images/nyantocat.gif" width="500" height="500"/>
+    <image href="https://octodex.github.com/images/nyantocat.gif" width="500" height="500"/>
   </svg>
   `
   const opts = {
