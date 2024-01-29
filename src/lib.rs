@@ -10,6 +10,8 @@ use napi::bindgen_prelude::{
 };
 #[cfg(not(target_arch = "wasm32"))]
 use napi_derive::napi;
+use pathfinder_content::outline::{Contour, Outline};
+use pathfinder_content::stroke::{OutlineStrokeToFill, StrokeStyle, LineJoin, LineCap};
 use options::JsOptions;
 use pathfinder_geometry::rect::RectF;
 use pathfinder_geometry::vector::Vector2F;
@@ -18,6 +20,7 @@ use resvg::{
     tiny_skia::{Pixmap, Point},
     usvg::{self, ImageKind, Node, TreeParsing},
 };
+use resvg::tiny_skia::PathSegment;
 #[cfg(target_arch = "wasm32")]
 use wasm_bindgen::{
     prelude::{wasm_bindgen, JsValue},
@@ -224,7 +227,7 @@ impl Resvg {
     // Either<T, Undefined> depends on napi 2.4.3
     // https://github.com/napi-rs/napi-rs/releases/tag/napi@2.4.3
     pub fn get_bbox(&self) -> Either<BBox, Undefined> {
-        match self.tree.root.bounding_box {
+        match self.tree.root.abs_bounding_box() {
             Some(bbox) => Either::A(BBox {
                 x: bbox.x() as f64,
                 y: bbox.y() as f64,
@@ -410,11 +413,114 @@ impl Resvg {
 impl Resvg {
     fn node_bbox(&self, node: &usvg::Node) -> Option<RectF> {
         let transform = node.abs_transform();
-        let bbox = node.bounding_box()?;
-        let bbox = RectF::new(
-            Vector2F::new(bbox.x(), bbox.y()),
-            Vector2F::new(bbox.width(), bbox.height()),
-        );
+        let bbox = match node {
+            usvg::Node::Path(p) => {
+                let no_fill = p.fill.is_none()
+                    || p.fill
+                    .as_ref()
+                    .map(|f| f.opacity.get() == 0.0)
+                    .unwrap_or_default();
+                let no_stroke = p.stroke.is_none()
+                    || p.stroke
+                    .as_ref()
+                    .map(|f| f.opacity.get() == 0.0)
+                    .unwrap_or_default();
+                if no_fill && no_stroke {
+                    return None;
+                }
+                let mut outline = Outline::new();
+                let mut contour = Contour::new();
+                let mut iter = p.data.segments().peekable();
+                while let Some(seg) = iter.next() {
+                    match seg {
+                        PathSegment::MoveTo(p) => {
+                            if !contour.is_empty() {
+                                outline
+                                    .push_contour(std::mem::replace(&mut contour, Contour::new()));
+                            }
+                            contour.push_endpoint(Vector2F::new(p.x, p.y))
+                        }
+                        PathSegment::LineTo(p) => {
+                            let v = Vector2F::new(p.x, p.y);
+                            if let Some(PathSegment::Close) = iter.peek() {
+                                let first = contour.position_of(0);
+                                if (first - v).square_length() < 1.0 {
+                                    continue;
+                                }
+                            }
+                            contour.push_endpoint(v);
+                        }
+                        PathSegment::CubicTo(p1, p2, p) => {
+                            contour.push_cubic(
+                                Vector2F::new(p1.x, p1.y),
+                                Vector2F::new(p2.x, p2.y),
+                                Vector2F::new(p.x, p.y),
+                            );
+                        }
+                        PathSegment::QuadTo(p1, p) => {
+                            contour
+                                .push_quadratic(Vector2F::new(p1.x, p1.y), Vector2F::new(p.x, p.y));
+                        }
+                        PathSegment::Close => {
+                            contour.close();
+                            outline.push_contour(std::mem::replace(&mut contour, Contour::new()));
+                        }
+                    }
+                }
+                if !contour.is_empty() {
+                    outline.push_contour(std::mem::replace(&mut contour, Contour::new()));
+                }
+                if let Some(stroke) = p.stroke.as_ref() {
+                    if !no_stroke {
+                        let mut style = StrokeStyle::default();
+                        style.line_width = stroke.width.get() as f32;
+                        style.line_join = LineJoin::Miter(style.line_width);
+                        style.line_cap = match stroke.linecap {
+                            usvg::LineCap::Butt => LineCap::Butt,
+                            usvg::LineCap::Round => LineCap::Round,
+                            usvg::LineCap::Square => LineCap::Square,
+                        };
+                        let mut filler = OutlineStrokeToFill::new(&outline, style);
+                        filler.offset();
+                        outline = filler.into_outline();
+                    }
+                }
+                Some(outline.bounds())
+            }
+            usvg::Node::Group(g) => {
+                let clippath = if let Some(ref clippath) =
+                    g.clip_path.as_ref().and_then(|n| n.borrow().root.children.first().cloned())
+                {
+                    self.node_bbox(clippath)
+                } else if let Some(ref mask) = g.mask.as_ref().and_then(|n| n.borrow().root.children.first().cloned()) {
+                    self.node_bbox(mask)
+                } else {
+                    Some(self.viewbox())
+                }?;
+                let mut v = None;
+                for child in &g.children {
+                    let child_viewbox =
+                        match self.node_bbox(child).and_then(|v| v.intersection(clippath)) {
+                            Some(v) => v,
+                            None => continue,
+                        };
+                    if let Some(v) = v.as_mut() {
+                        *v = child_viewbox.union_rect(*v);
+                    } else {
+                        v = Some(child_viewbox)
+                    };
+                }
+                v.and_then(|v| v.intersection(self.viewbox()))
+            }
+            usvg::Node::Image(image) => {
+                let rect = image.view_box.rect;
+                Some(points_to_rect(
+                    Vector2F::new(rect.x(), rect.y()),
+                    Vector2F::new(rect.right(), rect.bottom()),
+                ))
+            }
+            usvg::Node::Text(_) => None,
+        }?;
         let mut pts = vec![
             Point::from_xy(bbox.min_x(), bbox.min_y()),
             Point::from_xy(bbox.max_x(), bbox.max_y()),
@@ -428,6 +534,13 @@ impl Resvg {
         let y_max = pts[0].y.max(pts[1].y).max(pts[2].y).max(pts[3].y);
         let r = points_to_rect(Vector2F::new(x_min, y_min), Vector2F::new(x_max, y_max));
         Some(r)
+    }
+
+    fn viewbox(&self) -> RectF {
+        RectF::new(
+            Vector2F::new(0.0, 0.0),
+            Vector2F::new(self.width() as f32, self.height() as f32),
+        )
     }
 
     fn render_inner(&self) -> Result<RenderedImage, Error> {
