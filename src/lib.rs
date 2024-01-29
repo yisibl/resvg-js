@@ -554,11 +554,7 @@ impl Resvg {
     /// https://github.com/RazrFalcon/resvg/blob/v0.37.0/crates/usvg-tree/src/lib.rs#L1298-L1335
     fn calc_node_bbox(&self, node: &Node, ts: Transform) -> Option<BBox> {
         match node {
-            Node::Path(ref path) => path
-                .data
-                .compute_tight_bounds()?
-                .transform(ts)
-                .map(bbox_from_rect),
+            Node::Path(ref path) => bbox_with_transform(&path.data, ts, path.stroke.as_ref()),
             Node::Image(ref img) => img.view_box.rect.transform(ts).map(bbox_from_nonzrect),
             Node::Group(g) => {
                 // https://github.com/RazrFalcon/resvg/blob/v0.37.0/crates/usvg-tree/src/geom.rs#L89-L98
@@ -697,16 +693,6 @@ fn bbox_from_nonzrect(rect: NonZeroRect) -> BBox {
     }
 }
 
-// https://github.com/RazrFalcon/resvg/blob/1dfe9e506c2f90b55e662b1803d27f0b4e4ace77/crates/usvg-tree/src/geom.rs#L67-L76
-fn bbox_from_rect(rect: Rect) -> BBox {
-    BBox {
-        x: rect.x() as f64,
-        y: rect.y() as f64,
-        width: rect.width() as f64,
-        height: rect.height() as f64,
-    }
-}
-
 // https://github.com/RazrFalcon/resvg/blob/1dfe9e506c2f90b55e662b1803d27f0b4e4ace77/crates/usvg-tree/src/geom.rs#L102-L107
 fn bbox_is_default(bbox: &BBox) -> bool {
     bbox.x == f64::MAX && bbox.y == f64::MAX && bbox.width == f64::MIN && bbox.height == f64::MIN
@@ -724,6 +710,144 @@ fn bbox_expanded(this_bbox: &BBox, other: &BBox) -> BBox {
         width: this_bbox.width.max(other.width),
         height: this_bbox.height.max(other.height),
     }
+}
+
+// https://github.com/zimond/resvg/commit/3495d8705b302d6d266748516973606ca9657906
+fn bbox_with_transform(
+    path: &usvg::tiny_skia_path::Path,
+    ts: Transform,
+    stroke: Option<&usvg::Stroke>,
+) -> Option<BBox> {
+    use kurbo::{CubicBez, Point};
+
+    if path.segments().count() == 0 {
+        return None;
+    }
+
+    let mut prev_x = 0.0;
+    let mut prev_y = 0.0;
+    let mut minx = 0.0;
+    let mut miny = 0.0;
+    let mut maxx = 0.0;
+    let mut maxy = 0.0;
+
+    if let Some(PathSegment::MoveTo(p)) =
+        path.clone().transform(ts).and_then(|p| p.segments().next())
+    {
+        prev_x = p.x;
+        prev_y = p.y;
+        minx = p.x;
+        miny = p.y;
+        maxx = p.x;
+        maxy = p.y;
+    }
+
+    for seg in path
+        .clone()
+        .transform(ts)
+        .as_ref()
+        .map(|p| p.segments())
+        .into_iter()
+        .flatten()
+    {
+        match seg {
+            PathSegment::MoveTo(p) | PathSegment::LineTo(p) => {
+                let x = p.x;
+                let y = p.y;
+                prev_x = x;
+                prev_y = y;
+
+                if x > maxx {
+                    maxx = x;
+                } else if x < minx {
+                    minx = x;
+                }
+
+                if y > maxy {
+                    maxy = y;
+                } else if y < miny {
+                    miny = y;
+                }
+            }
+            PathSegment::CubicTo(p1, p2, p) => {
+                let curve = CubicBez::new(
+                    Point::new(prev_x as f64, prev_y as f64),
+                    Point::new(p1.x as f64, p1.y as f64),
+                    Point::new(p2.x as f64, p2.y as f64),
+                    Point::new(p.x as f64, p.y as f64),
+                );
+                let r = kurbo::ParamCurveExtrema::bounding_box(&curve);
+
+                if (r.x0 as f32) < minx {
+                    minx = r.x0 as f32;
+                }
+                if (r.x1 as f32) > maxx {
+                    maxx = r.x1 as f32;
+                }
+                if (r.y0 as f32) < miny {
+                    miny = r.y0 as f32;
+                }
+                if (r.y1 as f32) > maxy {
+                    maxy = r.y1 as f32;
+                }
+
+                prev_x = p.x;
+                prev_y = p.y;
+            }
+            PathSegment::QuadTo(p1, p) => {
+                let curve = CubicBez::new(
+                    Point::new(prev_x as f64, prev_y as f64),
+                    Point::new(p1.x as f64, p1.y as f64),
+                    Point::new(p1.x as f64, p1.y as f64),
+                    Point::new(p.x as f64, p.y as f64),
+                );
+                let r = kurbo::ParamCurveExtrema::bounding_box(&curve);
+
+                if (r.x0 as f32) < minx {
+                    minx = r.x0 as f32;
+                }
+                if (r.x1 as f32) > maxx {
+                    maxx = r.x1 as f32;
+                }
+                if (r.y0 as f32) < miny {
+                    miny = r.y0 as f32;
+                }
+                if (r.y1 as f32) > maxy {
+                    maxy = r.y1 as f32;
+                }
+
+                prev_x = p.x;
+                prev_y = p.y;
+            }
+            _ => {}
+        }
+    }
+
+    // TODO: find a better way
+    // It's an approximation, but it's better than nothing.
+    if let Some(stroke) = stroke {
+        let w = stroke.width.get()
+            / if ts.is_identity() {
+                2.0
+            } else {
+                2.0 / (ts.sx * ts.sy - ts.kx * ts.ky).abs().sqrt()
+            };
+        minx -= w;
+        miny -= w;
+        maxx += w;
+        maxy += w;
+    }
+
+    let width = maxx - minx;
+    let height = maxy - miny;
+
+    // Some(BBox::from(Rect::from_xywh(minx, miny, width, height)?))
+    Some(BBox {
+        x: minx as f64,
+        y: miny as f64,
+        width: width as f64,
+        height: height as f64,
+    })
 }
 
 fn is_not_data_url(data: &str) -> bool {

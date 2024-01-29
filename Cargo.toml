@@ -12,6 +12,7 @@ crate-type = ["cdylib"]
 env_logger = "0.10.0"
 log = "0.4"
 
+kurbo = "0.9.5"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 svgtypes = "0.13.0"
