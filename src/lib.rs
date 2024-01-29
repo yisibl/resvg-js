@@ -15,7 +15,7 @@ use pathfinder_content::outline::{Contour, Outline};
 use pathfinder_content::stroke::{LineCap, LineJoin, OutlineStrokeToFill, StrokeStyle};
 use pathfinder_geometry::rect::RectF;
 use pathfinder_geometry::vector::Vector2F;
-use resvg::tiny_skia::{PathSegment, Transform};
+use resvg::tiny_skia::{NonZeroRect, PathSegment, Rect, Transform};
 use resvg::usvg::TreePostProc;
 use resvg::{
     tiny_skia::{Pixmap, Point},
@@ -34,10 +34,10 @@ mod options;
 use error::Error;
 
 #[cfg(all(
-    not(target_arch = "wasm32"),
-    not(debug_assertions),
-    not(all(target_os = "windows", target_arch = "aarch64")),
-    not(all(target_os = "linux", target_arch = "aarch64", target_env = "musl")),
+not(target_arch = "wasm32"),
+not(debug_assertions),
+not(all(target_os = "windows", target_arch = "aarch64")),
+not(all(target_os = "linux", target_arch = "aarch64", target_env = "musl")),
 ))]
 #[global_allocator]
 static ALLOC: mimalloc_rust::GlobalMiMalloc = mimalloc_rust::GlobalMiMalloc;
@@ -162,7 +162,7 @@ impl Resvg {
             Either::A(a) => usvg::Tree::from_str(a.as_str(), &opts),
             Either::B(b) => usvg::Tree::from_data(b.as_ref(), &opts),
         }
-        .map_err(|e| napi::Error::from_reason(format!("{e}")))?;
+            .map_err(|e| napi::Error::from_reason(format!("{e}")))?;
         tree.postprocess(Default::default(), &fontdb);
         tree.calculate_abs_transforms();
         tree.calculate_bounding_boxes();
@@ -227,12 +227,12 @@ impl Resvg {
     // Either<T, Undefined> depends on napi 2.4.3
     // https://github.com/napi-rs/napi-rs/releases/tag/napi@2.4.3
     pub fn get_bbox(&self) -> Either<BBox, Undefined> {
-        match self.tree.root.abs_bounding_box() {
+        match self.calculate_bbox(self.tree.root.clone()) {
             Some(bbox) => Either::A(BBox {
-                x: bbox.x() as f64,
-                y: bbox.y() as f64,
-                width: bbox.width() as f64,
-                height: bbox.height() as f64,
+                x: bbox.x,
+                y: bbox.y as f64,
+                width: bbox.width,
+                height: bbox.height,
             }),
             None => Either::B(()),
         }
@@ -369,12 +369,12 @@ impl Resvg {
     /// This will first apply transform.
     /// Similar to `SVGGraphicsElement.getBBox()` DOM API.
     pub fn get_bbox(&self) -> Option<BBox> {
-        let bbox = self.tree.root.bounding_box?;
+        let bbox = self.calculate_bbox(self.tree.root.clone())?;
         Some(BBox {
-            x: bbox.x() as f64,
-            y: bbox.y() as f64,
-            width: bbox.width() as f64,
-            height: bbox.height() as f64,
+            x: bbox.x,
+            y: bbox.y,
+            width: bbox.width,
+            height: bbox.height,
         })
     }
 
@@ -417,14 +417,14 @@ impl Resvg {
             usvg::Node::Path(p) => {
                 let no_fill = p.fill.is_none()
                     || p.fill
-                        .as_ref()
-                        .map(|f| f.opacity.get() == 0.0)
-                        .unwrap_or_default();
+                    .as_ref()
+                    .map(|f| f.opacity.get() == 0.0)
+                    .unwrap_or_default();
                 let no_stroke = p.stroke.is_none()
                     || p.stroke
-                        .as_ref()
-                        .map(|f| f.opacity.get() == 0.0)
-                        .unwrap_or_default();
+                    .as_ref()
+                    .map(|f| f.opacity.get() == 0.0)
+                    .unwrap_or_default();
                 if no_fill && no_stroke {
                     return None;
                 }
@@ -543,6 +543,66 @@ impl Resvg {
         Some(r)
     }
 
+    // https://github.com/RazrFalcon/resvg/blob/1dfe9e506c2f90b55e662b1803d27f0b4e4ace77/crates/usvg-tree/src/lib.rs#L1289-L1291
+    #[inline]
+    fn calculate_bbox(&self, group: usvg::Group) -> Option<BBox> {
+        let node = Node::Group(Box::new(group));
+        let transform = node.abs_transform();
+        self.calc_node_bbox(&node, transform)
+    }
+
+    /// https://github.com/RazrFalcon/resvg/blob/v0.37.0/crates/usvg-tree/src/lib.rs#L1298-L1335
+    fn calc_node_bbox(&self, node: &Node, ts: Transform) -> Option<BBox> {
+        match node {
+            Node::Path(ref path) => path
+                .data
+                .compute_tight_bounds()?
+                .transform(ts)
+                .map(bbox_from_rect),
+            Node::Image(ref img) => img.view_box.rect.transform(ts).map(bbox_from_nonzrect),
+            Node::Group(g) => {
+                // https://github.com/RazrFalcon/resvg/blob/v0.37.0/crates/usvg-tree/src/geom.rs#L89-L98
+                // Self {
+                //   left: f32::MAX,
+                //   top: f32::MAX,
+                //   right: f32::MIN,
+                //   bottom: f32::MIN,
+                // }
+                let mut bbox = BBox {
+                    x: f64::MAX,
+                    y: f64::MAX,
+                    width: f64::MIN,
+                    height: f64::MIN,
+                };
+
+                for child in &g.children {
+                    let child_transform = if let Node::Group(ref group) = child {
+                        ts.pre_concat(group.transform)
+                    } else {
+                        ts
+                    };
+                    if let Some(c_bbox) = self.calc_node_bbox(&child, child_transform) {
+                        bbox = bbox_expanded(&bbox, &c_bbox);
+                    }
+                }
+
+                // Make sure bbox was changed.
+                if bbox_is_default(&bbox) {
+                    return None;
+                }
+
+                Some(bbox)
+            }
+            Node::Text(ref text) => {
+                if let Some(bbox) = text.bounding_box {
+                    bbox.transform(ts).map(bbox_from_nonzrect)
+                } else {
+                    None
+                }
+            }
+        }
+    }
+
     fn viewbox(&self) -> RectF {
         RectF::new(
             Vector2F::new(0.0, 0.0),
@@ -627,13 +687,55 @@ impl Resvg {
     }
 }
 
+// https://github.com/RazrFalcon/resvg/blob/1dfe9e506c2f90b55e662b1803d27f0b4e4ace77/crates/usvg-tree/src/geom.rs#L78-L87
+fn bbox_from_nonzrect(rect: NonZeroRect) -> BBox {
+    BBox {
+        x: rect.x() as f64,
+        y: rect.y() as f64,
+        width: rect.width() as f64,
+        height: rect.height() as f64,
+    }
+}
+
+// https://github.com/RazrFalcon/resvg/blob/1dfe9e506c2f90b55e662b1803d27f0b4e4ace77/crates/usvg-tree/src/geom.rs#L67-L76
+fn bbox_from_rect(rect: Rect) -> BBox {
+    BBox {
+        x: rect.x() as f64,
+        y: rect.y() as f64,
+        width: rect.width() as f64,
+        height: rect.height() as f64,
+    }
+}
+
+// https://github.com/RazrFalcon/resvg/blob/1dfe9e506c2f90b55e662b1803d27f0b4e4ace77/crates/usvg-tree/src/geom.rs#L102-L107
+fn bbox_is_default(bbox: &BBox) -> bool {
+    bbox.x == f64::MAX
+        && bbox.y == f64::MAX
+        && bbox.width == f64::MIN
+        && bbox.height == f64::MIN
+}
+
+// https://github.com/RazrFalcon/resvg/blob/1dfe9e506c2f90b55e662b1803d27f0b4e4ace77/crates/usvg-tree/src/geom.rs#L111-L122
+fn bbox_expanded(this_bbox: &BBox, other: &BBox) -> BBox {
+    // left: self.left.min(r.left),
+    // top: self.top.min(r.top),
+    // right: self.right.max(r.right),
+    // bottom: self.bottom.max(r.bottom),
+    BBox {
+        x: this_bbox.x.min(other.x),
+        y: this_bbox.y.min(other.y),
+        width: this_bbox.width.max(other.width),
+        height: this_bbox.height.max(other.height),
+    }
+}
+
 fn is_not_data_url(data: &str) -> bool {
     return !data.starts_with("data:");
 }
 
 fn traverse_tree_mut<F>(node: &mut usvg::Node, f: &F)
-where
-    F: Fn(&mut usvg::Node),
+    where
+        F: Fn(&mut usvg::Node),
 {
     f(node);
     if let usvg::Node::Group(g) = node {
@@ -644,8 +746,8 @@ where
 }
 
 fn traverse_tree<F>(node: &usvg::Node, f: &mut F)
-where
-    F: FnMut(&usvg::Node),
+    where
+        F: FnMut(&usvg::Node),
 {
     f(node);
     if let usvg::Node::Group(g) = node {
