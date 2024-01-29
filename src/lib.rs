@@ -10,17 +10,17 @@ use napi::bindgen_prelude::{
 };
 #[cfg(not(target_arch = "wasm32"))]
 use napi_derive::napi;
-use pathfinder_content::outline::{Contour, Outline};
-use pathfinder_content::stroke::{OutlineStrokeToFill, StrokeStyle, LineJoin, LineCap};
 use options::JsOptions;
+use pathfinder_content::outline::{Contour, Outline};
+use pathfinder_content::stroke::{LineCap, LineJoin, OutlineStrokeToFill, StrokeStyle};
 use pathfinder_geometry::rect::RectF;
 use pathfinder_geometry::vector::Vector2F;
+use resvg::tiny_skia::PathSegment;
 use resvg::usvg::TreePostProc;
 use resvg::{
     tiny_skia::{Pixmap, Point},
     usvg::{self, ImageKind, Node, TreeParsing},
 };
-use resvg::tiny_skia::PathSegment;
 #[cfg(target_arch = "wasm32")]
 use wasm_bindgen::{
     prelude::{wasm_bindgen, JsValue},
@@ -417,14 +417,14 @@ impl Resvg {
             usvg::Node::Path(p) => {
                 let no_fill = p.fill.is_none()
                     || p.fill
-                    .as_ref()
-                    .map(|f| f.opacity.get() == 0.0)
-                    .unwrap_or_default();
+                        .as_ref()
+                        .map(|f| f.opacity.get() == 0.0)
+                        .unwrap_or_default();
                 let no_stroke = p.stroke.is_none()
                     || p.stroke
-                    .as_ref()
-                    .map(|f| f.opacity.get() == 0.0)
-                    .unwrap_or_default();
+                        .as_ref()
+                        .map(|f| f.opacity.get() == 0.0)
+                        .unwrap_or_default();
                 if no_fill && no_stroke {
                     return None;
                 }
@@ -488,11 +488,17 @@ impl Resvg {
                 Some(outline.bounds())
             }
             usvg::Node::Group(g) => {
-                let clippath = if let Some(ref clippath) =
-                    g.clip_path.as_ref().and_then(|n| n.borrow().root.children.first().cloned())
+                let clippath = if let Some(ref clippath) = g
+                    .clip_path
+                    .as_ref()
+                    .and_then(|n| n.borrow().root.children.first().cloned())
                 {
                     self.node_bbox(clippath)
-                } else if let Some(ref mask) = g.mask.as_ref().and_then(|n| n.borrow().root.children.first().cloned()) {
+                } else if let Some(ref mask) = g
+                    .mask
+                    .as_ref()
+                    .and_then(|n| n.borrow().root.children.first().cloned())
+                {
                     self.node_bbox(mask)
                 } else {
                     Some(self.viewbox())
