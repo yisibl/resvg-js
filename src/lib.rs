@@ -468,7 +468,7 @@ impl Resvg {
 
                     match &img.kind {
                         ImageKind::HOLE(url) => {
-                            if is_http_or_https(&url) {
+                            if is_not_data_url(&url) {
                                 data.push(url.clone());
                             }
                         }
@@ -507,8 +507,8 @@ impl Resvg {
     }
 }
 
-fn is_http_or_https(data: &String) -> bool {
-    return data.starts_with("http://") || data.starts_with("https://");
+fn is_not_data_url(data: &str) -> bool {
+    return !data.starts_with("data:");
 }
 
 fn traverse_tree_mut<F>(node: &mut usvg::Node, f: &F)

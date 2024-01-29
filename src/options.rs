@@ -9,6 +9,7 @@ use resvg::tiny_skia::{Pixmap, Transform};
 use resvg::usvg::fontdb::Database;
 use resvg::usvg::{self, ImageHrefResolver, ImageKind, Options, TreeParsing};
 use serde::{Deserialize, Deserializer};
+use crate::is_not_data_url;
 
 /// Image fit options.
 /// This provides the deserializer for `usvg::FitTo`.
@@ -365,7 +366,7 @@ where
 pub(crate) fn tweak_usvg_options(opts: &mut usvg::Options) {
     opts.image_href_resolver = ImageHrefResolver::default();
     opts.image_href_resolver.resolve_string = Box::new(move |data: &str, opts: &Options| {
-        if data.starts_with("https://") || data.starts_with("http://") {
+        if is_not_data_url(data) {
             Some(ImageKind::HOLE(data.to_string()))
         } else {
             let resolver = ImageHrefResolver::default().resolve_string;
