@@ -34,10 +34,10 @@ mod options;
 use error::Error;
 
 #[cfg(all(
-not(target_arch = "wasm32"),
-not(debug_assertions),
-not(all(target_os = "windows", target_arch = "aarch64")),
-not(all(target_os = "linux", target_arch = "aarch64", target_env = "musl")),
+    not(target_arch = "wasm32"),
+    not(debug_assertions),
+    not(all(target_os = "windows", target_arch = "aarch64")),
+    not(all(target_os = "linux", target_arch = "aarch64", target_env = "musl")),
 ))]
 #[global_allocator]
 static ALLOC: mimalloc_rust::GlobalMiMalloc = mimalloc_rust::GlobalMiMalloc;
@@ -162,7 +162,7 @@ impl Resvg {
             Either::A(a) => usvg::Tree::from_str(a.as_str(), &opts),
             Either::B(b) => usvg::Tree::from_data(b.as_ref(), &opts),
         }
-            .map_err(|e| napi::Error::from_reason(format!("{e}")))?;
+        .map_err(|e| napi::Error::from_reason(format!("{e}")))?;
         tree.postprocess(Default::default(), &fontdb);
         tree.calculate_abs_transforms();
         tree.calculate_bounding_boxes();
@@ -417,14 +417,14 @@ impl Resvg {
             usvg::Node::Path(p) => {
                 let no_fill = p.fill.is_none()
                     || p.fill
-                    .as_ref()
-                    .map(|f| f.opacity.get() == 0.0)
-                    .unwrap_or_default();
+                        .as_ref()
+                        .map(|f| f.opacity.get() == 0.0)
+                        .unwrap_or_default();
                 let no_stroke = p.stroke.is_none()
                     || p.stroke
-                    .as_ref()
-                    .map(|f| f.opacity.get() == 0.0)
-                    .unwrap_or_default();
+                        .as_ref()
+                        .map(|f| f.opacity.get() == 0.0)
+                        .unwrap_or_default();
                 if no_fill && no_stroke {
                     return None;
                 }
@@ -709,10 +709,7 @@ fn bbox_from_rect(rect: Rect) -> BBox {
 
 // https://github.com/RazrFalcon/resvg/blob/1dfe9e506c2f90b55e662b1803d27f0b4e4ace77/crates/usvg-tree/src/geom.rs#L102-L107
 fn bbox_is_default(bbox: &BBox) -> bool {
-    bbox.x == f64::MAX
-        && bbox.y == f64::MAX
-        && bbox.width == f64::MIN
-        && bbox.height == f64::MIN
+    bbox.x == f64::MAX && bbox.y == f64::MAX && bbox.width == f64::MIN && bbox.height == f64::MIN
 }
 
 // https://github.com/RazrFalcon/resvg/blob/1dfe9e506c2f90b55e662b1803d27f0b4e4ace77/crates/usvg-tree/src/geom.rs#L111-L122
@@ -734,8 +731,8 @@ fn is_not_data_url(data: &str) -> bool {
 }
 
 fn traverse_tree_mut<F>(node: &mut usvg::Node, f: &F)
-    where
-        F: Fn(&mut usvg::Node),
+where
+    F: Fn(&mut usvg::Node),
 {
     f(node);
     if let usvg::Node::Group(g) = node {
@@ -746,8 +743,8 @@ fn traverse_tree_mut<F>(node: &mut usvg::Node, f: &F)
 }
 
 fn traverse_tree<F>(node: &usvg::Node, f: &mut F)
-    where
-        F: FnMut(&usvg::Node),
+where
+    F: FnMut(&usvg::Node),
 {
     f(node);
     if let usvg::Node::Group(g) = node {
