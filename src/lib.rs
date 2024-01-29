@@ -15,7 +15,7 @@ use pathfinder_content::outline::{Contour, Outline};
 use pathfinder_content::stroke::{LineCap, LineJoin, OutlineStrokeToFill, StrokeStyle};
 use pathfinder_geometry::rect::RectF;
 use pathfinder_geometry::vector::Vector2F;
-use resvg::tiny_skia::PathSegment;
+use resvg::tiny_skia::{PathSegment, Transform};
 use resvg::usvg::TreePostProc;
 use resvg::{
     tiny_skia::{Pixmap, Point},
@@ -412,7 +412,7 @@ impl Resvg {
 
 impl Resvg {
     fn node_bbox(&self, node: &usvg::Node) -> Option<RectF> {
-        let transform = node.abs_transform();
+        let mut transform = Transform::identity();
         let bbox = match node {
             usvg::Node::Path(p) => {
                 let no_fill = p.fill.is_none()
@@ -488,6 +488,7 @@ impl Resvg {
                 Some(outline.bounds())
             }
             usvg::Node::Group(g) => {
+                transform = g.transform;
                 let clippath = if let Some(ref clippath) = g
                     .clip_path
                     .as_ref()
