@@ -315,7 +315,7 @@ __metadata:
     "@typescript-eslint/parser": ^6.7.2
     ava: ^5.3.1
     copyfiles: ^2.4.1
-    dts-bundle-generator: ^8.0.1
+    dts-bundle-generator: ^9.0.0
     esbuild: ^0.20.0
     eslint: ^8.39.0
     eslint-config-prettier: ^8.5.0
@@ -1491,15 +1491,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dts-bundle-generator@npm:^8.0.1":
-  version: 8.0.1
-  resolution: "dts-bundle-generator@npm:8.0.1"
+"dts-bundle-generator@npm:^9.0.0":
+  version: 9.3.1
+  resolution: "dts-bundle-generator@npm:9.3.1"
   dependencies:
     typescript: ">=5.0.2"
     yargs: ^17.6.0
   bin:
     dts-bundle-generator: dist/bin/dts-bundle-generator.js
-  checksum: 619271a8297fcc2ae45a659585ea646c172fa0bb1efca1b8a5b6778434ddc3792036b5a744e767ba8f7e177253a4d8040b90a3b20bc1f3750be4a610e37b63dd
+  checksum: 86559ec98e97d440036b31b9d58be37f0b1f391ddf7e1a6ae565a7a65d3fb8b09826b6b1f19b80e0204dbba1e74408ee13a219cff4b89c8ecf77e17cca6bd016
   languageName: node
   linkType: hard
 
