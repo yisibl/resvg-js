@@ -84,15 +84,15 @@ export class Resvg {
   get height(): number
 }
 export class RenderedImage {
-  /** Write the image data to Buffer */
-  asPng(): Buffer
-
-  /** Get the RGBA pixels of the image */
-  get pixels(): Buffer
-
   /** Get the PNG width */
-  get width(): number
+  readonly width: number
 
   /** Get the PNG height */
-  get height(): number
+  readonly height: number
+
+  /** Get the RGBA pixels of the image */
+  readonly pixels: Uint8ClampedArray
+
+  /** Write the image data to Buffer */
+  asPng(): Buffer
 }

@@ -6,7 +6,7 @@ use std::sync::Arc;
 
 #[cfg(not(target_arch = "wasm32"))]
 use napi::bindgen_prelude::{
-    AbortSignal, AsyncTask, Buffer, Either, Error as NapiError, Task, Undefined,
+    AbortSignal, AsyncTask, Buffer, Uint8ClampedArray, Either, Error as NapiError, Task, Undefined,
 };
 #[cfg(not(target_arch = "wasm32"))]
 use napi_derive::napi;
@@ -111,15 +111,15 @@ impl RenderedImage {
     /// Get the RGBA pixels of the image
     #[cfg(target_arch = "wasm32")]
     #[wasm_bindgen(getter)]
-    pub fn pixels(&self) -> js_sys::Uint8Array {
+    pub fn pixels(&self) -> js_sys::Uint8ClampedArray {
         self.pix.data().into()
     }
 
     /// Get the RGBA pixels of the image
     #[cfg(not(target_arch = "wasm32"))]
     #[napi(getter)]
-    pub fn pixels(&self) -> Buffer {
-        self.pix.data().into()
+    pub fn pixels(&self) -> Uint8ClampedArray {
+        Uint8ClampedArray::new(self.pix.data().into())
     }
 
     #[cfg(not(target_arch = "wasm32"))]

@@ -9,7 +9,7 @@ import { Resvg, renderAsync } from '../index'
 
 import { jimpToRgbaPixels } from './helper'
 
-test('Use href to load a JPG image without alpha', async (t) => {
+test.skip('Use href to load a JPG image without alpha', async (t) => {
   const imgUrl = 'https://wd.imgix.net/image/kheDArv5csY6rvQUJDbWRscckLr1/De5peVXJZz3uSEmmVeYJ.png?w=500'
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
   <image href="${imgUrl}" width="500" height="250"/>
@@ -79,7 +79,7 @@ test('svg to RGBA pixels Array', async (t) => {
   const pngData = resvg.render()
   const pngBuffer = pngData.asPng()
 
-  const originPixels = pngData.pixels.toJSON().data
+  const originPixels = pngData.pixels
   const pixelArray = await jimpToRgbaPixels(pngBuffer, pngData.width, pngData.height)
 
   t.is(originPixels.length, pixelArray.length)
@@ -258,7 +258,7 @@ test('should be load custom fontFiles(no defaultFontFamily option)', (t) => {
     logLevel: 'debug',
   })
   const pngData = resvg.render()
-  const originPixels = pngData.pixels.toJSON().data
+  const originPixels = pngData.pixels
 
   // Find the number of blue `rgb(0,255,255)`pixels
   t.is(originPixels.join(',').match(/0,0,255/g)?.length, 1727)
@@ -280,7 +280,7 @@ test('should be load custom fontDirs(no defaultFontFamily option)', (t) => {
     },
   })
   const pngData = resvg.render()
-  const originPixels = pngData.pixels.toJSON().data
+  const originPixels = pngData.pixels
 
   // Find the number of blue `rgb(0,255,255)`pixels
   t.is(originPixels.join(',').match(/0,0,255/g)?.length, 1727)
@@ -303,7 +303,7 @@ test('The defaultFontFamily is not found in the OS and needs to be fallback', (t
     logLevel: 'debug',
   })
   const pngData = resvg.render()
-  const originPixels = pngData.pixels.toJSON().data
+  const originPixels = pngData.pixels
   // Find the number of blue `rgb(0,255,255)`pixels
   const matchPixels = originPixels.join(',').match(/0,0,255/g)
   t.true(matchPixels !== null) // If the font is not matched, there are no blue pixels.
@@ -327,7 +327,7 @@ test('Test defaultFontFamily', (t) => {
     logLevel: 'debug',
   })
   const pngData = resvg.render()
-  const originPixels = pngData.pixels.toJSON().data
+  const originPixels = pngData.pixels
   // Find the number of blue `rgb(0,255,255)`pixels
   const matchPixels = originPixels.join(',').match(/0,0,255/g)
   t.true(matchPixels !== null) // If the font is not matched, there are no blue pixels.

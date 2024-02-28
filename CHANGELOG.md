@@ -220,7 +220,7 @@ In addition, resvg-js can return the raw pixels data of the PNG, which can be ve
 
 ### Added
 
-- feat: add `.pixels()` API for returning PNG pixels data ([#123](https://github.com/yisibl/resvg-js/pull/123)).
+- feat: add `.pixels` API for returning PNG pixels data ([#123](https://github.com/yisibl/resvg-js/pull/123)).
 - chore: upgrade to resvg v0.25.0 (by @zimond in [#156](https://github.com/yisibl/resvg-js/pull/156)).
   - Partial `paint-order` attribute support. Markers can only be under or above the shape.
   - CSS3 `writing-mode` variants `vertical-rl` and `vertical-lr`. Thanks to @yisibl.
