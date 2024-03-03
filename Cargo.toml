@@ -24,7 +24,7 @@ futures = "0.3.21"
 woff2 = "0.3.0"
 
 [target.'cfg(all(not(all(target_os = "linux", target_arch = "aarch64", target_env = "musl")), not(all(target_os = "windows", target_arch = "aarch64")), not(target_arch = "wasm32")))'.dependencies]
-mimalloc-rust = { version = "0.2" }
+mimalloc2-rust = { version = "0.3" }
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 wasm-bindgen = "0.2.87"

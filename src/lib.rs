@@ -41,7 +41,7 @@ use usvg::NodeExt;
     not(all(target_os = "linux", target_arch = "aarch64", target_env = "musl")),
 ))]
 #[global_allocator]
-static ALLOC: mimalloc_rust::GlobalMiMalloc = mimalloc_rust::GlobalMiMalloc;
+static ALLOC: mimalloc2_rust::GlobalMiMalloc = mimalloc2_rust::GlobalMiMalloc;
 
 #[cfg(target_arch = "wasm32")]
 #[wasm_bindgen]
