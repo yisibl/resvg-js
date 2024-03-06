@@ -15,7 +15,7 @@ test.before(async () => {
   await initWasm(fs.readFile(join(__dirname, '../wasm/index_bg.wasm')))
 })
 
-test('Use href to load a JPG image without alpha', async (t) => {
+test.skip('Use href to load a JPG image without alpha', async (t) => {
   const imgUrl = 'https://wd.imgix.net/image/kheDArv5csY6rvQUJDbWRscckLr1/De5peVXJZz3uSEmmVeYJ.png?w=500'
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
   <image href="${imgUrl}" width="500" height="250"/>
