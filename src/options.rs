@@ -2,9 +2,8 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-use std::sync::Arc;
-
 use crate::error::Error;
+use crate::is_not_data_url;
 #[cfg(not(target_arch = "wasm32"))]
 use napi::{bindgen_prelude::Buffer, Either};
 use resvg::tiny_skia::{Pixmap, Transform};
@@ -366,9 +365,9 @@ where
 
 pub(crate) fn tweak_usvg_options(opts: &mut usvg::Options) {
     opts.image_href_resolver = ImageHrefResolver::default();
-    opts.image_href_resolver.resolve_string = Arc::new(move |data: &str, opts: &Options| {
-        if data.starts_with("https://") || data.starts_with("http://") {
-            Some(ImageKind::RAW(1, 1, Arc::new(data.as_bytes().to_vec())))
+    opts.image_href_resolver.resolve_string = Box::new(move |data: &str, opts: &Options| {
+        if is_not_data_url(data) {
+            Some(ImageKind::HOLE(data.to_string()))
         } else {
             let resolver = ImageHrefResolver::default().resolve_string;
             (resolver)(data, opts)

@@ -100,7 +100,7 @@ export declare const Resvg: {
 		getBBox(): BBox | undefined;
 		cropByBBox(bbox: BBox): void;
 		imagesToResolve(): any[];
-		resolveImage(href: string, buffer: Uint8Array): void;
+		resolveImage(_href: string, buffer: Uint8Array): void;
 		readonly height: number;
 		readonly width: number;
 	};
