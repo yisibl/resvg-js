@@ -62,7 +62,7 @@ test('svg to RGBA pixels Array', async (t) => {
   const pngData = resvg.render()
   const pngBuffer = pngData.asPng()
 
-  const originPixels = Array.from(pngData.pixels)
+  const originPixels = pngData.pixels
   const pixelArray = await jimpToRgbaPixels(Buffer.from(pngBuffer), pngData.width, pngData.height)
 
   t.is(originPixels.length, pixelArray.length)

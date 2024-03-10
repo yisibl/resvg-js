@@ -231,7 +231,7 @@ var RenderedImage = class _RenderedImage {
   }
   /**
   * Get the RGBA pixels of the image
-  * @returns {Uint8Array}
+  * @returns {Uint8ClampedArray}
   */
   get pixels() {
     const ret = wasm.renderedimage_pixels(this.__wbg_ptr);
@@ -446,6 +446,14 @@ function __wbg_get_imports() {
   };
   imports.wbg.__wbg_new_8125e318e6245eed = function(arg0) {
     const ret = new Uint8Array(getObject(arg0));
+    return addHeapObject(ret);
+  };
+  imports.wbg.__wbg_newwithbyteoffsetandlength_a624c98280289b0f = function(arg0, arg1, arg2) {
+    const ret = new Uint8ClampedArray(getObject(arg0), arg1 >>> 0, arg2 >>> 0);
+    return addHeapObject(ret);
+  };
+  imports.wbg.__wbg_new_e494528481cdbfa3 = function(arg0) {
+    const ret = new Uint8ClampedArray(getObject(arg0));
     return addHeapObject(ret);
   };
   imports.wbg.__wbg_values_e80af618f92c8649 = function(arg0) {

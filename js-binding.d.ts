@@ -44,7 +44,7 @@ export class RenderedImage {
   /** Write the image data to Buffer */
   asPng(): Buffer
   /** Get the RGBA pixels of the image */
-  get pixels(): Buffer
+  get pixels(): Uint8ClampedArray
   /** Get the PNG width */
   get width(): number
   /** Get the PNG height */
