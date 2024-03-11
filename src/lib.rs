@@ -34,14 +34,9 @@ mod options;
 use error::Error;
 use usvg::NodeExt;
 
-#[cfg(all(
-    not(target_arch = "wasm32"),
-    not(debug_assertions),
-    not(all(target_os = "windows", target_arch = "aarch64")),
-    not(all(target_os = "linux", target_arch = "aarch64", target_env = "musl")),
-))]
+#[cfg(all(not(target_family = "wasm"), not(debug_assertions),))]
 #[global_allocator]
-static ALLOC: mimalloc2_rust::GlobalMiMalloc = mimalloc2_rust::GlobalMiMalloc;
+static ALLOC: mimalloc::MiMalloc = mimalloc::MiMalloc;
 
 #[cfg(target_arch = "wasm32")]
 #[wasm_bindgen]
