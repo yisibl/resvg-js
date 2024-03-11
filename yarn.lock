@@ -308,7 +308,7 @@ __metadata:
   resolution: "@resvg/resvg-js@workspace:."
   dependencies:
     "@napi-rs/cli": ^2.16.3
-    "@swc-node/register": 1.6.4
+    "@swc-node/register": 1.9.0
     "@swc/core": ^1.3.88
     "@types/node": ^20.6.5
     "@typescript-eslint/eslint-plugin": ^6.7.2
@@ -332,39 +332,40 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@swc-node/core@npm:^1.10.3":
-  version: 1.10.5
-  resolution: "@swc-node/core@npm:1.10.5"
+"@swc-node/core@npm:^1.13.0":
+  version: 1.13.0
+  resolution: "@swc-node/core@npm:1.13.0"
   peerDependencies:
     "@swc/core": ">= 1.3"
-  checksum: 642e230388fd53842a4ad2c7daff0bf4cf1327f0002de49a5fac19d74770f5a0a5b7dd265c1e2feafa08ef22fa5dfe7957e375c03834a3059adefecfdbbff274
+    "@swc/types": ">= 0.1"
+  checksum: 12056f1458c535c54c889aafbe969feef9329210657e1d22235b7d795856ec88e4a8e2116572371698ff2c0b184ebe7935ec857748262d5fcf0bd5b1563649b7
   languageName: node
   linkType: hard
 
-"@swc-node/register@npm:1.6.4":
-  version: 1.6.4
-  resolution: "@swc-node/register@npm:1.6.4"
+"@swc-node/register@npm:1.9.0":
+  version: 1.9.0
+  resolution: "@swc-node/register@npm:1.9.0"
   dependencies:
-    "@swc-node/core": ^1.10.3
-    "@swc-node/sourcemap-support": ^0.3.0
-    colorette: ^2.0.19
+    "@swc-node/core": ^1.13.0
+    "@swc-node/sourcemap-support": ^0.5.0
+    colorette: ^2.0.20
     debug: ^4.3.4
-    pirates: ^4.0.5
-    tslib: ^2.5.0
+    pirates: ^4.0.6
+    tslib: ^2.6.2
   peerDependencies:
     "@swc/core": ">= 1.3"
     typescript: ">= 4.3"
-  checksum: 9112d10e1ef69a84d9043087ae09600b1d34d1901cef67b69329ddc642b9200ee8aabc5bdc419678e76b3f4e950a1ab13bac3999b92c9ec2fc9c8ce6a33943f2
+  checksum: 5e08ece47a4a69deaa6594dfab2c018212d61bacb3bb8ba35875a319188eb83bbc14d58b8843cf424954fc0cbfd3e03a44956b8cfc81eed3d1b7c06b6f90a904
   languageName: node
   linkType: hard
 
-"@swc-node/sourcemap-support@npm:^0.3.0":
-  version: 0.3.0
-  resolution: "@swc-node/sourcemap-support@npm:0.3.0"
+"@swc-node/sourcemap-support@npm:^0.5.0":
+  version: 0.5.0
+  resolution: "@swc-node/sourcemap-support@npm:0.5.0"
   dependencies:
     source-map-support: ^0.5.21
-    tslib: ^2.5.0
-  checksum: a3c837ed790238ef88682eb342b75d756eba5eb3b6cfe6cf14a597bd78dfc9a9797f1e54a4977c1297e5324fba2e33bd76ab8aa9c396ad463693de2001180c9e
+    tslib: ^2.6.2
+  checksum: 2163f2ae337dafa07f62492a78d1e7b272207c91f1f7b5a9ab95ba929b7dfa93a4db1188dbafde117dae7219805ba9aac9693fd2066563992dba2239295181ee
   languageName: node
   linkType: hard
 
@@ -1278,7 +1279,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"colorette@npm:^2.0.19, colorette@npm:^2.0.20":
+"colorette@npm:^2.0.20":
   version: 2.0.20
   resolution: "colorette@npm:2.0.20"
   checksum: 0c016fea2b91b733eb9f4bcdb580018f52c0bc0979443dad930e5037a968237ac53d9beb98e218d2e9235834f8eebce7f8e080422d6194e957454255bde71d3d
@@ -3702,7 +3703,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pirates@npm:^4.0.5":
+"pirates@npm:^4.0.6":
   version: 4.0.6
   resolution: "pirates@npm:4.0.6"
   checksum: 46a65fefaf19c6f57460388a5af9ab81e3d7fd0e7bc44ca59d753cb5c4d0df97c6c6e583674869762101836d68675f027d60f841c105d72734df9dfca97cbcc6
@@ -4500,7 +4501,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tslib@npm:^2.5.0":
+"tslib@npm:^2.6.2":
   version: 2.6.2
   resolution: "tslib@npm:2.6.2"
   checksum: 329ea56123005922f39642318e3d1f0f8265d1e7fcb92c633e0809521da75eeaca28d2cf96d7248229deb40e5c19adf408259f4b9640afd20d13aecc1430f3ad
