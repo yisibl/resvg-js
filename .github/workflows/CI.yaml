@@ -56,7 +56,7 @@ jobs:
             build: |-
               set -e &&
               yarn build &&
-              llvm-strip -x *.node
+              strip *.node
           - host: macos-14
             target: aarch64-apple-darwin
             build: |

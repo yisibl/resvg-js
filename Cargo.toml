@@ -23,8 +23,11 @@ pathfinder_simd = { version = "0.5.2", features = ["pf-no-simd"] }
 futures = "0.3.21"
 woff2 = "0.3.0"
 
-[target.'cfg(all(not(all(target_os = "linux", target_arch = "aarch64", target_env = "musl")), not(all(target_os = "windows", target_arch = "aarch64")), not(target_arch = "wasm32")))'.dependencies]
-mimalloc-rust = { version = "0.2" }
+[target.'cfg(not(any(target_os = "linux", target_family = "wasm")))'.dependencies]
+mimalloc = "0.1"
+
+[target.'cfg(target_os = "linux")'.dependencies]
+mimalloc = { version = "0.1", features = ["local_dynamic_tls"] }
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 wasm-bindgen = "0.2.87"
