@@ -1,6 +1,6 @@
 {
   "name": "@resvg/resvg-js-win32-arm64-msvc",
-  "version": "2.6.0",
+  "version": "2.6.1-beta.0",
   "os": [
     "win32"
   ],

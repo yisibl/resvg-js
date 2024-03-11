@@ -9,6 +9,25 @@ This changelog also contains important changes in dependencies.
 
 ## [Unreleased]
 
+## [2.6.1-beta.0] - 2024-03-11
+
+This version solves the problem of missing DLLs caused by not installing [Visual C++ Redistributable](https://learn.microsoft.com/en-US/cpp/windows/latest-supported-vc-redist?view=msvc-170) on Windows.
+
+### Added
+
+- chore(deps): upgrade dependencies such as napi-rs [#311](https://github.com/yisibl/resvg-js/issues/311)
+- chore(ci): adding Node.js v20 to the CI
+- chore(ci): use macOS M1 machines
+- doc: clarify that the default value of the defaultFontFamily is empty
+- doc: improved change log documentation for M/L/C error
+- test: add a bbox test with stroke
+- fix(deps): update rust crate svgtypes to 0.14.0
+
+### Fixed
+
+- fix: enable static link for windows-msvc [#308](https://github.com/yisibl/resvg-js/issues/308) Thanks to @Zagrios
+- fix: test bindings on x86_64-unknown-linux-musl [#306](https://github.com/yisibl/resvg-js/issues/306) Thanks to @Brooooooklyn
+
 ## [2.6.0] - 2023-10-20
 
 🚀 Up to **115x faster** for very large SVG files
@@ -608,7 +627,8 @@ The first official version, use [resvg 0.18.0](https://github.com/RazrFalcon/res
 - Support custom fonts and system fonts.
 - Supports setting the background color of PNG.
 
-[unreleased]: https://github.com/yisibl/resvg-js/compare/v2.6.0...HEAD
+[unreleased]: https://github.com/yisibl/resvg-js/compare/v2.6.1-beta.0...HEAD
+[2.6.1-beta.0]: https://github.com/yisibl/resvg-js/compare/v2.6.0...v2.6.1-beta.0
 [2.6.0]: https://github.com/yisibl/resvg-js/compare/v2.5.0...v2.6.0
 [2.5.0]: https://github.com/yisibl/resvg-js/compare/v2.4.1...v2.5.0
 [2.4.1]: https://github.com/yisibl/resvg-js/compare/v2.4.0...v2.4.1
