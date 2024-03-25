@@ -30,8 +30,8 @@ mimalloc = "0.1"
 mimalloc = { version = "0.1", features = ["local_dynamic_tls"] }
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
-wasm-bindgen = "0.2.87"
-js-sys = "0.3.64"
+wasm-bindgen = "0.2.92"
+js-sys = "0.3.69"
 resvg = { version = "0.34.0", default-features = false, features = [
     "raster-images",
     "text",
