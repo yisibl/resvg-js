@@ -31,7 +31,7 @@ jobs:
           - host: macos-14
             target: x86_64-apple-darwin
             build: |
-              yarn build
+              yarn build --target x86_64-apple-darwin
               strip -x *.node
           - host: windows-latest
             build: yarn build
