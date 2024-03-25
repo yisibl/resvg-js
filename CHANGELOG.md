@@ -9,6 +9,13 @@ This changelog also contains important changes in dependencies.
 
 ## [Unreleased]
 
+## [2.6.1] - 2024-03-25
+
+### Added
+
+- chore(deps): update yarn to v3.8.1
+- chore(deps): update actions/cache action to v4
+
 ## [2.6.1-beta.0] - 2024-03-11
 
 This version solves the problem of missing DLLs caused by not installing [Visual C++ Redistributable](https://learn.microsoft.com/en-US/cpp/windows/latest-supported-vc-redist?view=msvc-170) on Windows.
@@ -627,7 +634,8 @@ The first official version, use [resvg 0.18.0](https://github.com/RazrFalcon/res
 - Support custom fonts and system fonts.
 - Supports setting the background color of PNG.
 
-[unreleased]: https://github.com/yisibl/resvg-js/compare/v2.6.1-beta.0...HEAD
+[unreleased]: https://github.com/yisibl/resvg-js/compare/v2.6.1...HEAD
+[2.6.0]: https://github.com/yisibl/resvg-js/compare/v2.6.0...v2.6.1
 [2.6.1-beta.0]: https://github.com/yisibl/resvg-js/compare/v2.6.0...v2.6.1-beta.0
 [2.6.0]: https://github.com/yisibl/resvg-js/compare/v2.5.0...v2.6.0
 [2.5.0]: https://github.com/yisibl/resvg-js/compare/v2.4.1...v2.5.0
