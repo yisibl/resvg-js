@@ -9,6 +9,10 @@ This changelog also contains important changes in dependencies.
 
 ## [Unreleased]
 
+### Fixed
+
+- fix: `Uncaught LinkError WebAssembly.instantiate()` [#322](https://github.com/yisibl/resvg-js/issues/322)
+
 ## [2.6.1] - 2024-03-25
 
 ### Added
@@ -634,8 +638,9 @@ The first official version, use [resvg 0.18.0](https://github.com/RazrFalcon/res
 - Support custom fonts and system fonts.
 - Supports setting the background color of PNG.
 
-[unreleased]: https://github.com/yisibl/resvg-js/compare/v2.6.1...HEAD
-[2.6.0]: https://github.com/yisibl/resvg-js/compare/v2.6.0...v2.6.1
+[unreleased]: https://github.com/yisibl/resvg-js/compare/v2.6.2...HEAD
+[2.6.2]: https://github.com/yisibl/resvg-js/compare/v2.6.1...v2.6.2
+[2.6.1]: https://github.com/yisibl/resvg-js/compare/v2.6.0...v2.6.1
 [2.6.1-beta.0]: https://github.com/yisibl/resvg-js/compare/v2.6.0...v2.6.1-beta.0
 [2.6.0]: https://github.com/yisibl/resvg-js/compare/v2.5.0...v2.6.0
 [2.5.0]: https://github.com/yisibl/resvg-js/compare/v2.4.1...v2.5.0
