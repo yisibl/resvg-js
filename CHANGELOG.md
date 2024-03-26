@@ -9,6 +9,8 @@ This changelog also contains important changes in dependencies.
 
 ## [Unreleased]
 
+## [2.6.2] - 2024-03-26
+
 ### Fixed
 
 - fix: `Uncaught LinkError WebAssembly.instantiate()` [#322](https://github.com/yisibl/resvg-js/issues/322)
