@@ -8,8 +8,23 @@
   <link rel="preload" as="fetch" type="application/wasm" href="./index_bg.wasm" crossorigin>
   <script src="./index.min.js"></script>
   <style>
+    :root {
+      --slider-thumb-size: 26px;
+      --slider-track-height: 14px;
+      --slider-thumb-bg-color: #FF8253;
+      --input-border-color: #666;
+    }
+
     html {
       box-sizing: border-box;
+      font-family: system-ui, Arial, Helvetica, sans-serif;
+    }
+
+    html:before {
+      content: '';
+      color: color-mix( in srgb, var(--picker-color), transparent var(--picker-alpha, 0%) );
+      /* Or use Relative color */
+      /* color: rgb(from var(--picker-color) r g b / var(--picker-alpha, 1)); */
     }
 
     *, *:before, *:after {
@@ -49,12 +64,12 @@
       margin-right: auto;
     }
 
-    input[type="color"] {
+    input[type="color" i] {
       border: none;
       background: none;
     }
 
-    input[type="color"]::-webkit-color-swatch-wrapper {
+    input[type="color" i]::-webkit-color-swatch-wrapper {
       padding: 0;
     }
 
@@ -63,7 +78,26 @@
       user-select: none;
     }
 
-    input:not([type="color"]), select {
+    .color-picker-box {
+      position: relative;
+      display: flex;
+      align-items: center;
+      height: var(--slider-track-height);
+    }
+
+    #color-picker {
+      visibility: hidden;
+      width: 40px;
+      height: var(--slider-track-height);
+      position: absolute;
+      bottom: -10px;
+      visibility: hidden;
+      position-anchor: --picker-target;
+      left: anchor(left);
+      margin-left: -106px;
+    }
+
+    input:not([type="color" i]), select {
       height: 30px;
       padding: 0 .5em;
       font-size: 16px;
@@ -73,6 +107,7 @@
       display: flex;
       flex: 1;
       margin-top: 20px;
+      margin-bottom: 30px;
     }
 
     #input-svg {
@@ -168,6 +203,71 @@
 
     .github:hover .octo-arm {
       animation: octocat-wave 560ms ease-in-out;
+    }
+    /* 自定义 Alpha 选择器样式 */
+    input[type="range" i] {
+      appearance: none;
+      max-width: 150px;
+    }
+
+    input[type="range" i]::-webkit-slider-thumb {
+      anchor-name: --picker-target;
+      appearance: none;
+      height: var(--slider-thumb-size);
+      width: var(--slider-thumb-size);
+      max-width: 80px;
+      position: relative;
+      z-index: 2048;
+      top: 50%;
+      transform: translateY(-50%);
+      border-radius: 50%;
+      border: 2px solid #fff;
+      box-shadow: 1px 2px 8px rgba(0, 0, 0, 0.6), inset 0px 1px 3px rgba(0, 0, 0, 0.3);
+      background: var(--picker-color, var(--slider-thumb-bg-color));
+    }
+    input[type="range" i]::-moz-range-thumb {
+      anchor-name: --picker-target;
+      appearance: none;
+      height: var(--slider-thumb-size);
+      width: var(--slider-thumb-size);
+      max-width: 80px;
+      position: relative;
+      z-index: 2048;
+      border-radius: 50%;
+      border: 2px solid #fff;
+      box-shadow: 1px 2px 8px rgba(0, 0, 0, 0.6), inset 0px 1px 3px rgba(0, 0, 0, 0.3);
+      background: var(--picker-color, var(--slider-thumb-bg-color));
+    }
+    input[type="range" i]:focus::-webkit-slider-thumb {
+      outline: solid 2px #000;
+    }
+    input[type="range" i]:focus::-moz-range-thumb {
+      outline: solid 2px #000;
+    }
+
+    input[type="range" i]::-webkit-slider-runnable-track {
+      appearance: none;
+      height: var(--slider-track-height);
+      border-radius: 999px;
+      border: 1px solid var(--input-border-color, #666);
+      box-shadow: inset 0px 1px 3px rgba(0, 0, 0, 0.3);
+      --chessboard-size: var(--slider-track-height);
+      background:
+          linear-gradient(to right, transparent, var(--picker-color, var(--slider-thumb-bg-color))),
+          repeating-conic-gradient(#808080 0% 25%, transparent 0% 50%)
+          50% / var(--chessboard-size) var(--chessboard-size);
+    }
+    input[type="range" i]::-moz-range-track {
+      appearance: none;
+      height: var(--slider-track-height);
+      border-radius: 999px;
+      border: 1px solid var(--input-border-color, #666);
+      box-shadow: inset 0px 1px 3px rgba(0, 0, 0, 0.3);
+      --chessboard-size: var(--slider-track-height);
+      background:
+          linear-gradient(to right, transparent, var(--picker-color, var(--slider-thumb-bg-color))),
+          repeating-conic-gradient(#808080 0% 25%, transparent 0% 50%)
+          50% / var(--chessboard-size) var(--chessboard-size);
     }
   </style>
   <script>
@@ -350,6 +450,7 @@
       }
 
       const colorPickerElement = document.querySelector('#color-picker')
+      const colorPickerAlphaElement = document.querySelector('#color-picker-alpha')
       const svgSizeElement = document.querySelector('#svg-size')
       const cropElement = document.querySelector('#crop-by-bbox')
       const svgSelectElement = document.querySelector('#slt-svg')
@@ -396,12 +497,40 @@
         }
       })
 
-      colorPickerElement.addEventListener('change', function (event) {
-        const value = event.target.value
+      function onChangeColor() {
         const hasCrop = cropElement.checked
-        if (!value) return
-        resvgOpts.background = value
+        const style = window.getComputedStyle(document.querySelector('html'), ':before')
+        const color = style.getPropertyValue('color')
+        const rgb_color = convertColorToRGBA(color)
+
+        console.info('getComputedStyle color\n', color)
+        console.info('convert to rgba()\n', rgb_color)
+
+        resvgOpts.background = rgb_color
         svg2png(null, resvgOpts, hasCrop)
+      }
+
+      colorPickerElement.addEventListener('input', function (event) {
+        const value = event.target.value
+        if (!value) return
+        document.documentElement.style.setProperty('--picker-color', value)
+        onChangeColor()
+      })
+      colorPickerAlphaElement.addEventListener('click', function (event) {
+        colorPickerElement.showPicker()
+      })
+
+      colorPickerAlphaElement.addEventListener('input', function (event) {
+        const value = event.target.value
+        if (!value) return
+
+        const color_picker_value = getComputedStyle(document.documentElement).getPropertyValue('--picker-color')
+        if (!color_picker_value) {
+          document.documentElement.style.setProperty('--picker-color', '#FF8253')
+        }
+        // 如果使用 Relative color，这里直接使用 value + %
+        document.documentElement.style.setProperty('--picker-alpha', 100 - value + '%')
+        onChangeColor()
       })
 
       svgSizeElement.addEventListener('change', function (event) {
@@ -487,6 +616,30 @@
       }
       return { checkResult: false, index: currentFontIndex }
     }
+
+    // 将 color() 转换为 rgba()
+    function convertColorToRGBA(color) {
+      if (!color || typeof color !== 'string') return color
+
+      const match = color.match(/color\(srgb\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)(?:\s*\/\s*([\d.]+%?))?\)/)
+      if (match) {
+        const r = Math.round(match[1] * 255)
+        const g = Math.round(match[2] * 255)
+        const b = Math.round(match[3] * 255)
+        let alpha = match[4]
+        // 如果 alpha 是百分比形式，转换为 0 到 1 之间的小数
+        if (!alpha) {
+          alpha = 1
+        } else if (alpha.includes('%')) {
+          alpha = parseFloat(alpha) / 100
+        } else {
+          alpha = parseFloat(alpha)
+        }
+
+        return `rgba(${r}, ${g}, ${b}, ${alpha})`
+      }
+      return color
+    }
   </script>
 </head>
 
@@ -518,12 +671,15 @@
         </select>
       </div>
       <div class="opts-cell">
-        <label for="color-picker">Change background:</label>
-        <input type="color" name="color-picker" id="color-picker">
+        <label for="color-picker">Background:</label>
+        <div class="color-picker-box">
+          <input type="color" name="color-picker" value="#FF8253" id="color-picker">
+          <input type="range" id="color-picker-alpha" min="0" max="100" value="100">
+        </div>
       </div>
       <div class="opts-cell">
-        <label for="svg-size">Change width:</label>
-        <input type="number" name="svg-size" id="svg-size">
+        <label for="svg-size">Width:</label>
+        <input type="number" name="svg-size" id="svg-size" style="max-width: 6em;">
       </div>
       <div class="opts-cell">
         <label for="crop-by-bbox">Crop by BBox:</label>
