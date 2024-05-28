@@ -35,6 +35,7 @@ use error::Error;
 use usvg::NodeExt;
 
 #[cfg(all(not(target_family = "wasm"), not(debug_assertions),))]
+#[cfg(not(all(target_os = "linux", target_arch = "arm")))]
 #[global_allocator]
 static ALLOC: mimalloc::MiMalloc = mimalloc::MiMalloc;
 
