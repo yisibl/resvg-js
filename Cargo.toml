@@ -26,7 +26,7 @@ woff2 = "0.3.0"
 [target.'cfg(not(any(target_os = "linux", target_family = "wasm")))'.dependencies]
 mimalloc = "0.1"
 
-[target.'cfg(target_os = "linux")'.dependencies]
+[target.'cfg(all(target_os = "linux", not(target_arch = "arm")))'.dependencies]
 mimalloc = { version = "0.1", features = ["local_dynamic_tls"] }
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
