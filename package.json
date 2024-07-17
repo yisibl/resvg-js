@@ -14,9 +14,13 @@
     "rust",
     "svg2png",
     "svg2img",
+    "CLI",
     "svg to png"
   ],
+  "bin": "bin/resvg-js",
   "files": [
+    "bin",
+    "cli.js",
     "index.d.ts",
     "index.js",
     "js-binding.js",
@@ -48,6 +52,7 @@
   },
   "scripts": {
     "artifacts": "napi artifacts",
+    "dev:cli": "esbuild ./cli/cli.js --outfile=./cli.js --bundle --external:./index --platform=node --watch",
     "bench": "node -r @swc-node/register benchmark/bench.ts",
     "bundle": "run-p 'bundle:*'",
     "bundle:js": "node bundle.js",
@@ -67,7 +72,7 @@
     "format:yaml": "prettier --parser yaml --write './**/*.{yml,yaml}'",
     "lint": "eslint . -c ./.eslintrc.yml './**/*.{ts,tsx,js}'",
     "lint:fix": "eslint . -c ./.eslintrc.yml './**/*.{ts,tsx,js}' --fix",
-    "prepublishOnly": "napi prepublish -t npm && esbuild js-binding.js --minify --allow-overwrite --outfile=js-binding.js",
+    "prepublishOnly": "napi prepublish -t npm && node bundle-prepublish.js",
     "test": "ava __test__/**/index*.*",
     "test:wasm": "ava __test__/**/wasm*.*",
     "version": "napi version"
@@ -91,6 +96,7 @@
     "husky": "^8.0.0",
     "jimp-compact": "^0.16.1-2",
     "lint-staged": "^15.0.0",
+    "minimist": "^1.2.8",
     "node-fetch": "2.x",
     "npm-run-all2": "^6.1.2",
     "prettier": "^2.7.1",

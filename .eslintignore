@@ -1,5 +1,6 @@
 js-binding.js
 js-binding.d.ts
 target
+/cli.js
 wasm
 wasm/dist
