@@ -52,7 +52,7 @@
   },
   "scripts": {
     "artifacts": "napi artifacts",
-    "dev:cli": "esbuild ./cli/cli.js --outfile=./cli.js --bundle --external:./index --platform=node --watch",
+    "dev:cli": "node bundle-cli.js --cli",
     "bench": "node -r @swc-node/register benchmark/bench.ts",
     "bundle": "run-p 'bundle:*'",
     "bundle:js": "node bundle.js",
