@@ -40,24 +40,25 @@ async function bootsrap(argvs = process.argv) {
     /** @type {import ('../index.d').RenderedImage | null} */
     let fileData = null
     const { Resvg } = require('../index')
+    const { getBufferFromStdin, writeBufferToStdout } = require('./util')
     if (paths.input !== '-') {
       const { promises } = require('fs')
       const svgBuffer = await promises.readFile(paths.input)
       const resvg = new Resvg(svgBuffer, resvgOptions)
       fileData = resvg.render()
     } else {
-      const { getBufferFromStdin } = require('./util')
       const svgBuffer = await getBufferFromStdin()
       const resvg = new Resvg(svgBuffer, resvgOptions)
       fileData = resvg.render()
     }
 
     // Output
+    // TODO: wait for add more output formats, e.g. avif, webp, JPEG XL
+    const imageBuffer = fileData.asPng()
     if (paths.output && fileData) {
       const { promises } = require('fs')
       const { logger } = require('./util')
-      // TODO: wait for add more output formats, e.g. avif, webp, JPEG XL
-      await promises.writeFile(paths.output, fileData.asPng())
+      await promises.writeFile(paths.output, imageBuffer)
       switch (resvgOptions?.logLevel) {
         case 'off':
           break
@@ -69,7 +70,7 @@ async function bootsrap(argvs = process.argv) {
           break
       }
     } else {
-      process.stdout.write(fileData.asPng())
+      await writeBufferToStdout(imageBuffer)
     }
   }
 }

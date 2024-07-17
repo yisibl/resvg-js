@@ -72,3 +72,24 @@ module.exports.getBufferFromStdin = async function () {
     })
   })
 }
+
+module.exports.writeBufferToStdout = async function (buffer) {
+  return new Promise((resolve) => {
+    const stream = require('stream')
+    const rawStream = new stream.Readable({
+      read: function () {
+        if (buffer.length === 0) {
+          this.push(null)
+          resolve()
+        } else {
+          const chunkSize = 1024 // 1KB
+          const chunk = buffer.subarray(0, chunkSize)
+          buffer = buffer.subarray(chunkSize)
+          this.push(chunk)
+        }
+      },
+    })
+
+    rawStream.pipe(process.stdout)
+  })
+}
