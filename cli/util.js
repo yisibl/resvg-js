@@ -1,35 +1,60 @@
 const process = require('process')
 
-function createLogger() {
-  const { createStyle } = require('./style')
-  const pc = createStyle()
+/** log level => allow log level */
+const defaultShouldLogMapping = {
+  trace: ['trace', 'debug', 'info', 'warn', 'error'],
+  debug: ['debug', 'info', 'warn', 'error'],
+  info: ['info', 'warn', 'error'],
+  warn: ['warn', 'error'],
+  error: ['error'],
+  off: [],
+}
+function defaultShouldLog(logName, logLevel) {
+  return defaultShouldLogMapping[logLevel].indexOf(logName) !== -1
+}
+
+function createLogger(logLevel = 'info', shouldLogCB = defaultShouldLog) {
+  const { createStyle, isColorizenSupport } = require('./style')
+  // ensure all log output 2 stderr space
+  const pc = createStyle(isColorizenSupport(true, 2))
   const { ___X_CMD_THEME_COLOR_CODE } = process.env
   const pcInf = ___X_CMD_THEME_COLOR_CODE ? pc.rgb(___X_CMD_THEME_COLOR_CODE) : pc.green
+  const emptyFn = () => {}
   return {
-    info: (msg, extraInfo, extraName = 'help') => {
-      process.stderr.write(`- ${pcInf('I|resvg-js')}: ${msg}\n`)
-      !!extraInfo && process.stderr.write(`  ${pcInf(extraName + ':')} ${extraInfo}\n`)
-    },
-    warn: (msg, extraInfo, extraName = 'help') => {
-      process.stderr.write(`${pc.yellow('-' + ' ' + pc.bold(pc.inverse('W') + '|resvg-js: ' + msg))}\n`)
-      !!extraInfo && process.stderr.write(`  ${pc.yellow(extraName + ':')} ${extraInfo}\n`)
-    },
-    error: (msg, extraInfo, extraName = 'help') => {
-      process.stderr.write(`${pc.red('-' + ' ' + pc.bold(pc.inverse('E') + '|resvg-js: ' + msg))}\n`)
-      !!extraInfo && process.stderr.write(`  ${pc.red(extraName + ':')} ${extraInfo}\n`)
-    },
+    logLevel,
+    debug: shouldLogCB('debug', logLevel)
+      ? (msg, extraInfo, extraName = 'help') => {
+          process.stderr.write(`- ${pcInf(pc.inverse('D') + '|resvg-js')}: ${msg}\n`)
+          !!extraInfo && process.stderr.write(`  ${pcInf(extraName + ':')} ${extraInfo}\n`)
+        }
+      : emptyFn,
+    info: shouldLogCB('info', logLevel)
+      ? (msg, extraInfo, extraName = 'help') => {
+          process.stderr.write(`- ${pcInf('I|resvg-js')}: ${msg}\n`)
+          !!extraInfo && process.stderr.write(`  ${pcInf(extraName + ':')} ${extraInfo}\n`)
+        }
+      : emptyFn,
+    warn: shouldLogCB('warn', logLevel)
+      ? (msg, extraInfo, extraName = 'help') => {
+          process.stderr.write(`${pc.yellow('-' + ' ' + pc.bold(pc.inverse('W') + '|resvg-js: ' + msg))}\n`)
+          !!extraInfo && process.stderr.write(`  ${pc.yellow(extraName + ':')} ${extraInfo}\n`)
+        }
+      : emptyFn,
+    error: shouldLogCB('error', logLevel)
+      ? (msg, extraInfo, extraName = 'help') => {
+          process.stderr.write(`${pc.red('-' + ' ' + pc.bold(pc.inverse('E') + '|resvg-js: ' + msg))}\n`)
+          !!extraInfo && process.stderr.write(`  ${pc.red(extraName + ':')} ${extraInfo}\n`)
+        }
+      : emptyFn,
   }
 }
 module.exports.createLogger = createLogger
-
-const logger = createLogger()
-module.exports.logger = logger
 
 /**
  * Exit directly and prompt for unknown options
  * @param {string} command_options_key
  */
-module.exports.unkonwOptionExit = function unkonwOptionExit(key) {
+module.exports.unkonwOptionExit = function unkonwOptionExit(key, logger = createLogger()) {
   logger.error(`Unkonw option ==> --${key}`, 'Show more detail `--log-level debug`, or show help `resvg-js --help`')
   process.exit(1)
 }
@@ -39,7 +64,7 @@ module.exports.unkonwOptionExit = function unkonwOptionExit(key) {
  * @param {string} tmpInput
  * @param {string|undefined} tmpOutput
  */
-module.exports.getPathsByArgs = function getPathsByArgs(tmpInput, tmpOutput) {
+module.exports.getPathsByArgs = function getPathsByArgs(tmpInput, tmpOutput, logger = createLogger()) {
   if (!tmpInput) {
     logger.error('Please provide an input file path', 'resvg-js [OPTIONS] <input_svg_path|"-"> [output_png_path]')
     process.exit(1)

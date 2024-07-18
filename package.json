@@ -52,7 +52,7 @@
   },
   "scripts": {
     "artifacts": "napi artifacts",
-    "dev:cli": "node bundle-cli.js --cli",
+    "dev:cli": "node bundle-cli.js --watch",
     "bench": "node -r @swc-node/register benchmark/bench.ts",
     "bundle": "run-p 'bundle:*'",
     "bundle:js": "node bundle.js",

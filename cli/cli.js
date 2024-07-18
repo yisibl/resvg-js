@@ -33,8 +33,10 @@ async function bootsrap(argvs = process.argv) {
     printHelp(version)
   } else {
     // Main
+    const { createLogger } = require('./util')
     const { transformOptions } = require('./option')
-    const [paths, resvgOptions] = transformOptions(parsedArgv)
+    const logger = createLogger(parsedArgv?.['log-level'])
+    const [paths, resvgOptions] = transformOptions(parsedArgv, logger)
 
     // Input
     /** @type {import ('../index.d').RenderedImage | null} */
@@ -57,17 +59,13 @@ async function bootsrap(argvs = process.argv) {
     const imageBuffer = fileData.asPng()
     if (paths.output && fileData) {
       const { promises } = require('fs')
-      const { logger } = require('./util')
       await promises.writeFile(paths.output, imageBuffer)
-      switch (resvgOptions?.logLevel) {
-        case 'off':
-          break
-        case 'info':
-          logger.info(paths.output, `{ width: ${fileData.width}, height: ${fileData.height} }`, 'image')
-          break
-        default:
-          logger.info(paths.output)
-          break
+      if (resvgOptions?.logLevel === 'info') {
+        // Have specify info level options
+        logger.info(paths.output, `{ width: ${fileData.width}, height: ${fileData.height} }`, 'image')
+      } else {
+        // default will output image path
+        logger.info(paths.output)
       }
     } else {
       await writeBufferToStdout(imageBuffer)

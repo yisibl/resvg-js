@@ -8,12 +8,15 @@ const tty = require('tty')
 /**
  * Check current is support color command text
  * @param colorSupoort can force output not colorizen
+ * @param fd Channel judgment. Provide options to allow users to customize the judgment.
+ * e.g, logs and TUI are 2 stderr. In this case, only when the user operates on 2 does the color output need to be disabled.
+ * COMMAND 2 > runtime.log. All logs need to remove colorizen code
  */
-function isColorizenSupport(colorSupoort = true) {
+function isColorizenSupport(colorSupoort = true, fd = 1) {
   return (
     (colorSupoort &&
       !('NO_COLOR' in process.env) &&
-      (process.platform === 'win32' || (tty.isatty(1) && process.env.TERM !== 'dumb') || 'CI' in process.env)) ||
+      (process.platform === 'win32' || (tty.isatty(fd) && process.env.TERM !== 'dumb') || 'CI' in process.env)) ||
     'FORCE_COLOR' in process.env
   )
 }
@@ -50,6 +53,13 @@ function formatter(open, close, replace = open) {
   }
 }
 
+/**
+ * support control isColorizen as param
+ * styleFn generator
+ *
+ * @param {boolen} enabled
+ * @return {Function} style
+ */
 function styleFn(enabled = isColorizenSupport()) {
   const init = enabled ? formatter : () => String
   return {
@@ -86,14 +96,8 @@ function styleFn(enabled = isColorizenSupport()) {
   }
 }
 
-/**
- * support control isColorizen as param
- * styleFn generator
- *
- * @param {boolen} enabled
- * @return {Function} style
- */
 module.exports.createStyle = styleFn
+module.exports.isColorizenSupport = isColorizenSupport
 
 /**
  * commandline style output colorizen

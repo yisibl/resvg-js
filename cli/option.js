@@ -39,15 +39,13 @@ const optionMapping = {
  *    import('../index').ResvgRenderOptions
  *  ]}
  */
-module.exports.transformOptions = function transformOptions(parseArgv) {
-  const { getPathsByArgs, logger, unkonwOptionExit } = require('./util')
+module.exports.transformOptions = function transformOptions(parseArgv, logger) {
+  const { getPathsByArgs, unkonwOptionExit } = require('./util')
   // #region - Args to Paths
   const [tmpInput, tmpOutput] = parseArgv._
-  const result = [getPathsByArgs(tmpInput, tmpOutput)]
-  if (parseArgv?.['log-level'] === 'debug') {
-    logger.info('Argv', JSON.stringify(parseArgv), 'JSON')
-    logger.info('Input and Output Path', JSON.stringify(result[0]), 'JSON')
-  }
+  const result = [getPathsByArgs(tmpInput, tmpOutput, logger)]
+  logger.debug('Argv', JSON.stringify(parseArgv), 'JSON')
+  logger.debug('Input and Output Path', JSON.stringify(result[0]), 'JSON')
   delete parseArgv._
   // #endregion
 
@@ -76,7 +74,7 @@ module.exports.transformOptions = function transformOptions(parseArgv) {
     }
 
     // other option using mapping
-    !(key in optionMapping) && unkonwOptionExit(key)
+    !(key in optionMapping) && unkonwOptionExit(key, logger)
     if (key.startsWith('font-') || key === 'system-font') {
       options['font'] ??= {}
       options['font'][optionMapping[key]] = parseArgv[key]
@@ -90,8 +88,6 @@ module.exports.transformOptions = function transformOptions(parseArgv) {
   // #endregion
   result.push(options)
 
-  if (parseArgv?.['log-level'] === 'debug') {
-    logger.info('Options', JSON.stringify(result[1]), 'JSON')
-  }
+  logger.debug('Options', JSON.stringify(result[1]), 'JSON')
   return result
 }
