@@ -1,13 +1,42 @@
-/* eslint-disable no-console */
-/* prettier-ignore */
+import type { ResvgRenderOptions } from '../index'
+
+import { pc } from './style'
 
 /**
- * @param {string} version
+ * plz ensure modify options will check the help message
  */
-module.exports.printHelp = function printHelp(version) {
-  const { pc } = require('./style')
+export type CLIOptions = {
+  help?: boolean
+  version?: boolean
+  'system-font'?: boolean
+  'font-file'?: string | string[]
+  'font-dir'?: string | string[]
+  'font-default-size'?: number
+  'font-default-family'?: string
+  'font-serif-family'?: string
+  'font-sans-serif-family'?: string
+  'font-cursive-family'?: string
+  'font-fantasy-family'?: string
+  'font-monospace-family'?: string
+  'shape-rendering'?: 0 | 1 | 2
+  'text-rendering'?: 0 | 1 | 2
+  'image-rendering'?: 0 | 1
+  'fit-width'?: number
+  'fit-height'?: number
+  'fit-zoom'?: number
+  'crop-top'?: number
+  'crop-left'?: number
+  'crop-right'?: number
+  'crop-bottom'?: number
+  dpi?: number
+  language?: string | string[]
+  background?: string
+  'log-level'?: ResvgRenderOptions['logLevel']
+}
 
-  console.log(
+/* prettier-ignore */
+export function printHelp(version: string) {
+  console.info(
     `${pc.yellow('NAME:')}
     ${pc.green('resvg-js')} - A high-performance SVG renderer CLI, powered by Rust based resvg and napi-rs
 

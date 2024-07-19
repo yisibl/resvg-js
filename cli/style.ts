@@ -1,18 +1,20 @@
+import process from 'node:process'
+import tty from 'node:tty'
+
 /**
  * Terminal style output colorizen
  * Inspiring picocolors(https://www.npmjs.com/package/picocolors)
  */
-const process = require('process')
-const tty = require('tty')
 
 /**
  * Check current is support color command text
+ *
  * @param colorSupoort can force output not colorizen
- * @param fd Channel judgment. Provide options to allow users to customize the judgment.
+ * @param fd Channel. Provide options to allow users to customize the judgment.
  * e.g, logs and TUI are 2 stderr. In this case, only when the user operates on 2 does the color output need to be disabled.
  * COMMAND 2 > runtime.log. All logs need to remove colorizen code
  */
-function isColorizenSupport(colorSupoort = true, fd = 1) {
+export function isColorizenSupport(colorSupoort = true, fd = 1) {
   return (
     (colorSupoort &&
       !('NO_COLOR' in process.env) &&
@@ -23,14 +25,8 @@ function isColorizenSupport(colorSupoort = true, fd = 1) {
 
 /**
  * Provide to formatter. If has close tag, replace it
- *
- * @param {string} str
- * @param {string} close
- * @param {string} replace
- * @param {number} index
- * @return {string}
  */
-function replaceClose(str, close, replace, index) {
+function replaceClose(str: string, close: string, replace: string, index: number): string {
   const start = str.substring(0, index) + replace
   const end = str.substring(index + close.length)
   const nextIndex = end.indexOf(close)
@@ -39,14 +35,9 @@ function replaceClose(str, close, replace, index) {
 
 /**
  * A utils Fn provide to styleFn add asnii code
- *
- * @param {string} open
- * @param {string} close
- * @param {string} replace
- * @return {(input: string) => string}
  */
-function formatter(open, close, replace = open) {
-  return (input) => {
+function formatter(open: string, close: string, replace = open) {
+  return (input: string) => {
     const string = `${input}`
     const index = string.indexOf(close, open.length)
     return ~index ? open + replaceClose(string, close, replace, index) + close : open + string + close
@@ -56,11 +47,8 @@ function formatter(open, close, replace = open) {
 /**
  * support control isColorizen as param
  * styleFn generator
- *
- * @param {boolen} enabled
- * @return {Function} style
  */
-function styleFn(enabled = isColorizenSupport()) {
+export function createStyle(enabled = isColorizenSupport()) {
   const init = enabled ? formatter : () => String
   return {
     isColorSupported: enabled,
@@ -96,13 +84,10 @@ function styleFn(enabled = isColorizenSupport()) {
   }
 }
 
-module.exports.createStyle = styleFn
-module.exports.isColorizenSupport = isColorizenSupport
-
 /**
  * commandline style output colorizen
  *
  * Automatically determine whether output coloring is required
  * @tip the rgb color see to check your number: https://github.com/sindresorhus/xterm-colors
  */
-module.exports.pc = styleFn()
+export const pc = createStyle()

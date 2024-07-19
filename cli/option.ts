@@ -1,5 +1,17 @@
+import { resolve } from 'node:path'
+
+import type { ResvgRenderOptions } from '../index'
+
+import type { ParsedArgs } from './cli'
+import type { Logger } from './util'
+import { getPathsByArgs, unkonwOptionExit } from './util'
+
 /** Allow partial options using Camel-Case */
-const optionMapping = {
+type ResvgOptionsKeys =
+  | keyof ResvgRenderOptions
+  | keyof Required<ResvgRenderOptions>['font']
+  | keyof Required<ResvgRenderOptions>['crop']
+const optionMapping: Record<string, ResvgOptionsKeys> = {
   // font
   'system-font': 'loadSystemFonts',
   'font-file': 'fontFiles',
@@ -30,63 +42,59 @@ const optionMapping = {
   'log-level': 'logLevel',
 }
 
+type Result = [{ input: string; output?: string }, ResvgRenderOptions]
 /**
  * transform argv to ResvgRenderOptions
- *
- * @param {import ('./help.d').CLIOptions & import('minimist').ParsedArgs} parseArgv
- * @return {[
- *    { input: string, output?: string },
- *    import('../index').ResvgRenderOptions
- *  ]}
  */
-module.exports.transformOptions = function transformOptions(parseArgv, logger) {
-  const { getPathsByArgs, unkonwOptionExit } = require('./util')
+export function transformOptions(parseArgv: ParsedArgs, logger: Logger) {
   // #region - Args to Paths
   const [tmpInput, tmpOutput] = parseArgv._
-  const result = [getPathsByArgs(tmpInput, tmpOutput, logger)]
+  const result: Result = [getPathsByArgs(tmpInput, tmpOutput, logger), {}]
   logger.debug('Argv', JSON.stringify(parseArgv), 'JSON')
   logger.debug('Input and Output Path', JSON.stringify(result[0]), 'JSON')
-  delete parseArgv._
   // #endregion
 
-  // #region - Main Options
-  const options = {}
+  // #region - Main Options Handler
+  const options: ResvgRenderOptions = {}
   for (const key in parseArgv) {
+    if (key === '_') continue
     // handle fit-*
     if (key.startsWith('fit-')) {
       options['fitTo'] = {
-        mode: key.slice(4),
+        mode: key.slice(4) as Required<ResvgRenderOptions>['fitTo']['mode'],
         value: parseArgv[key],
       }
       continue
     }
 
-    // format mutilple string
+    // transform mutilple string
     if (['font-file', 'font-dir', 'language'].includes(key) && typeof parseArgv[key] === 'string') {
       parseArgv[key] = [parseArgv[key]]
     }
-    // format path option
+    // transform path option
     if (['font-file', 'font-dir'].includes(key)) {
-      const { resolve } = require('path')
       parseArgv[key] = Array.isArray(parseArgv[key])
         ? parseArgv[key].map((path) => resolve(process.cwd(), path))
         : resolve(process.cwd(), parseArgv[key])
     }
 
-    // other option using mapping
+    // other option using mapping transform
     !(key in optionMapping) && unkonwOptionExit(key, logger)
     if (key.startsWith('font-') || key === 'system-font') {
       options['font'] ??= {}
-      options['font'][optionMapping[key]] = parseArgv[key]
+      const fontkey = optionMapping[key] as keyof Required<ResvgRenderOptions>['font']
+      options['font'][fontkey] = parseArgv[key]
     } else if (key.startsWith('crop-')) {
-      options['crop'] ??= {}
-      options['crop'][optionMapping[key]] = parseArgv[key]
+      options['crop'] ??= {} as Required<ResvgRenderOptions>['crop']
+      const cropkey = key.slice(5) as keyof Required<ResvgRenderOptions>['crop']
+      options['crop'][cropkey] = parseArgv[key]
     } else {
-      options[optionMapping[key]] = parseArgv[key]
+      const optkey = optionMapping[key] as keyof ResvgRenderOptions
+      options[optkey] = parseArgv[key]
     }
   }
   // #endregion
-  result.push(options)
+  result[1] = options
 
   logger.debug('Options', JSON.stringify(result[1]), 'JSON')
   return result

@@ -1,6 +1,6 @@
 /** @type {import('esbuild').BuildOptions} */
 const commonOptions = {
-  entryPoints: ['cli/cli.js'],
+  entryPoints: ['cli/cli.ts'],
   outfile: 'cli.js',
   logLevel: 'info',
   minify: false,
