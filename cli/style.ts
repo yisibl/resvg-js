@@ -18,6 +18,7 @@ export function isColorizenSupport(colorSupoort = true, fd = 1) {
   return (
     (colorSupoort &&
       !('NO_COLOR' in process.env) &&
+      !(process.env?.NODE_ENV === 'test') &&
       (process.platform === 'win32' || (tty.isatty(fd) && process.env.TERM !== 'dumb') || 'CI' in process.env)) ||
     'FORCE_COLOR' in process.env
   )

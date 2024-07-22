@@ -46,7 +46,8 @@ ${pc.yellow('WEBSITE:')}
 ${pc.yellow('VERSION:')} ${version}
 
 ${pc.yellow('SYNOPSIS:')}
-    resvg-js [OPTIONS] <input_svg_path | '-'> [output_path]
+    resvg-js [OPTIONS] <input_svg_path> [output_path]   ${pc.gray('# If empty output_path. The raw data of image to stdout')}
+    resvg-js [OPTIONS] - [output_path]                  ${pc.gray('# Receives svg string from stdin')}
 
 ${pc.yellow('OPTIONS:')}
   ${pc.gray('Font:')}
@@ -84,21 +85,22 @@ ${pc.yellow('OPTIONS:')}
     ${pc.cyan('--language   <lang>')}             ${pc.red('Language code')} ${pc.gray('[Mutilple]')}
     ${pc.cyan('--background <CSS3_color>')}       ${pc.red('Background color')}
     ${pc.cyan('--log-level  <logLevel>')}         ${pc.red('Setting log level')}
+        ${pc.gray("<'off' | 'error' | 'warn' | 'info' | 'debug' | 'trace'>")}
 
 ${pc.yellow('ARGS:')}
     ${pc.cyan('<input_file_path>')}               ${pc.red('SVG file path. Use "-" for stdin')}
     ${pc.cyan('[output_file_path]')}              ${pc.red('Output image file path')}
 
 ${pc.yellow('EXAMPLES:')}
-    ${pc.cyan('resvg-js input.svg output.png')}
-    ${pc.cyan('resvg-js --fit-width 1200 input.svg output.png')}
-    ${pc.cyan(`resvg-js \\
+  ${pc.gray('$')} ${pc.cyan('resvg-js input.svg output.png')}
+  ${pc.gray('$')} ${pc.cyan('resvg-js --fit-width 1200 input.svg output.png')}
+  ${pc.gray('$')} ${pc.cyan(`resvg-js \\
         --no-system-font                    \\
         --font-file "./Font-Light.ttf"      \\
         --font-file "./Font-Bold.ttf"       \\
         --font-default-family "Font"        \\
         --background "rgba(238,235,230,.9)" \\
         ./input.svg ./output.png`)}
-    ${pc.cyan('cat a.svg | resvg-js --fit-width 1200 --image-rending 0 - output.png')}
+  ${pc.gray('$')} ${pc.cyan('cat a.svg | resvg-js --fit-width 1200 --image-rending 0 - output.png')}
 `)
 }

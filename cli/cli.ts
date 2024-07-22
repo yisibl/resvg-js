@@ -7,7 +7,7 @@ import { Resvg } from '../index'
 
 import type { CLIOptions } from './help'
 import { printHelp } from './help'
-import { transformOptions } from './option'
+import { transformOptions, transformPaths } from './option'
 import { createLogger, getBufferFromStdin, writeBufferToStdout } from './util'
 
 process.on('uncaughtException', (err) => {
@@ -21,7 +21,7 @@ process.on('SIGINT', () => {
 
 export type ParsedArgs = CLIOptions & minimist.ParsedArgs
 
-async function bootsrap(argvs = process.argv) {
+export async function bootsrap(argvs = process.argv) {
   const { version } = require('../package.json')
   const parsedArgv: ParsedArgs = minimist<CLIOptions>(argvs.slice(2, argvs.length), {
     alias: {
@@ -37,7 +37,9 @@ async function bootsrap(argvs = process.argv) {
   } else {
     // Main
     const logger = createLogger(parsedArgv?.['log-level'])
-    const [paths, resvgOptions] = transformOptions(parsedArgv, logger)
+    logger.debug('Argv', JSON.stringify(parsedArgv), 'JSON')
+    const paths = transformPaths(parsedArgv, logger)
+    const resvgOptions = transformOptions(parsedArgv, logger)
 
     // Input
     let fileData = null
