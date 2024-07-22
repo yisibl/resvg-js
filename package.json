@@ -17,7 +17,7 @@
     "CLI",
     "svg to png"
   ],
-  "bin": "bin/resvg-js",
+  "bin": "./bin/resvg-js.js",
   "files": [
     "bin",
     "cli.js",

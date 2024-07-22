@@ -346,7 +346,7 @@ __metadata:
     prettier: ^2.7.1
     typescript: ^5.4.2
   bin:
-    resvg-js: bin/resvg-js
+    resvg-js: ./bin/resvg-js.js
   languageName: unknown
   linkType: soft
 
