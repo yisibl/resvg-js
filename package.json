@@ -75,6 +75,7 @@
     "prepublishOnly": "napi prepublish -t npm && node bundle-prepublish.js",
     "test": "ava __test__/**/index*.*",
     "test:wasm": "ava __test__/**/wasm*.*",
+    "test:cli": "ava __test__/**/cli*.*",
     "version": "napi version"
   },
   "devDependencies": {
