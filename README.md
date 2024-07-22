@@ -194,6 +194,30 @@ This package also ships a pure WebAssembly artifact built with `wasm-bindgen` to
 
 See [playground](wasm/index.html), it is also possible to [call Wasm in Node.js](example/wasm-node.js), but it is slower.
 
+### CLI
+
+```txt
+SYNOPSIS:
+    resvg-js [OPTIONS] <input_svg_path> [output_path]   # If empty output_path. The raw data of image to stdout
+    resvg-js [OPTIONS] - [output_path]                  # Receives svg string from stdin
+```
+
+#### Direct Use
+
+```shell
+npx @resvg/resvg-js --help
+# or
+bunx @resvg/resvg-js --help
+```
+
+#### Global Installation
+
+```shell
+npm install -g @resvg/resvg-js
+
+resvg-js --help
+```
+
 ## Sample Benchmark
 
 ```shell
