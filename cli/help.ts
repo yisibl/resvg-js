@@ -84,8 +84,8 @@ ${pc.yellow('OPTIONS:')}
     ${pc.cyan('--dpi        <num>')}              ${pc.red('Dots Per Inch')}
     ${pc.cyan('--language   <lang>')}             ${pc.red('Language code')} ${pc.gray('[Mutilple]')}
     ${pc.cyan('--background <CSS3_color>')}       ${pc.red('Background color')}
-    ${pc.cyan('--log-level  <logLevel>')}         ${pc.red('Setting log level')}
-        ${pc.gray("<'off' | 'error' | 'warn' | 'info' | 'debug' | 'trace'>")}
+    ${pc.cyan('--log-level  <level>')}            ${pc.red('Setting log level')}
+        ${pc.gray('[level: "off" | "error" | "warn" | "info" | "debug" | "trace"]')}
 
 ${pc.yellow('ARGS:')}
     ${pc.cyan('<input_file_path>')}               ${pc.red('SVG file path. Use "-" for stdin')}
