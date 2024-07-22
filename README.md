@@ -299,6 +299,15 @@ npm run build:wasm
 npm run test:wasm
 ```
 
+### CLI
+
+```bash
+npm i
+npm run dev:cli
+npx resvg-js --help
+npm run test:cli
+```
+
 ## Roadmap
 
 I will consider implementing the following features, if you happen to be interested,
