@@ -335,7 +335,7 @@ __metadata:
     eslint-config-prettier: ^8.5.0
     eslint-plugin-import: ^2.26.0
     eslint-plugin-prettier: ^4.2.1
-    eslint-plugin-sonarjs: ^0.25.0
+    eslint-plugin-sonarjs: ^1.0.0
     husky: ^8.0.0
     jimp-compact: ^0.16.1-2
     lint-staged: ^15.0.0
@@ -1765,12 +1765,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-sonarjs@npm:^0.25.0":
-  version: 0.25.1
-  resolution: "eslint-plugin-sonarjs@npm:0.25.1"
+"eslint-plugin-sonarjs@npm:^1.0.0":
+  version: 1.0.3
+  resolution: "eslint-plugin-sonarjs@npm:1.0.3"
   peerDependencies:
-    eslint: ^5.0.0 || ^6.0.0 || ^7.0.0 || ^8.0.0
-  checksum: 76b4bde16182de2691682313f03342a951f60d55ed87d5700409e32c9f02660ae3ec9d95daf1c75c18a7c2035b0e1f92bdfb30df054dc90e63ab65d432a575f9
+    eslint: ^8.0.0 || ^9.0.0
+  checksum: 2473a0239536e33fd3a31393f6953e782d1e80c9326e8781b0acf09906bab9b57ddb42dbf639e19bb2500b5d3c8b338fca0e3f3a52db509ba3d9f94e6cd154f4
   languageName: node
   linkType: hard
 
