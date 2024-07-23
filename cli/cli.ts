@@ -1,5 +1,5 @@
 import { writeFile, readFile } from 'node:fs/promises'
-import process from 'process'
+import process from 'node:process'
 
 import minimist from 'minimist'
 
@@ -21,7 +21,7 @@ process.on('SIGINT', () => {
 
 export type ParsedArgs = CLIOptions & minimist.ParsedArgs
 
-export async function bootsrap(argvs = process.argv) {
+export async function main(argvs = process.argv) {
   const { version } = require('../package.json')
   const parsedArgv: ParsedArgs = minimist<CLIOptions>(argvs.slice(2, argvs.length), {
     alias: {
@@ -71,7 +71,7 @@ export async function bootsrap(argvs = process.argv) {
   }
 }
 
-bootsrap()
+main()
   .then(() => {
     process.exit(0)
   })
