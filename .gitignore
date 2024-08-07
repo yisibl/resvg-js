@@ -181,7 +181,7 @@ $RECYCLE.BIN/
 
 # End of https://www.toptal.com/developers/gitignore/api/windows
 
-#Added by cargo
+# Added by cargo
 
 /target
 Cargo.lock
@@ -195,3 +195,6 @@ Cargo.lock
 !.yarn/versions
 
 *.node
+
+# Added CLI bundle file
+/cli.js
