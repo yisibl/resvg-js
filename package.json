@@ -14,9 +14,13 @@
     "rust",
     "svg2png",
     "svg2img",
+    "CLI",
     "svg to png"
   ],
+  "bin": "./bin/resvg-js.js",
   "files": [
+    "bin",
+    "cli.js",
     "index.d.ts",
     "index.js",
     "js-binding.js",
@@ -48,6 +52,7 @@
   },
   "scripts": {
     "artifacts": "napi artifacts",
+    "dev:cli": "node bundle-cli.js --watch",
     "bench": "node -r @swc-node/register benchmark/bench.ts",
     "bundle": "run-p 'bundle:*'",
     "bundle:js": "node bundle.js",
@@ -67,15 +72,17 @@
     "format:yaml": "prettier --parser yaml --write './**/*.{yml,yaml}'",
     "lint": "eslint . -c ./.eslintrc.yml './**/*.{ts,tsx,js}'",
     "lint:fix": "eslint . -c ./.eslintrc.yml './**/*.{ts,tsx,js}' --fix",
-    "prepublishOnly": "napi prepublish -t npm && esbuild js-binding.js --minify --allow-overwrite --outfile=js-binding.js",
+    "prepublishOnly": "napi prepublish -t npm && node bundle-prepublish.js",
     "test": "ava __test__/**/index*.*",
     "test:wasm": "ava __test__/**/wasm*.*",
+    "test:cli": "ava __test__/**/cli*.*",
     "version": "napi version"
   },
   "devDependencies": {
     "@napi-rs/cli": "^2.18.0",
     "@swc-node/register": "^1.9.0",
     "@swc/core": "^1.4.6",
+    "@types/minimist": "^1.2.5",
     "@types/node": "^20.6.5",
     "@typescript-eslint/eslint-plugin": "^6.7.2",
     "@typescript-eslint/parser": "^6.7.2",
@@ -91,6 +98,7 @@
     "husky": "^8.0.0",
     "jimp-compact": "^0.16.1-2",
     "lint-staged": "^15.0.0",
+    "minimist": "^1.2.8",
     "node-fetch": "2.x",
     "npm-run-all2": "^6.1.2",
     "prettier": "^2.7.1",
