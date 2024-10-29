@@ -92,7 +92,7 @@
     "jimp-compact": "^0.16.1-2",
     "lint-staged": "^15.0.0",
     "node-fetch": "2.x",
-    "npm-run-all2": "^6.1.2",
+    "npm-run-all2": "^7.0.0",
     "prettier": "^2.7.1",
     "typescript": "^5.4.2"
   },
