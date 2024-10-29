@@ -340,7 +340,7 @@ __metadata:
     jimp-compact: ^0.16.1-2
     lint-staged: ^15.0.0
     node-fetch: 2.x
-    npm-run-all2: ^6.1.2
+    npm-run-all2: ^7.0.0
     prettier: ^2.7.1
     typescript: ^5.4.2
   languageName: unknown
@@ -2732,6 +2732,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"isexe@npm:^3.1.1":
+  version: 3.1.1
+  resolution: "isexe@npm:3.1.1"
+  checksum: 7fe1931ee4e88eb5aa524cd3ceb8c882537bc3a81b02e438b240e47012eef49c86904d0f0e593ea7c3a9996d18d0f1f3be8d3eaa92333977b0c3a9d353d5563e
+  languageName: node
+  linkType: hard
+
 "jimp-compact@npm:^0.16.1-2":
   version: 0.16.1
   resolution: "jimp-compact@npm:0.16.1"
@@ -2769,10 +2776,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"json-parse-even-better-errors@npm:^3.0.0":
-  version: 3.0.1
-  resolution: "json-parse-even-better-errors@npm:3.0.1"
-  checksum: bf74fa3f715e56699ccd68b80a7d20908de432a3fae2d5aa2ed530a148e9d9ccdf8e6983b93d9966a553aa70dcf003ce3a7ffec2c0ce74d2a6173e3691a426f0
+"json-parse-even-better-errors@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "json-parse-even-better-errors@npm:4.0.0"
+  checksum: da1ae7ef0cc9db02972a06a71322f26bdcda5d7f648c23b28ce7f158ba35707461bcbd91945d8aace10d8d79c383b896725c65ffa410242352692328aa9b5edf
   languageName: node
   linkType: hard
 
@@ -3260,30 +3267,31 @@ __metadata:
   languageName: node
   linkType: hard
 
-"npm-normalize-package-bin@npm:^3.0.0":
-  version: 3.0.1
-  resolution: "npm-normalize-package-bin@npm:3.0.1"
-  checksum: de416d720ab22137a36292ff8a333af499ea0933ef2320a8c6f56a73b0f0448227fec4db5c890d702e26d21d04f271415eab6580b5546456861cc0c19498a4bf
+"npm-normalize-package-bin@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "npm-normalize-package-bin@npm:4.0.0"
+  checksum: e1a0971e5640bc116c5197f9707d86dc404b6d8e13da2c7ea82baa5583b8da279a3c8607234aa1d733c2baac3b3eba87b156f021f20ae183dc4806530e61675d
   languageName: node
   linkType: hard
 
-"npm-run-all2@npm:^6.1.2":
-  version: 6.1.2
-  resolution: "npm-run-all2@npm:6.1.2"
+"npm-run-all2@npm:^7.0.0":
+  version: 7.0.1
+  resolution: "npm-run-all2@npm:7.0.1"
   dependencies:
     ansi-styles: ^6.2.1
     cross-spawn: ^7.0.3
     memorystream: ^0.3.1
     minimatch: ^9.0.0
     pidtree: ^0.6.0
-    read-package-json-fast: ^3.0.2
+    read-package-json-fast: ^4.0.0
     shell-quote: ^1.7.3
+    which: ^5.0.0
   bin:
     npm-run-all: bin/npm-run-all/index.js
     npm-run-all2: bin/npm-run-all/index.js
     run-p: bin/run-p/index.js
     run-s: bin/run-s/index.js
-  checksum: dc595a8341eba7f1ac23496da1f5751b8372023716124d4204cee3e2e7005679902137247106861f01b9fc8976681245191ce925f2c6cea9c37a34c61cf1f9d0
+  checksum: 3879513c7cc7b3ae164e969931563a3699406fd2a909c30d2c95d8d106bf1e0d1a5c807885c2880d7f0c9e96d3a95d5c56166623dc928e26e28bd87839aa7785
   languageName: node
   linkType: hard
 
@@ -3674,13 +3682,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"read-package-json-fast@npm:^3.0.2":
-  version: 3.0.2
-  resolution: "read-package-json-fast@npm:3.0.2"
+"read-package-json-fast@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "read-package-json-fast@npm:4.0.0"
   dependencies:
-    json-parse-even-better-errors: ^3.0.0
-    npm-normalize-package-bin: ^3.0.0
-  checksum: 8d406869f045f1d76e2a99865a8fd1c1af9c1dc06200b94d2b07eef87ed734b22703a8d72e1cd36ea36cc48e22020bdd187f88243c7dd0563f72114d38c17072
+    json-parse-even-better-errors: ^4.0.0
+    npm-normalize-package-bin: ^4.0.0
+  checksum: bf0becd7d0b652dcc5874b466d1dbd98313180e89505c072f35ff48a1ad6bdaf2427143301e1924d64e4af5064cda8be5df16f14de882f03130e29051bbaab87
   languageName: node
   linkType: hard
 
@@ -4476,6 +4484,17 @@ __metadata:
   bin:
     node-which: ./bin/node-which
   checksum: 1a5c563d3c1b52d5f893c8b61afe11abc3bab4afac492e8da5bde69d550de701cf9806235f20a47b5c8fa8a1d6a9135841de2596535e998027a54589000e66d1
+  languageName: node
+  linkType: hard
+
+"which@npm:^5.0.0":
+  version: 5.0.0
+  resolution: "which@npm:5.0.0"
+  dependencies:
+    isexe: ^3.1.1
+  bin:
+    node-which: bin/which.js
+  checksum: 6ec99e89ba32c7e748b8a3144e64bfc74aa63e2b2eacbb61a0060ad0b961eb1a632b08fb1de067ed59b002cec3e21de18299216ebf2325ef0f78e0f121e14e90
   languageName: node
   linkType: hard
 
