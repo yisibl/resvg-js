@@ -2,6 +2,8 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+use std::collections::HashSet;
+
 use crate::options::*;
 use resvg::usvg::fontdb::{Database, Language};
 
@@ -81,94 +83,102 @@ pub fn load_wasm_fonts(
     Ok(())
 }
 
+// Well-known font names for each CSS generic family, covering Windows,
+// macOS, and common Linux distributions.
+const SANS_SERIF_FALLBACKS: &[&str] = &[
+    "Arial",
+    "Helvetica",
+    "Liberation Sans",
+    "Noto Sans",
+    "DejaVu Sans",
+    "Droid Sans",
+    "Adwaita Sans",
+];
+const SERIF_FALLBACKS: &[&str] = &[
+    "Times New Roman",
+    "Liberation Serif",
+    "Noto Serif",
+    "DejaVu Serif",
+    "Droid Serif",
+];
+const MONOSPACE_FALLBACKS: &[&str] = &[
+    "Courier New",
+    "Liberation Mono",
+    "Noto Sans Mono",
+    "DejaVu Sans Mono",
+    "Droid Sans Mono",
+    "Adwaita Mono",
+];
+const CURSIVE_FALLBACKS: &[&str] = &["Comic Sans MS", "Segoe Script"];
+const FANTASY_FALLBACKS: &[&str] = &["Impact", "Papyrus"];
+
+/// Set each CSS generic family to the configured value if available, then
+/// probe well-known alternatives (mirroring browser behaviour), then fall
+/// back to the first font in fontdb.
+fn set_generic_families(font_options: &JsFontOptions, fontdb: &mut Database) {
+    let available: HashSet<&str> = fontdb
+        .faces()
+        .flat_map(|face| face.families.iter().map(|f| f.0.as_str()))
+        .collect();
+    let first_fallback = get_first_font_family_or_fallback(fontdb);
+
+    let resolve = |configured: &str, fallbacks: &[&str]| -> String {
+        if !configured.is_empty() && available.contains(configured) {
+            return configured.to_string();
+        }
+        for name in fallbacks {
+            if available.contains(name) {
+                return (*name).to_string();
+            }
+        }
+        first_fallback.clone()
+    };
+
+    // Resolve all families before mutating fontdb (avoids borrow conflict).
+    let serif = resolve(&font_options.serif_family, SERIF_FALLBACKS);
+    let sans_serif = resolve(&font_options.sans_serif_family, SANS_SERIF_FALLBACKS);
+    let cursive = resolve(&font_options.cursive_family, CURSIVE_FALLBACKS);
+    let fantasy = resolve(&font_options.fantasy_family, FANTASY_FALLBACKS);
+    let monospace = resolve(&font_options.monospace_family, MONOSPACE_FALLBACKS);
+
+    fontdb.set_serif_family(&serif);
+    fontdb.set_sans_serif_family(&sans_serif);
+    fontdb.set_cursive_family(&cursive);
+    fontdb.set_fantasy_family(&fantasy);
+    fontdb.set_monospace_family(&monospace);
+}
+
 #[cfg(not(target_arch = "wasm32"))]
 fn set_font_families(font_options: &JsFontOptions, fontdb: &mut Database) {
-    let mut default_font_family = font_options.default_font_family.clone().trim().to_string();
-    // Debug: get font lists
-    // for face in fontdb.faces() {
-    //     let family = face
-    //         .families
-    //         .iter()
-    //         .find(|f| f.1 == Language::English_UnitedStates)
-    //         .unwrap_or(&face.families[0]);
-    //     debug!("font_id = {}, family_name = {}", face.id, family.0);
-    // }
+    let default_font_family = font_options.default_font_family.clone().trim().to_string();
 
-    let fontdb_found_default_font_family = fontdb
-        .faces()
-        .find_map(|it| {
-            it.families
-                .iter()
-                .find(|f| f.0 == default_font_family)
-                .map(|f| f.0.clone())
-        })
-        .unwrap_or_default();
-
-    // 当 default_font_family 为空或系统无该字体时，尝试把 fontdb
-    // 中字体列表的第一个字体设置为默认的字体。
-    if default_font_family.is_empty() || fontdb_found_default_font_family.is_empty() {
-        // font_files 或 font_dirs 选项不为空时, 从已加载的字体列表中获取第一个字体的 font family。
-        if !font_options.font_files.is_empty() || !font_options.font_dirs.is_empty() {
-            default_font_family = get_first_font_family_or_fallback(fontdb);
-        }
-    }
-
-    fontdb.set_serif_family(&default_font_family);
-    fontdb.set_sans_serif_family(&default_font_family);
-    fontdb.set_cursive_family(&default_font_family);
-    fontdb.set_fantasy_family(&default_font_family);
-    fontdb.set_monospace_family(&default_font_family);
+    set_generic_families(font_options, fontdb);
 
     debug!("📝 default_font_family = '{default_font_family}'");
 
-    #[cfg(not(target_arch = "wasm32"))]
-    find_and_debug_font_path(fontdb, default_font_family.as_str())
+    if !default_font_family.is_empty() {
+        find_and_debug_font_path(fontdb, default_font_family.as_str());
+    }
 }
 
 #[cfg(target_arch = "wasm32")]
 fn set_wasm_font_families(
     font_options: &JsFontOptions,
     fontdb: &mut Database,
-    font_buffers: Option<js_sys::Array>,
+    _font_buffers: Option<js_sys::Array>,
 ) {
-    let mut default_font_family = font_options.default_font_family.clone().trim().to_string();
-
-    let fontdb_found_default_font_family = fontdb
-        .faces()
-        .find_map(|it| {
-            it.families
-                .iter()
-                .find(|f| f.0 == default_font_family)
-                .map(|f| f.0.clone())
-        })
-        .unwrap_or_default();
-
-    // 当 default_font_family 为空或系统无该字体时，尝试把 fontdb
-    // 中字体列表的第一个字体设置为默认的字体。
-    if default_font_family.is_empty() || fontdb_found_default_font_family.is_empty() {
-        // font_buffers 选项不为空时, 从已加载的字体列表中获取第一个字体的 font family。
-        if let Some(_font_buffers) = font_buffers {
-            default_font_family = get_first_font_family_or_fallback(fontdb);
-        }
-    }
-
-    fontdb.set_serif_family(&default_font_family);
-    fontdb.set_sans_serif_family(&default_font_family);
-    fontdb.set_cursive_family(&default_font_family);
-    fontdb.set_fantasy_family(&default_font_family);
-    fontdb.set_monospace_family(&default_font_family);
+    set_generic_families(font_options, fontdb);
 }
 
-/// 查询指定 font family 的字体是否存在，如果不存在则使用 fallback_font_family 代替。
+/// Log whether the specified default font family exists in the database.
 #[cfg(not(target_arch = "wasm32"))]
-fn find_and_debug_font_path(fontdb: &mut Database, font_family: &str) {
+fn find_and_debug_font_path(fontdb: &Database, font_family: &str) {
     let query = Query {
         families: &[Family::Name(font_family)],
         ..Query::default()
     };
 
     let now = std::time::Instant::now();
-    // 查询当前使用的字体是否存在
     match fontdb.query(&query) {
         Some(id) => {
             if let Some((src, index)) = fontdb.face_source(id) {
@@ -183,41 +193,22 @@ fn find_and_debug_font_path(fontdb: &mut Database, font_family: &str) {
             }
         }
         None => {
-            let first_font_family = get_first_font_family_or_fallback(fontdb);
-
-            fontdb.set_serif_family(&first_font_family);
-            fontdb.set_sans_serif_family(&first_font_family);
-            fontdb.set_cursive_family(&first_font_family);
-            fontdb.set_fantasy_family(&first_font_family);
-            fontdb.set_monospace_family(&first_font_family);
-
-            warn!(
-                "Warning: The default font-family '{font_family}' not found, set to '{first_font_family}'."
-            );
+            warn!("Warning: The default font-family '{font_family}' not found.");
         }
     }
 }
 
-/// 获取 fontdb 中的第一个字体的 font family。
-fn get_first_font_family_or_fallback(fontdb: &mut Database) -> String {
-    let mut default_font_family = "Arial".to_string(); // 其他情况都 fallback 到指定的这个字体。
-
-    match fontdb.faces().next() {
-        Some(face) => {
-            if let Some(base_family) = face
-                .families
+/// Get the first font family from fontdb, or "Arial" as a last resort.
+fn get_first_font_family_or_fallback(fontdb: &Database) -> String {
+    fontdb
+        .faces()
+        .next()
+        .and_then(|face| {
+            face.families
                 .iter()
                 .find(|f| f.1 == Language::English_UnitedStates)
-                .or_else(|| face.families.get(0))
-            {
-                default_font_family = base_family.0.clone();
-            }
-        }
-        None => {
-            #[cfg(not(target_arch = "wasm32"))]
-            debug!("📝 get_first_font_family not found = '{default_font_family}'");
-        }
-    }
-
-    default_font_family
+                .or(face.families.first())
+                .map(|f| f.0.clone())
+        })
+        .unwrap_or_else(|| "Arial".to_string())
 }

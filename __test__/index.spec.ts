@@ -334,6 +334,88 @@ test('Test defaultFontFamily', (t) => {
   t.true((matchPixels?.length ?? 0) > 1500)
 })
 
+test('sansSerifFamily option should control sans-serif generic family', (t) => {
+  // When sansSerifFamily is set, the CSS generic family "sans-serif" should
+  // resolve to that font. Before the fix, set_font_families() ignored the
+  // configured generic family values and set ALL generic families to the
+  // first font loaded into fontdb (e.g. "Font Awesome 6 Brands"), causing
+  // missing glyphs for text like "7.4B" → "74B".
+  //
+  // Probe for an available sans-serif font across platforms:
+  //   Linux: Liberation Sans / DejaVu Sans / Noto Sans / Droid Sans
+  //   macOS: Helvetica / Arial
+  //   Windows: Arial
+  const candidates = ['Arial', 'Helvetica', 'Liberation Sans', 'DejaVu Sans', 'Noto Sans', 'Droid Sans']
+  const makeSvg = (family: string) => `
+  <svg xmlns="http://www.w3.org/2000/svg" width="300" height="60" viewBox="0 0 300 60">
+    <text fill="white" font-size="24" x="10" y="40" font-family="${family}">Hello 7.4B</text>
+  </svg>`
+
+  // Render with a non-existent font name to get the per-character-fallback baseline.
+  // A real font produces different output from this baseline.
+  const fallbackPixels = Buffer.from(
+    new Resvg(makeSvg('ZZZZZ_NonExistent_Font_12345'), { font: { loadSystemFonts: true } }).render().pixels.toJSON()
+      .data,
+  )
+
+  let fontName: string | undefined
+  for (const name of candidates) {
+    const pixels = Buffer.from(
+      new Resvg(makeSvg(name), { font: { loadSystemFonts: true } }).render().pixels.toJSON().data,
+    )
+    if (Buffer.compare(pixels, fallbackPixels) !== 0) {
+      fontName = name
+      break
+    }
+  }
+
+  if (!fontName) {
+    t.log('Skipping: no suitable sans-serif font found on this system')
+    t.pass()
+    return
+  }
+
+  const sansSerifSvg = makeSvg('sans-serif')
+  const directSvg = makeSvg(fontName)
+
+  const opts = {
+    font: {
+      loadSystemFonts: true,
+      sansSerifFamily: fontName,
+    },
+  }
+
+  const sansSerifPixels = new Resvg(sansSerifSvg, opts).render().pixels
+  const directPixels = new Resvg(directSvg, opts).render().pixels
+
+  // sans-serif should resolve to the chosen font, producing identical output
+  t.deepEqual(sansSerifPixels.toJSON().data, directPixels.toJSON().data)
+})
+
+test('sans-serif should render punctuation like "." without dropping glyphs', (t) => {
+  // Before the fix, sans-serif could resolve to "Font Awesome 6 Brands"
+  // (the first font in fontdb), an icon font that lacks basic Latin glyphs.
+  // This caused "7.4B" and "74B" to render identically — the dot was invisible.
+  const makeSvg = (text: string) => `
+  <svg xmlns="http://www.w3.org/2000/svg" width="200" height="40" viewBox="0 0 200 40">
+    <text fill="blue" font-size="24" x="10" y="30" font-family="sans-serif">${text}</text>
+  </svg>`
+
+  const opts = {
+    font: {
+      loadSystemFonts: true,
+      fontDirs: ['/usr/share/fonts/'],
+    },
+  }
+
+  const withDot = new Resvg(makeSvg('7.4B'), opts).render().pixels
+  const withoutDot = new Resvg(makeSvg('74B'), opts).render().pixels
+
+  // If the font can render ".", these two must produce different pixels.
+  // With the bug they were identical (dot was invisible).
+  t.notDeepEqual(withDot.toJSON().data, withoutDot.toJSON().data)
+})
+
 test('Async rendering', async (t) => {
   const filePath = '../example/text.svg'
   const svg = await fs.readFile(join(__dirname, filePath))
