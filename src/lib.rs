@@ -253,11 +253,7 @@ impl Resvg {
         svg: &Either<String, Buffer>,
         options: Option<String>,
     ) -> Result<Resvg, NapiError> {
-        let js_options: JsOptions = match options {
-            Some(o) => serde_json::from_str(o.as_str())
-                .map_err(|e| Error::InvalidOptions(format!("{e}")))?,
-            None => JsOptions::default(),
-        };
+        let js_options = options::parse_js_options(options.as_deref())?;
         let _ = env_logger::builder()
             .filter_level(js_options.log_level)
             .try_init();
@@ -390,11 +386,7 @@ impl Resvg {
         options: Option<String>,
         custom_font_buffers: Option<js_sys::Array>,
     ) -> Result<Resvg, js_sys::Error> {
-        let js_options: JsOptions = match options {
-            Some(o) => serde_json::from_str(o.as_str())
-                .map_err(|e| Error::InvalidOptions(format!("{e}")))?,
-            None => JsOptions::default(),
-        };
+        let js_options = options::parse_js_options(options.as_deref())?;
 
         let (mut opts, mut fontdb) = js_options.to_usvg_options();
 
