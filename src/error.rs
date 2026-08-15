@@ -32,6 +32,9 @@ pub enum Error {
 
     #[error("Unsupported image types (currently resvg only supports PNG, JPEG and GIF)")]
     UnsupportedImage,
+
+    #[error("Invalid options: {0}")]
+    InvalidOptions(String),
 }
 
 #[cfg(not(target_arch = "wasm32"))]

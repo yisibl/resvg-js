@@ -182,6 +182,15 @@ impl Default for JsOptions {
     }
 }
 
+pub(crate) fn parse_js_options(options: Option<&str>) -> Result<JsOptions, Error> {
+    match options {
+        Some(options) => serde_json::from_str::<Option<JsOptions>>(options)
+            .map(Option::unwrap_or_default)
+            .map_err(|error| Error::InvalidOptions(error.to_string())),
+        None => Ok(JsOptions::default()),
+    }
+}
+
 impl JsOptions {
     pub(crate) fn to_usvg_options(&self) -> (usvg::Options, Database) {
         // Load fonts
@@ -376,4 +385,29 @@ pub(crate) fn tweak_usvg_options(opts: &mut usvg::Options) {
             (resolver)(data, opts)
         }
     });
+}
+
+#[cfg(test)]
+mod tests {
+    use super::parse_js_options;
+
+    #[test]
+    fn parse_js_options_uses_defaults_for_missing_options() {
+        assert!(parse_js_options(None).is_ok());
+    }
+
+    #[test]
+    fn parse_js_options_uses_defaults_for_null() {
+        assert!(parse_js_options(Some("null")).is_ok());
+    }
+
+    #[test]
+    fn parse_js_options_rejects_invalid_json() {
+        assert!(parse_js_options(Some("{")).is_err());
+    }
+
+    #[test]
+    fn parse_js_options_rejects_unknown_fields() {
+        assert!(parse_js_options(Some(r#"{"unknown":true}"#)).is_err());
+    }
 }
