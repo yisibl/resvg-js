@@ -601,6 +601,23 @@ test('should throw because invalid SVG attribute (width attribute is 0)', (t) =>
   t.is(error.message, 'SVG has an invalid size')
 })
 
+test('should throw because render options contain an unknown field', (t) => {
+  const svg = '<svg width="128" height="128" xmlns="http://www.w3.org/2000/svg"></svg>'
+  const error = t.throws(() => {
+    new Resvg(svg, { dpii: 96 } as any)
+  })
+
+  t.regex(error.message, /Invalid options:.*dpii/)
+})
+
+test('renderAsync should reject because render options contain an unknown field', async (t) => {
+  const svg = '<svg width="128" height="128" xmlns="http://www.w3.org/2000/svg"></svg>'
+
+  await t.throwsAsync(renderAsync(svg, { dpii: 96 } as any), {
+    message: /Invalid options:.*dpii/,
+  })
+})
+
 test('should throw because invalid options (width 0)', (t) => {
   const error = t.throws(
     () => {
