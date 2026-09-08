@@ -388,6 +388,7 @@ impl Resvg {
         options: Option<String>,
         custom_font_buffers: Option<js_sys::Array>,
     ) -> Result<Resvg, js_sys::Error> {
+        console_error_panic_hook::set_once();
         let js_options: JsOptions = options
             .and_then(|o| serde_json::from_str(o.as_str()).ok())
             .unwrap_or_default();

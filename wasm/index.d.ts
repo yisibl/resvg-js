@@ -91,6 +91,12 @@ export type SystemFontsOptions = {
  *
  */
 export declare const initWasm: (module_or_path: Promise<InitInput> | InitInput) => Promise<void>;
+/**
+ * Discard the current Wasm instance and initialize a fresh one (new linear memory).
+ * Only call this once no `Resvg`/`RenderedImage` from the old instance are still alive.
+ * @param module_or_path WebAssembly Module or .wasm url
+ */
+export declare const resetWasm: (module_or_path: Promise<InitInput> | InitInput) => Promise<void>;
 export declare const Resvg: {
 	new (svg: Uint8Array | string, options?: ResvgRenderOptions): {
 		free(): void;

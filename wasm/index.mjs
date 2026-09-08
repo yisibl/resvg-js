@@ -510,6 +510,28 @@ function __wbg_get_imports() {
     const ret = getObject(arg0).push(getObject(arg1));
     return ret;
   };
+  imports.wbg.__wbg_new_abda76e883ba8a5f = function() {
+    const ret = new Error();
+    return addHeapObject(ret);
+  };
+  imports.wbg.__wbg_stack_658279fe44541cf6 = function(arg0, arg1) {
+    const ret = getObject(arg1).stack;
+    const ptr1 = passStringToWasm0(ret, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+    const len1 = WASM_VECTOR_LEN;
+    getInt32Memory0()[arg0 / 4 + 1] = len1;
+    getInt32Memory0()[arg0 / 4 + 0] = ptr1;
+  };
+  imports.wbg.__wbg_error_f851667af71bcfc6 = function(arg0, arg1) {
+    let deferred0_0;
+    let deferred0_1;
+    try {
+      deferred0_0 = arg0;
+      deferred0_1 = arg1;
+      console.error(getStringFromWasm0(arg0, arg1));
+    } finally {
+      wasm.__wbindgen_free(deferred0_0, deferred0_1, 1);
+    }
+  };
   imports.wbg.__wbg_length_c20a40f15020d68a = function(arg0) {
     const ret = getObject(arg0).length;
     return ret;
@@ -545,6 +567,9 @@ async function __wbg_init(input) {
   return __wbg_finalize_init(instance, module);
 }
 var dist_default = __wbg_init;
+function __resvgJsResetWasmModule() {
+  wasm = void 0;
+}
 
 // wasm-binding.ts
 var initialized = false;
@@ -552,6 +577,11 @@ var initWasm = async (module_or_path) => {
   if (initialized) {
     throw new Error("Already initialized. The `initWasm()` function can be used only once.");
   }
+  await dist_default(await module_or_path);
+  initialized = true;
+};
+var resetWasm = async (module_or_path) => {
+  __resvgJsResetWasmModule();
   await dist_default(await module_or_path);
   initialized = true;
 };
@@ -582,5 +612,6 @@ function isCustomFontsOptions(value) {
 }
 export {
   Resvg2 as Resvg,
-  initWasm
+  initWasm,
+  resetWasm
 };

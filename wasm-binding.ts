@@ -1,4 +1,4 @@
-import init, { Resvg as _Resvg, InitInput } from './wasm/dist'
+import init, { Resvg as _Resvg, InitInput, __resvgJsResetWasmModule } from './wasm/dist'
 import { CustomFontsOptions, ResvgRenderOptions, SystemFontsOptions } from './wasm/index'
 
 let initialized = false
@@ -12,6 +12,17 @@ export const initWasm = async (module_or_path: Promise<InitInput> | InitInput): 
   if (initialized) {
     throw new Error('Already initialized. The `initWasm()` function can be used only once.')
   }
+  await init(await module_or_path)
+  initialized = true
+}
+
+/**
+ * Discard the current Wasm instance and initialize a fresh one (new linear memory).
+ * Only call this once no `Resvg`/`RenderedImage` from the old instance are still alive.
+ * @param module_or_path WebAssembly Module or .wasm url
+ */
+export const resetWasm = async (module_or_path: Promise<InitInput> | InitInput): Promise<void> => {
+  __resvgJsResetWasmModule()
   await init(await module_or_path)
   initialized = true
 }

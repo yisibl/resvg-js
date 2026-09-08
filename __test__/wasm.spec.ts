@@ -88,6 +88,19 @@ test("should be no error: RuntimeError { message: 'unreachable', }", async (t) =
   t.is(result.getHeight(), 300)
 })
 
+test('should not panic when a clipped group is entirely below the canvas', async (t) => {
+  const svg = `<svg viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg">
+<defs>
+  <clipPath id="clip"><rect x="0" y="0" width="1200" height="630"/></clipPath>
+</defs>
+<g clip-path="url(#clip)">
+<rect x="0" y="1300" width="10" height="10" fill="#404040"/>
+</g>
+</svg>`
+  const resvg = new Resvg(svg)
+  t.notThrows(() => resvg.render())
+})
+
 test('buffer input', async (t) => {
   const filePath = '../example/text.svg'
   const svg = await fs.readFile(join(__dirname, filePath))
