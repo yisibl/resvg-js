@@ -37,6 +37,7 @@ resvg = { version = "0.34.0", default-features = false, features = [
     "raster-images",
     "text",
 ] }
+console_error_panic_hook = "0.1"
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
 napi = { version = "3", features = ["serde-json", "async"] }
@@ -64,5 +65,5 @@ panic = "unwind"
 codegen-units = 1
 
 [patch.crates-io]
-resvg = { git = "https://github.com/zimond/resvg", rev = "3495d870" }
+resvg = { git = "https://github.com/ptz0n/resvg", rev = "1759f23c3258328a2f3ae9bda2905b352143610b" }
 woff2 = { git="https://github.com/yisibl/woff2-rs", branch="fix-total-compressed-size" }
